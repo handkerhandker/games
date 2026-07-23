@@ -381,8 +381,8 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
   color: #8d8272; letter-spacing: 1px; text-align: center; line-height: 1.7; }
 /* 角色卡（char-spec §5.3：立绘/名称/称号/风味/开局武器行/修正清单/定位/锁态/选中态） */
 #ui .char-cards { display: flex; gap: clamp(14px, 2.5vw, 32px); margin-top: clamp(12px, 2.4vh, 24px);
-  align-items: stretch; justify-content: center; }
-#ui .char-card { position: relative; width: clamp(220px, 24vw, 300px); min-height: clamp(300px, 52vh, 400px);
+  align-items: stretch; justify-content: center; max-width: 100%; /* 防行溢出（面板 overflow-x 连坐滚动条实锤） */ }
+#ui .char-card { position: relative; width: clamp(220px, 24vw, 300px); min-width: 0; flex: 0 1 auto; min-height: clamp(300px, 52vh, 400px);
   box-sizing: border-box; background: rgba(28, 22, 18, 0.96); border: 2px solid #57463a;
   border-radius: 10px; padding: clamp(12px, 2vh, 20px) clamp(12px, 1.6vw, 18px) clamp(30px, 4vh, 40px);
   display: flex; flex-direction: column; align-items: center;
@@ -419,7 +419,7 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
   border: 1px solid var(--cc-theme, #c9a227); border-radius: 8px; padding: 2px 10px;
   background: rgba(10, 8, 6, 0.85); display: none; }
 /* 锁定遮罩：灰度化立绘 + 45% 黑遮罩 + 🔒 + 成就名 + 条件全文 + 进度（锁定可选中查看） */
-#ui .cc-lock { position: absolute; inset: 0; border-radius: 8px; background: rgba(8, 6, 5, 0.45);
+#ui .cc-lock { position: absolute; inset: 0; border-radius: 8px; background: rgba(8, 6, 5, 0.88);
   display: none; flex-direction: column; align-items: center; justify-content: center;
   gap: 6px; padding: 14px; box-sizing: border-box; text-align: center; }
 #ui .char-card.locked .cc-lock { display: flex; }
@@ -430,8 +430,8 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
   font-variant-numeric: tabular-nums; }
 /* 地图卡（map-spec §7.2：地板预览块 + 名称 + 风味 + 差异 ≤3 条 + 解锁徽记） */
 #ui .map-cards { display: flex; gap: clamp(14px, 2.5vw, 32px); margin-top: clamp(12px, 2.4vh, 24px);
-  align-items: stretch; justify-content: center; }
-#ui .map-card { position: relative; width: clamp(280px, 34vw, 420px); box-sizing: border-box;
+  align-items: stretch; justify-content: center; max-width: 100%; }
+#ui .map-card { position: relative; width: clamp(280px, 34vw, 420px); min-width: 0; flex: 0 1 auto; box-sizing: border-box;
   background: rgba(28, 22, 18, 0.96); border: 2px solid #57463a; border-radius: 10px;
   padding: clamp(12px, 2vh, 20px) clamp(12px, 1.8vw, 20px);
   display: flex; gap: clamp(10px, 1.6vw, 16px); align-items: flex-start;
@@ -464,8 +464,8 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
 #ui .exp-rules { display: flex; flex-direction: column; gap: 3px; margin-top: 10px; align-items: center; }
 #ui .exp-rule { font-size: clamp(11px, 0.95vw + 5px, 13px); color: #b3a48c; }
 #ui .exp-cards { display: flex; gap: clamp(16px, 3vw, 40px); margin-top: clamp(14px, 2.6vh, 24px);
-  align-items: stretch; justify-content: center; }
-#ui .exp-card { position: relative; width: clamp(240px, 26vw, 320px); min-height: clamp(150px, 28vh, 200px);
+  align-items: stretch; justify-content: center; max-width: 100%; }
+#ui .exp-card { position: relative; width: clamp(240px, 26vw, 320px); min-width: 0; flex: 0 1 auto; min-height: clamp(150px, 28vh, 200px);
   box-sizing: border-box; background: rgba(28, 22, 18, 0.96); border: 2px solid #57463a;
   border-radius: 10px; padding: clamp(14px, 2.4vh, 24px) clamp(14px, 1.8vw, 22px);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;

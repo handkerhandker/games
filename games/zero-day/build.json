@@ -1,0 +1,8 @@
+{
+  "id": "zero-day",
+  "name": "零日协议",
+  "syncedAt": "2026-07-23T17:18:50.644Z",
+  "source": "F:/资料/kimi/new game2/dist/零日协议.html",
+  "sourceMtime": "2026-07-23T17:18:50.504Z",
+  "prebuild": "npm run bundle"
+}

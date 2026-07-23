@@ -1,0 +1,8 @@
+{
+  "id": "dungeon",
+  "name": "地城（new game4）",
+  "syncedAt": "2026-07-23T17:15:37.701Z",
+  "source": "F:/资料/kimi/new game4/dist",
+  "sourceMtime": "2026-07-23T17:15:37.431Z",
+  "prebuild": "npx vite build"
+}
