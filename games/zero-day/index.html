@@ -10346,30 +10346,40 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       guardFlavor(root);
       fitCombat();
     }
+    const FIT_BUFFER = 24;
+    let fitLocked = null;
     function fitCombat() {
       const shell = root.querySelector(".cb-shell");
       if (!shell) return;
-      shell.style.transform = "";
-      shell.style.height = "";
-      const top = shell.getBoundingClientRect().top;
-      const availH = window.innerHeight - top - 6;
-      const availW = shell.parentElement ? shell.parentElement.clientWidth : window.innerWidth;
-      const naturalH = shell.scrollHeight;
-      const naturalW = shell.scrollWidth;
-      const f = Math.min(1, availW / Math.max(1, naturalW), availH / Math.max(1, naturalH));
-      if (f < 0.995) {
-        const ff = Math.max(0.55, f);
-        shell.style.height = `${naturalH}px`;
-        shell.style.transform = `scale(${ff})`;
+      if (!fitLocked) {
+        shell.style.transform = "";
+        shell.style.height = "";
+        const top = shell.getBoundingClientRect().top;
+        const availH = window.innerHeight - top - 6;
+        const availW = shell.parentElement ? shell.parentElement.clientWidth : window.innerWidth;
+        const naturalH = shell.scrollHeight + FIT_BUFFER;
+        const naturalW = shell.scrollWidth;
+        const f = Math.min(1, availW / Math.max(1, naturalW), availH / Math.max(1, naturalH));
+        fitLocked = { ff: Math.max(0.55, f), naturalH: shell.scrollHeight };
+      }
+      if (fitLocked.ff < 1) {
+        shell.style.height = `${fitLocked.naturalH}px`;
+        shell.style.transform = `scale(${fitLocked.ff})`;
         document.body.classList.add("cb-noscroll");
+        if (fitLocked.ff > 0.55 && window.scrollY !== 0) window.scrollTo(0, 0);
       } else {
+        shell.style.height = "";
+        shell.style.transform = "";
         document.body.classList.remove("cb-noscroll");
       }
     }
     markStart();
     render();
     flushFx();
-    window.addEventListener("resize", fitCombat);
+    window.addEventListener("resize", () => {
+      fitLocked = null;
+      fitCombat();
+    });
     tip3(root, ctx2, "combat");
   }
 
