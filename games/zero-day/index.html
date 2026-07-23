@@ -1004,17 +1004,20 @@ body.cb-noscroll { overflow: hidden; }
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
 }
 .sc-card-plus { color: var(--amber); margin-left: 2px; }
-.sc-card-type { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--dim); }
+.sc-card-type { display: flex; justify-content: space-between; min-width: 0; overflow: hidden; font-size: var(--fs-xs); color: var(--dim); }
+.sc-card-type > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sc-card--attack .sc-card-type { color: var(--red); }
 .sc-card--skill .sc-card-type { color: var(--phos); }
 .sc-card--power .sc-card-type { color: var(--amber); }
-.sc-card-rarity { color: var(--dim); }
+.sc-card-rarity { color: var(--dim); flex: none; white-space: nowrap; }
 .sc-card-desc {
   font-size: var(--fs-sm); line-height: 1.55; overflow: hidden;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4;
 }
 .sc-card-flavor {
-  margin-top: auto; padding-top: clamp(4px, .7vw, 6px);
+  /* 底部锚定改回普通流式：定高内盒溢出时 margin-top:auto 会变负值，风味块被吸上去压住卡名
+     （"冲"字被虚线拦腰的实锤根因）；改由 .sc-card-in 底缘统一裁剪 */
+  padding-top: clamp(4px, .7vw, 6px);
   border-top: 1px dashed var(--line);
   font-size: var(--fs-xs); color: var(--dim); line-height: 1.5;
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
@@ -3815,6 +3818,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     loadRun: () => loadRun,
     loadSettings: () => loadSettings,
     markSeen: () => markSeen,
+    mergeRunIntoMeta: () => mergeRunIntoMeta,
     newRun: () => newRun,
     nextAct: () => nextAct,
     removeCard: () => removeCard,
@@ -3924,6 +3928,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       seenEvents: [],
       heatLimitBonus: 0
     };
+    try {
+      for (const ref of run2.deck) markSeen("card", ref.id);
+    } catch (e) {
+    }
     return run2;
   }
   function saveRun(run2) {
@@ -3957,13 +3965,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   }
   function normalizeMeta(data) {
     const m = { ...META_DEFAULT, ...data && typeof data === "object" ? data : {} };
-    if (!Array.isArray(m.achievements)) m.achievements = [];
-    if (!Array.isArray(m.charactersWon)) m.charactersWon = [];
+    m.achievements = Array.isArray(m.achievements) ? [...m.achievements] : [];
+    m.charactersWon = Array.isArray(m.charactersWon) ? [...m.charactersWon] : [];
     const seen = m.seen && typeof m.seen === "object" ? m.seen : {};
     m.seen = {
-      card: Array.isArray(seen.card) ? seen.card : [],
-      enemy: Array.isArray(seen.enemy) ? seen.enemy : [],
-      relic: Array.isArray(seen.relic) ? seen.relic : []
+      card: Array.isArray(seen.card) ? [...seen.card] : [],
+      enemy: Array.isArray(seen.enemy) ? [...seen.enemy] : [],
+      relic: Array.isArray(seen.relic) ? [...seen.relic] : []
     };
     for (const k of ["wins", "runs", "bestFloor", "totalKills", "totalDamage", "totalCardsRemoved", "totalCardsUpgraded"]) {
       if (typeof m[k] !== "number" || !Number.isFinite(m[k])) m[k] = 0;
@@ -4009,9 +4017,30 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     updateMeta({ seen: meta2.seen });
     return true;
   }
+  function mergeRunIntoMeta(run2, { won = false } = {}) {
+    const meta2 = getMeta();
+    const s = run2 && run2.stats && typeof run2.stats === "object" ? run2.stats : {};
+    const add = (k) => typeof s[k] === "number" && Number.isFinite(s[k]) ? s[k] : 0;
+    const patch = {
+      totalDamage: meta2.totalDamage + add("damageDealt"),
+      totalCardsRemoved: meta2.totalCardsRemoved + add("cardsRemoved"),
+      totalCardsUpgraded: meta2.totalCardsUpgraded + add("cardsUpgraded")
+    };
+    if (won) {
+      const set = new Set(Array.isArray(meta2.charactersWon) ? meta2.charactersWon : []);
+      const cid = run2 && typeof run2.character === "string" ? run2.character : "";
+      if (cid) set.add(cid);
+      patch.charactersWon = [...set];
+    }
+    return updateMeta(patch);
+  }
   function addCard(run2, ref) {
     if (!run2 || !ref || !ref.id) return false;
     run2.deck.push({ id: ref.id, upgraded: !!ref.upgraded });
+    try {
+      markSeen("card", ref.id);
+    } catch (e) {
+    }
     return true;
   }
   function removeCard(run2, index) {
@@ -4054,6 +4083,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function addRelic(run2, id) {
     if (!id) return;
     if (!run2.relics.includes(id)) run2.relics.push(id);
+    try {
+      markSeen("relic", id);
+    } catch (e) {
+    }
     const hook = RELICS[id] && RELICS[id].hooks && RELICS[id].hooks.onPickup;
     if (typeof hook === "function") {
       try {
@@ -8378,6 +8411,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         },
         enemies: enemyIds.map((id) => this._makeEnemy(id))
       };
+      try {
+        for (const id of enemyIds) markSeen("enemy", id);
+      } catch (e) {
+      }
       fireRelics(run2, "onCombatStart", this);
       this._rollIntents(true);
       this._startPlayerTurn();
@@ -8450,7 +8487,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     _startPlayerTurn() {
       const p = this.state.player;
       this.turn += 1;
-      p.block = 0;
+      if (this.turn > 1) p.block = 0;
       let energy = p.maxEnergy;
       if (p.statuses.charge) {
         energy += p.statuses.charge;
@@ -10363,12 +10400,29 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   }
 
   // src/fx/audio.js
+  init_state();
   var ac = null;
   var master = null;
   var noiseBuf = null;
   var curRate = 1;
   var sfxOn = null;
   var musicOn = null;
+  var masterVol = 0.8;
+  var _settingsInit = false;
+  function initFromSettings() {
+    if (_settingsInit) return;
+    _settingsInit = true;
+    try {
+      const s = loadSettings();
+      if (!s || typeof s !== "object") return;
+      if (typeof s.sfx === "boolean") sfxOn = s.sfx;
+      if (typeof s.music === "boolean") musicOn = s.music;
+      if (typeof s.masterVolume === "number" && Number.isFinite(s.masterVolume)) {
+        masterVol = Math.min(1, Math.max(0, s.masterVolume));
+      }
+    } catch {
+    }
+  }
   function loadPref(key, dft) {
     try {
       const v = window.localStorage.getItem(key);
@@ -10384,20 +10438,26 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
   }
   function getSfxOn() {
+    initFromSettings();
     if (sfxOn == null) sfxOn = loadPref("zdp_sfx", true);
     return sfxOn;
   }
   function getMusicOn() {
+    initFromSettings();
     if (musicOn == null) musicOn = loadPref("zdp_music", true);
     return musicOn;
   }
+  function effectiveGain() {
+    return 0.5 * masterVol;
+  }
   function ensureCtx() {
+    initFromSettings();
     if (!ac) {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
       ac = new AC();
       master = ac.createGain();
-      master.gain.value = 0.5;
+      master.gain.value = effectiveGain();
       master.connect(ac.destination);
     }
     if (ac.state === "suspended") ac.resume().catch(() => {
@@ -10561,6 +10621,26 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       savePref("zdp_sfx", sfxOn);
       return sfxOn;
     },
+    /** EXPAND §6：设置页即改即生效——直接设定开关状态（不触碰 AudioContext，无手势安全） */
+    setEnabled(on) {
+      initFromSettings();
+      sfxOn = !!on;
+      savePref("zdp_sfx", sfxOn);
+      return sfxOn;
+    },
+    /** EXPAND §6：主音量 0-1（钳制）；AudioContext 未创建时仅记录，创建后生效 */
+    setVolume(v) {
+      initFromSettings();
+      const n = Number(v);
+      if (Number.isFinite(n)) {
+        masterVol = Math.min(1, Math.max(0, n));
+        try {
+          if (master) master.gain.value = effectiveGain();
+        } catch {
+        }
+      }
+      return masterVol;
+    },
     get enabled() {
       return getSfxOn();
     }
@@ -10675,6 +10755,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     /** 切换开关 → 新状态（开启时立即尝试播放，关闭时立即停止） */
     toggle() {
       musicOn = !getMusicOn();
+      savePref("zdp_music", musicOn);
+      if (musicOn) {
+        try {
+          startMusic();
+        } catch {
+        }
+      } else {
+        try {
+          stopMusic();
+        } catch {
+        }
+      }
+      return musicOn;
+    },
+    /** EXPAND §6：设置页即改即生效——直接设定开关状态（语义同 toggle 的目标态） */
+    setEnabled(on) {
+      initFromSettings();
+      musicOn = !!on;
       savePref("zdp_music", musicOn);
       if (musicOn) {
         try {
@@ -11352,6 +11450,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     lastRun = run;
     lastResult = "lose";
     const newIds = await settleAchievements();
+    try {
+      mergeRunIntoMeta(run, { won: false });
+      meta = getMeta();
+    } catch (e) {
+    }
     sfx.play("lose");
     const ep = await pickEpilogue("lose");
     clearRun();
@@ -11364,6 +11467,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     lastRun = run;
     lastResult = "win";
     const newIds = await settleAchievements();
+    try {
+      mergeRunIntoMeta(run, { won: true });
+      meta = getMeta();
+    } catch (e) {
+    }
     sfx.play("win");
     const ep = await pickEpilogue("win");
     clearRun();

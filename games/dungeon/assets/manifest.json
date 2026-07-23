@@ -68,5 +68,14 @@
   "enemy_shaman": "sprites/enemy_shaman.png",
   "passive_crit": "sprites/passive_crit.png",
   "passive_duration": "sprites/passive_duration.png",
-  "passive_wisdom": "sprites/passive_wisdom.png"
+  "passive_wisdom": "sprites/passive_wisdom.png",
+  "player_berserker": "sprites/player_berserker.png",
+  "player_cleric": "sprites/player_cleric.png",
+  "tile_lib_floor_1": "tiles/tile_lib_floor_1.png",
+  "tile_lib_floor_2": "tiles/tile_lib_floor_2.png",
+  "tile_lib_floor_3": "tiles/tile_lib_floor_3.png",
+  "tile_lib_wall": "tiles/tile_lib_wall.png",
+  "tile_lib_deco_candle": "tiles/tile_lib_deco_candle.png",
+  "tile_lib_deco_books": "tiles/tile_lib_deco_books.png",
+  "tile_lib_deco_page": "tiles/tile_lib_deco_page.png"
 }
