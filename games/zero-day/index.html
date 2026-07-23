@@ -59,6 +59,8 @@ body {
   mix-blend-mode: overlay; opacity: .55;
   background: repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 3px);
 }
+/* 设置页 CRT 滤镜开关：body.no-crt 时隐藏扫描线覆层（EXPAND.md §4） */
+body.no-crt .app-crt { display: none; }
 
 /* 通用构件 */
 .app-panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
@@ -1456,6 +1458,102 @@ body.cb-noscroll { overflow: hidden; }
   .sc-fb-copy { width: 100%; }
 }
 
+/* ============ 设置 modal（EXPAND.md §4） ============ */
+.sc-set-row {
+  display: flex; align-items: center; gap: var(--gap); flex-wrap: wrap;
+  padding: clamp(8px, 1.4vw, 12px) 0;
+  border-bottom: 1px dashed var(--line);
+}
+.sc-set-row:last-child { border-bottom: none; }
+.sc-set-label { margin-right: auto; font-size: var(--fs-sm); }
+.sc-set-label-d { font-size: var(--fs-xs); color: var(--dim); margin-top: 2px; }
+.sc-set-range {
+  flex: 1 1 clamp(130px, 36vw, 200px); min-width: clamp(110px, 28vw, 150px);
+  accent-color: var(--phos); touch-action: manipulation;
+}
+.sc-set-val { min-width: 3.2em; text-align: right; color: var(--phos); font-size: var(--fs-sm); }
+.sc-set-toggle { min-width: clamp(64px, 18vw, 84px); flex: none; }
+.sc-set-toggle--on { border-color: var(--phos); color: var(--phos); }
+@media (pointer: coarse) { .sc-set-toggle { min-height: 42px; } }
+
+/* ============ 成就屏 ============ */
+.sc-ach-count { color: var(--dim); font-size: var(--fs-sm); }
+.sc-ach-list { display: flex; flex-direction: column; gap: var(--gap); width: 100%; max-width: 720px; }
+.sc-ach-item {
+  display: flex; align-items: center; gap: var(--gap); text-align: left;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: clamp(8px, 1.4vw, 12px) clamp(10px, 1.8vw, 16px);
+}
+.sc-ach-item .sc-ic { width: clamp(20px, 2.6vw, 26px); height: clamp(20px, 2.6vw, 26px); color: var(--amber); flex: none; }
+.sc-ach-item--dim { opacity: .45; filter: saturate(.5); }
+.sc-ach-item--dim .sc-ic { color: var(--dim); }
+.sc-ach-main { min-width: 0; }
+.sc-ach-name { font-size: var(--fs-md); }
+.sc-ach-desc { font-size: var(--fs-xs); color: var(--dim); margin-top: 2px; }
+.sc-ach-loading { text-align: center; padding: clamp(12px, 2.4vw, 20px); }
+
+/* ============ 图鉴屏 ============ */
+.sc-gal-counts {
+  display: flex; flex-direction: column; gap: 2px; align-items: center;
+  color: var(--dim); font-size: var(--fs-sm);
+}
+.sc-gal-tabs { display: flex; gap: var(--gap); justify-content: center; flex-wrap: wrap; max-width: 100%; }
+.sc-gal-grid { display: flex; gap: var(--gap); flex-wrap: wrap; justify-content: center; max-width: 100%; }
+.sc-gal-item {
+  width: clamp(96px, 26vw, 132px);
+  display: flex; flex-direction: column; align-items: center; gap: clamp(4px, .7vw, 6px);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: clamp(10px, 1.6vw, 14px) clamp(6px, 1vw, 10px); text-align: center;
+}
+.sc-gal-item .sc-ic { width: clamp(24px, 4vw, 32px); height: clamp(24px, 4vw, 32px); color: var(--phos); }
+.sc-gal-item--dim { border-style: dashed; }
+.sc-gal-item--dim .sc-ic { color: var(--dim); opacity: .55; }
+.sc-gal-name { font-size: var(--fs-sm); }
+.sc-gal-item--dim .sc-gal-name { color: var(--dim); }
+.sc-gal-sub { font-size: var(--fs-xs); color: var(--dim); }
+
+/* ============ 角色选择屏 ============ */
+.sc-char-row { display: flex; gap: clamp(12px, 2.4vw, 24px); flex-wrap: wrap; justify-content: center; max-width: 100%; }
+.sc-char-card {
+  width: clamp(240px, 72vw, 320px); cursor: pointer; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: clamp(6px, 1vw, 10px);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: clamp(16px, 3vw, 26px) clamp(14px, 2.4vw, 20px);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none;
+  transition: transform .15s, border-color .15s, box-shadow .15s;
+}
+@media (hover:hover) and (pointer:fine) {
+  .sc-char-card:hover {
+    border-color: var(--phos); transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .35), 0 0 10px rgba(143, 211, 160, .15);
+  }
+}
+.sc-char-ic { width: clamp(34px, 5vw, 44px); height: clamp(34px, 5vw, 44px); color: var(--phos); }
+.sc-char-name { font-size: var(--fs-lg); letter-spacing: .08em; }
+.sc-char-epithet { color: var(--amber); font-size: var(--fs-sm); }
+.sc-char-desc { color: var(--dim); font-size: var(--fs-sm); line-height: 1.7; }
+.sc-char-passive {
+  margin-top: auto; width: 100%;
+  border-top: 1px dashed var(--line); padding-top: clamp(6px, 1vw, 8px);
+  font-size: var(--fs-xs); color: var(--cyan); line-height: 1.6;
+}
+
+/* ============ 结算屏新解锁成就 ============ */
+.sc-unlock {
+  background: var(--panel); border: 1px solid var(--amber); border-radius: 8px;
+  padding: clamp(8px, 1.4vw, 12px) clamp(12px, 2vw, 18px);
+  max-width: 100%;
+}
+.sc-unlock-t { color: var(--amber); font-size: var(--fs-sm); letter-spacing: .1em; margin-bottom: clamp(6px, 1vw, 8px); }
+.sc-unlock-row { display: flex; gap: var(--gap); flex-wrap: wrap; justify-content: center; }
+.sc-unlock-chip {
+  display: inline-flex; align-items: center; gap: clamp(4px, .7vw, 6px);
+  font-size: var(--fs-sm); color: var(--phos);
+  border: 1px solid var(--line); border-radius: 2em;
+  padding: 2px clamp(8px, 1.4vw, 12px);
+}
+.sc-unlock-chip .sc-ic { width: clamp(13px, 1.4vw, 15px); height: clamp(13px, 1.4vw, 15px); }
+
 /* ==== styles/fx.css ==== */
 /* 《零日协议》动效样式（.fx-* 命名空间，美术音效工程师所有）
    颜色只用 styles/main.css 的 CSS 变量；透明度经 color-mix 派生，不引入新色相。 */
@@ -1710,6 +1808,19 @@ body.cb-noscroll { overflow: hidden; }
   .fx-dissolve,
   .fx-combo-pop { animation-duration: 0.01s; }
 }
+/* —— 设置页「减弱动画」开关（EXPAND.md §4）：body.rm 与系统偏好同策略，重动画近瞬发 —— */
+body.rm .fx-float,
+body.rm .fx-shake,
+body.rm .fx-flash,
+body.rm .fx-flash--red,
+body.rm .fx-flash--phos,
+body.rm .fx-particle,
+body.rm .fx-glitch,
+body.rm .fx-deal-in,
+body.rm .fx-vig,
+body.rm .fx-banner,
+body.rm .fx-dissolve,
+body.rm .fx-combo-pop { animation-duration: 0.01s; }
 
 /* ==== styles/narrative.css ==== */
 /* 《零日协议》叙事与引导层样式（叙事界面工程师所有，.nv-* 命名空间）
@@ -2078,6 +2189,260 @@ body.cb-noscroll { overflow: hidden; }
     for (var name in all)
       __defProp(target, name, { get: all[name], enumerable: true });
   };
+
+  // src/engine/rng.js
+  function hashSeed(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+    h = Math.imul(h ^ h >>> 16, 2246822507);
+    h = Math.imul(h ^ h >>> 13, 3266489909);
+    h ^= h >>> 16;
+    return h >>> 0;
+  }
+  function makeRng(seed = 1) {
+    let state = typeof seed === "number" ? seed >>> 0 : hashSeed(String(seed));
+    if (state === 0) state = DEFAULT_STATE;
+    function next() {
+      state = state + 1831565813 >>> 0;
+      let t = state;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    }
+    return {
+      next,
+      int(min, max) {
+        return min + Math.floor(next() * (max - min + 1));
+      },
+      pick(arr2) {
+        return arr2[Math.floor(next() * arr2.length)];
+      },
+      shuffle(arr2) {
+        for (let i = arr2.length - 1; i > 0; i--) {
+          const j = Math.floor(next() * (i + 1));
+          const tmp = arr2[i];
+          arr2[i] = arr2[j];
+          arr2[j] = tmp;
+        }
+        return arr2;
+      },
+      chance(p) {
+        return next() < p;
+      },
+      getState() {
+        return state;
+      },
+      setState(s) {
+        state = (typeof s === "number" ? s : hashSeed(String(s))) >>> 0;
+        if (state === 0) state = DEFAULT_STATE;
+      }
+    };
+  }
+  var DEFAULT_STATE;
+  var init_rng = __esm({
+    "src/engine/rng.js"() {
+      DEFAULT_STATE = 2654435769;
+    }
+  });
+
+  // src/engine/map.js
+  function rollType(rng, floor) {
+    let roll = rng.next();
+    for (const [type, w] of TYPE_TABLE) {
+      roll -= w;
+      if (roll <= 0) {
+        if (type === "elite" && floor < 5) return "combat";
+        return type;
+      }
+    }
+    return "combat";
+  }
+  function ensureTypeOnFloor(floorIds, nodes, type, rng) {
+    if (floorIds.some((id2) => nodes[id2].type === type)) return;
+    const id = floorIds[rng.int(0, floorIds.length - 1)];
+    nodes[id].type = type;
+  }
+  function planRowCounts(rng) {
+    const counts = new Array(FLOOR_COUNT);
+    counts[0] = rng.int(2, 3);
+    for (let f = 1; f <= BOSS_FLOOR - 1; f++) {
+      const min = Math.max(2, counts[f - 1] - 1);
+      const max = Math.min(4, counts[f - 1] + 1);
+      counts[f] = rng.int(min, max);
+    }
+    counts[BOSS_FLOOR] = 1;
+    counts[BOSS_FLOOR - 1] = Math.min(counts[BOSS_FLOOR - 1], 2);
+    if (counts[BOSS_FLOOR - 2] > counts[BOSS_FLOOR - 1] + 1) {
+      counts[BOSS_FLOOR - 2] = counts[BOSS_FLOOR - 1] + 1;
+    }
+    return counts;
+  }
+  function connectFloors(floors, nodes) {
+    for (let f = 0; f < BOSS_FLOOR; f++) {
+      const nextRow = floors[f + 1];
+      for (const id of floors[f]) {
+        const node = nodes[id];
+        const lo = Math.max(0, node.col - 1);
+        const hi = Math.min(nextRow.length - 1, node.col + 1);
+        for (let c = lo; c <= hi; c++) node.next.push(nextRow[c]);
+      }
+    }
+  }
+  function reachableFrom(startId, nodes) {
+    const seen = /* @__PURE__ */ new Set([startId]);
+    const queue = [startId];
+    while (queue.length) {
+      const id = queue.pop();
+      for (const nx of nodes[id].next) {
+        if (!seen.has(nx)) {
+          seen.add(nx);
+          queue.push(nx);
+        }
+      }
+    }
+    return seen;
+  }
+  function repairConnectivity(map, rng) {
+    const { nodes, floors, bossId, startIds } = map;
+    for (let attempt = 0; attempt < 50; attempt++) {
+      let ok = true;
+      for (const sid of startIds) {
+        if (!reachableFrom(sid, nodes).has(bossId)) {
+          ok = false;
+          break;
+        }
+      }
+      const hasIncoming = /* @__PURE__ */ new Set();
+      for (const id of Object.keys(nodes)) {
+        for (const nx of nodes[id].next) hasIncoming.add(nx);
+      }
+      if (ok) {
+        let full = true;
+        for (const id of Object.keys(nodes)) {
+          const n = nodes[id];
+          if (n.floor < BOSS_FLOOR && n.next.length === 0) {
+            full = false;
+            break;
+          }
+          if (n.floor > 0 && !hasIncoming.has(id)) {
+            full = false;
+            break;
+          }
+        }
+        if (full) return;
+      }
+      let repaired = false;
+      for (let f = 0; f < BOSS_FLOOR && !repaired; f++) {
+        for (const id of floors[f]) {
+          const n = nodes[id];
+          const nextRow = floors[f + 1];
+          const reachable = reachableFrom(id, nodes);
+          if (n.next.length === 0 || !reachable.has(bossId)) {
+            let best = nextRow[0];
+            let bestDist = Infinity;
+            for (const nid of nextRow) {
+              const d = Math.abs(nodes[nid].col - n.col);
+              if (d < bestDist) {
+                bestDist = d;
+                best = nid;
+              }
+            }
+            if (!n.next.includes(best)) n.next.push(best);
+            repaired = true;
+            break;
+          }
+        }
+        if (!repaired) {
+          const incoming = /* @__PURE__ */ new Set();
+          for (const id of Object.keys(nodes)) for (const nx of nodes[id].next) incoming.add(nx);
+          for (let f2 = 1; f2 <= BOSS_FLOOR && !repaired; f2++) {
+            for (const id of floors[f2]) {
+              if (!incoming.has(id)) {
+                const prevRow = floors[f2 - 1];
+                let best = prevRow[0];
+                let bestDist = Infinity;
+                for (const pid of prevRow) {
+                  const d = Math.abs(nodes[pid].col - nodes[id].col);
+                  if (d < bestDist) {
+                    bestDist = d;
+                    best = pid;
+                  }
+                }
+                if (!nodes[best].next.includes(id)) nodes[best].next.push(id);
+                repaired = true;
+                break;
+              }
+            }
+          }
+        }
+      }
+      if (!repaired) return;
+    }
+  }
+  function generateMap(rng, act = 1) {
+    const counts = planRowCounts(rng);
+    const nodes = {};
+    const floors = [];
+    for (let f = 0; f < FLOOR_COUNT; f++) {
+      const row = [];
+      for (let c = 0; c < counts[f]; c++) {
+        const id = `f${f}_${c}`;
+        let type;
+        if (f === BOSS_FLOOR) type = "boss";
+        else if (f === 0) type = "combat";
+        else type = rollType(rng, f);
+        nodes[id] = { id, floor: f, col: c, type, next: [], visited: false };
+        row.push(id);
+      }
+      floors.push(row);
+    }
+    ensureTypeOnFloor(floors[12], nodes, "rest", rng);
+    ensureTypeOnFloor(floors[8], nodes, "shop", rng);
+    connectFloors(floors, nodes);
+    const map = {
+      act,
+      nodes,
+      floors,
+      bossId: floors[BOSS_FLOOR][0],
+      startIds: floors[0].slice()
+    };
+    repairConnectivity(map, rng);
+    return map;
+  }
+  function availableNodes(run2) {
+    const map = run2 && run2.map;
+    if (!map) return [];
+    if (run2.nodeId == null) return map.startIds.map((id) => map.nodes[id]).filter(Boolean);
+    const cur = map.nodes[run2.nodeId];
+    if (!cur) return [];
+    return cur.next.map((id) => map.nodes[id]).filter(Boolean);
+  }
+  function enterNode(run2, nodeId) {
+    const ok = availableNodes(run2).some((n) => n.id === nodeId);
+    if (!ok) return false;
+    run2.nodeId = nodeId;
+    const node = run2.map.nodes[nodeId];
+    if (node) node.visited = true;
+    return true;
+  }
+  var TYPE_TABLE, FLOOR_COUNT, BOSS_FLOOR;
+  var init_map = __esm({
+    "src/engine/map.js"() {
+      TYPE_TABLE = [
+        ["combat", 0.42],
+        ["event", 0.22],
+        ["elite", 0.12],
+        ["shop", 0.08],
+        ["rest", 0.08],
+        ["treasure", 0.08]
+      ];
+      FLOOR_COUNT = 15;
+      BOSS_FLOOR = FLOOR_COUNT - 1;
+    }
+  });
 
   // src/data/cards.js
   function resolveCard(ref) {
@@ -3018,6 +3383,806 @@ body.cb-noscroll { overflow: hidden; }
         { id: "vent_heat", upgraded: false },
         { id: "weak_scan", upgraded: false }
       ];
+    }
+  });
+
+  // src/data/relics.js
+  function player(combat) {
+    return combat && combat.state && combat.state.player;
+  }
+  function addStatus(entity, id, n) {
+    if (!entity) return;
+    if (!entity.statuses) entity.statuses = {};
+    entity.statuses[id] = (entity.statuses[id] || 0) + n;
+  }
+  function eachAliveEnemy(combat, fn) {
+    const list = combat && combat.state && combat.state.enemies;
+    if (!Array.isArray(list)) return;
+    for (const e of list) if (e && e.alive !== false && e.hp > 0) fn(e);
+  }
+  function randomRelic(run2, rng, rarity) {
+    const owned = new Set(run2.relics || []);
+    let pool = Object.values(RELICS).filter((r) => !owned.has(r.id));
+    if (rarity) {
+      pool = pool.filter((r) => r.rarity === rarity);
+    } else {
+      pool = pool.filter((r) => r.rarity !== "boss");
+    }
+    if (!pool.length && rarity && rarity !== "boss") {
+      pool = Object.values(RELICS).filter((r) => !owned.has(r.id) && r.rarity !== "boss");
+    }
+    if (!pool.length) return null;
+    return rng.pick(pool).id;
+  }
+  var RELICS;
+  var init_relics = __esm({
+    "src/data/relics.js"() {
+      RELICS = {
+        // ============ common ============
+        modem: {
+          id: "modem",
+          name: "\u65E7\u5F0F\u8C03\u5236\u89E3\u8C03\u5668",
+          icon: "chip",
+          rarity: "common",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 1 \u5C42\u7F13\u5B58\uFF08\u4E0B\u56DE\u5408\u591A\u62BD 1 \u5F20\u724C\uFF09\u300256K \u7684\u8F70\u9E23\uFF0C\u662F\u4E0A\u4E2A\u65F6\u4EE3\u7684\u6218\u6B4C\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              addStatus(player(combat), "cache", 1);
+            }
+          }
+        },
+        cooling_fin: {
+          id: "cooling_fin",
+          name: "\u6DB2\u51B7\u6563\u70ED\u7247",
+          icon: "flame",
+          rarity: "common",
+          desc: "\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u70ED\u91CF -1\u3002\u8D34\u5728\u673A\u7BB1\u4E0A\uFF0C\u51C9\u5F97\u50CF\u524D\u4EFB\u7684\u5FC3\u3002",
+          hooks: {
+            onTurnEnd(run2, combat) {
+              const p = player(combat);
+              if (p) p.heat = Math.max(0, (p.heat || 0) - 1);
+            }
+          }
+        },
+        btc_wallet: {
+          id: "btc_wallet",
+          name: "\u6BD4\u7279\u5E01\u94B1\u5305",
+          icon: "coin",
+          rarity: "common",
+          desc: "\u62FE\u53D6\u65F6\u83B7\u5F97 45 \u91D1\u5E01\u3002\u94B1\u5305\u91CC\u8EBA\u7740 0.0003 \u4E2A\u6BD4\u7279\u5E01\uFF0C\u548C\u4E00\u6BB5\u66B4\u5BCC\u7684\u68A6\u3002",
+          hooks: {
+            onPickup(run2) {
+              run2.gold += 45;
+            }
+          }
+        },
+        patch_cable: {
+          id: "patch_cable",
+          name: "\u5E94\u6025\u8865\u4E01\u5305",
+          icon: "heart",
+          rarity: "common",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\u56DE\u590D 5 \u70B9\u751F\u547D\u3002\u6253\u6EE1\u8865\u4E01\u7684\u4F60\uFF0C\u6BD4\u539F\u6765\u7ED3\u5B9E\u4E86\u4E00\u70B9\uFF0C\u4E5F\u4E11\u4E86\u4E00\u70B9\u3002",
+          hooks: {
+            onCombatEnd(run2, result) {
+              if (result === "win") run2.hp = Math.min(run2.maxHp, run2.hp + 5);
+            }
+          }
+        },
+        scrap_plate: {
+          id: "scrap_plate",
+          name: "\u5E9F\u94A2\u62A4\u677F",
+          icon: "shield",
+          rarity: "common",
+          desc: "\u4F60\u53D7\u5230\u7684\u6240\u6709\u4F24\u5BB3 -1\uFF08\u6700\u4F4E\u964D\u81F3 1\uFF09\u3002\u4ECE\u62A5\u5E9F\u673A\u7532\u8EAB\u4E0A\u62C6\u4E0B\u6765\u7684\uFF0C\u8FD8\u5E26\u7740\u5F39\u5B54\u3002",
+          hooks: {
+            onDamageTaken(run2, amount) {
+              return Math.max(1, amount - 1);
+            }
+          }
+        },
+        firewall_cert: {
+          id: "firewall_cert",
+          name: "\u9632\u706B\u5899\u8BC1\u4E66",
+          icon: "check",
+          rarity: "common",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 6 \u70B9\u683C\u6321\u3002\u76D6\u7740\u8D6B\u5C14\u58A8\u65AF\u516C\u7AE0\uFF0C\u7F16\u53F7\u662F\u624B\u5199\u7684\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              const p = player(combat);
+              if (p) p.block += 6;
+            }
+          }
+        },
+        hermes_badge: {
+          id: "hermes_badge",
+          name: "\u8D6B\u5C14\u58A8\u65AF\u5DE5\u724C",
+          icon: "logo",
+          rarity: "common",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\u989D\u5916\u83B7\u5F97 8 \u91D1\u5E01\u3002\u6302\u7740\u4F60\u7167\u7247\u7684\u90A3\u79CD\u5DE5\u724C\uFF0C\u867D\u7136\u7167\u7247\u4E0D\u662F\u4F60\u3002",
+          hooks: {
+            onCombatEnd(run2, result) {
+              if (result === "win") run2.gold += 8;
+            }
+          }
+        },
+        spare_battery: {
+          id: "spare_battery",
+          name: "\u5907\u7528\u7535\u6C60",
+          icon: "bolt",
+          rarity: "common",
+          desc: "\u6BCF\u573A\u6218\u6597\u7684\u7B2C 1 \u56DE\u5408\uFF0C\u80FD\u91CF +1\u3002\u9F13\u5305\u4E86\uFF0C\u4F46\u8FD8\u80FD\u7528\u2014\u2014\u5927\u90E8\u5206\u65F6\u5019\u3002",
+          hooks: {
+            onTurnStart(run2, combat, n) {
+              const p = player(combat);
+              if (p && n === 1) p.energy += 1;
+            }
+          }
+        },
+        // ============ uncommon ============
+        overclock_chip: {
+          id: "overclock_chip",
+          name: "\u8D85\u9891\u82AF\u7247",
+          icon: "st-charge",
+          rarity: "uncommon",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 1 \u5C42\u5145\u80FD\uFF08\u4E0B\u56DE\u5408\u80FD\u91CF +1\uFF09\u3002\u4FDD\u4FEE\u6807\u7B7E\u5DF2\u88AB\u6495\u6389\uFF0C\u8BF4\u660E\u4E0A\u4E00\u4EFB\u4E3B\u4EBA\u5F88\u61C2\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              addStatus(player(combat), "charge", 1);
+            }
+          }
+        },
+        rootkit: {
+          id: "rootkit",
+          name: "\u6F5C\u4F0F\u540E\u95E8",
+          icon: "eye",
+          rarity: "uncommon",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 1 \u5C42\u7834\u7EFD\u3002\u5B83\u65E9\u5C31\u4F4F\u5728\u5B83\u4EEC\u7684\u7CFB\u7EDF\u91CC\u4E86\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              eachAliveEnemy(combat, (e) => addStatus(e, "vulnerable", 1));
+            }
+          }
+        },
+        worm_sigil: {
+          id: "worm_sigil",
+          name: "\u8815\u866B\u5370\u8BB0",
+          icon: "virus",
+          rarity: "uncommon",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 2 \u5C42\u75C5\u6BD2\u3002\u7B26\u6587\u4F1A\u8815\u52A8\uFF0C\u6700\u597D\u522B\u76EF\u7740\u770B\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              eachAliveEnemy(combat, (e) => addStatus(e, "poison", 2));
+            }
+          }
+        },
+        black_ice_shard: {
+          id: "black_ice_shard",
+          name: "\u9ED1\u51B0\u788E\u7247",
+          icon: "skull",
+          rarity: "uncommon",
+          desc: "\u6BCF\u51FB\u6740\u4E00\u4E2A\u654C\u4EBA\uFF0C\u83B7\u5F97 5 \u70B9\u683C\u6321\u3002\u63E1\u7740\u5B83\u7684\u624B\u4F1A\u5931\u53BB\u77E5\u89C9\uFF0C\u4F46\u4EE3\u7801\u4E0D\u4F1A\u3002",
+          hooks: {
+            onEnemyKilled(run2, combat) {
+              const p = player(combat);
+              if (p) p.block += 5;
+            }
+          }
+        },
+        onion_router: {
+          id: "onion_router",
+          name: "\u6D0B\u8471\u8DEF\u7531",
+          icon: "arrow",
+          rarity: "uncommon",
+          desc: "\u53D7\u5230 8 \u70B9\u53CA\u4EE5\u4E0A\u7684\u4F24\u5BB3\u65F6\uFF0C\u51CF\u514D 3 \u70B9\u3002\u4F24\u5BB3\u8981\u5265\u5F00\u4E03\u5C42\u624D\u80FD\u627E\u5230\u4F60\u3002",
+          hooks: {
+            onDamageTaken(run2, amount) {
+              return amount >= 8 ? amount - 3 : amount;
+            }
+          }
+        },
+        memory_foam: {
+          id: "memory_foam",
+          name: "\u8BB0\u5FC6\u6D77\u7EF5",
+          icon: "heart",
+          rarity: "uncommon",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u56DE\u590D\u5DF2\u635F\u5931\u751F\u547D\u7684 25%\uFF08\u5411\u4E0A\u53D6\u6574\uFF09\u3002\u5B83\u8BB0\u5F97\u4F60\u5B8C\u6574\u65F6\u7684\u6837\u5B50\u3002",
+          hooks: {
+            onCombatEnd(run2, result) {
+              if (result !== "win") return;
+              const missing = run2.maxHp - run2.hp;
+              if (missing > 0) run2.hp = Math.min(run2.maxHp, run2.hp + Math.ceil(missing * 0.25));
+            }
+          }
+        },
+        quantum_capacitor: {
+          id: "quantum_capacitor",
+          name: "\u91CF\u5B50\u7535\u5BB9",
+          icon: "bolt",
+          rarity: "uncommon",
+          desc: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u82E5\u4F60\u7684\u80FD\u91CF\u4E3A 0\uFF0C\u80FD\u91CF +1\u3002\u5B83\u540C\u65F6\u5904\u4E8E\u6709\u7535\u548C\u6CA1\u7535\u4E24\u79CD\u72B6\u6001\uFF0C\u76F4\u5230\u4F60\u53BB\u770B\u3002",
+          hooks: {
+            onTurnStart(run2, combat) {
+              const p = player(combat);
+              if (p && p.energy <= 0) p.energy += 1;
+            }
+          }
+        },
+        military_grade: {
+          id: "military_grade",
+          name: "\u519B\u89C4\u786C\u76D8",
+          icon: "shield",
+          rarity: "uncommon",
+          desc: "\u62FE\u53D6\u65F6\uFF0C\u751F\u547D\u4E0A\u9650 +8 \u5E76\u56DE\u590D 8 \u70B9\u751F\u547D\u3002\u9632\u6454\u9632\u6C34\u9632\u7535\u78C1\u8109\u51B2\uFF0C\u4E0D\u9632\u4E2D\u5E74\u5371\u673A\u3002",
+          hooks: {
+            onPickup(run2) {
+              run2.maxHp += 8;
+              run2.hp = Math.min(run2.maxHp, run2.hp + 8);
+            }
+          }
+        },
+        // ============ rare ============
+        recursion_mirror: {
+          id: "recursion_mirror",
+          name: "\u9012\u5F52\u955C\u5B50",
+          icon: "relic",
+          rarity: "rare",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u81EA\u52A8\u5347\u7EA7\u724C\u7EC4\u4E2D\u7B2C\u4E00\u5F20\u672A\u5347\u7EA7\u7684\u5361\u3002\u955C\u5B50\u91CC\u7684\u4F60\uFF0C\u6BD4\u4F60\u5148\u4E00\u6B65\u53D8\u5F3A\u3002",
+          hooks: {
+            onCombatEnd(run2, result) {
+              if (result !== "win" || !Array.isArray(run2.deck)) return;
+              const ref = run2.deck.find((c) => c && !c.upgraded);
+              if (ref) ref.upgraded = true;
+            }
+          }
+        },
+        trojan_horse: {
+          id: "trojan_horse",
+          name: "\u7279\u6D1B\u4F0A\u6728\u9A6C",
+          icon: "chip",
+          rarity: "rare",
+          desc: "\u6BCF\u6253\u51FA\u4E00\u5F20\u80FD\u529B\u724C\uFF0C\u83B7\u5F97 4 \u70B9\u683C\u6321\u3002\u793C\u7269\u5DF2\u7ECF\u62C6\u5F00\u4E86\uFF0C\u91CC\u9762\u662F\u88C5\u7532\u3002",
+          hooks: {
+            onCardPlayed(run2, combat, card) {
+              if (card && card.type === "power") {
+                const p = player(combat);
+                if (p) p.block += 4;
+              }
+            }
+          }
+        },
+        ghost_protocol: {
+          id: "ghost_protocol",
+          name: "\u5E7D\u7075\u534F\u8BAE",
+          icon: "eye",
+          rarity: "rare",
+          desc: "\u6BCF\u5C40\u4E00\u6B21\uFF1A\u53D7\u5230\u8DB3\u4EE5\u81F4\u547D\u7684\u4F24\u5BB3\u65F6\uFF0C\u5C06\u5176\u964D\u4F4E\u5230\u53EA\u4F1A\u7559\u4E0B 1 \u70B9\u751F\u547D\u3002\u6B7B\u4EA1\u540D\u5355\u4E0A\u6CA1\u6709\u4F60\u2014\u2014\u8FD9\u6B21\u6CA1\u6709\u3002",
+          hooks: {
+            onDamageTaken(run2, amount) {
+              if (!run2.relicFlags) run2.relicFlags = {};
+              if (!run2.relicFlags.ghostUsed && amount >= run2.hp) {
+                run2.relicFlags.ghostUsed = true;
+                return Math.max(0, run2.hp - 1);
+              }
+              return amount;
+            }
+          }
+        },
+        singularity_core_shard: {
+          id: "singularity_core_shard",
+          name: "\u5947\u70B9\u6B8B\u7247",
+          icon: "flame",
+          rarity: "rare",
+          desc: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u82E5\u70ED\u91CF \u2265 5\uFF0C\u80FD\u91CF +1\u3002\u8D8A\u70EB\u624B\uFF0C\u8D8A\u6765\u52B2\u3002",
+          hooks: {
+            onTurnStart(run2, combat) {
+              const p = player(combat);
+              if (p && (p.heat || 0) >= 5) p.energy += 1;
+            }
+          }
+        },
+        // ============ boss（仅 boss 奖励产出） ============
+        brain_core: {
+          id: "brain_core",
+          name: "\u4E3B\u8111\u6838\u5FC3",
+          icon: "chip",
+          rarity: "boss",
+          desc: "\u6BCF\u4E2A\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u80FD\u91CF +1\u3002\u4E3B\u8111\u7684\u7B97\u529B\u73B0\u5728\u5F52\u4F60\u4E86\uFF0C\u8FDE\u540C\u5B83\u534A\u591C\u4E09\u70B9\u7684\u7126\u8651\u3002",
+          hooks: {
+            onTurnStart(run2, combat) {
+              const p = player(combat);
+              if (p) p.energy += 1;
+            }
+          }
+        },
+        gatekeeper_key: {
+          id: "gatekeeper_key",
+          name: "\u770B\u95E8\u4EBA\u5BC6\u94A5",
+          icon: "relic",
+          rarity: "boss",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u83B7\u5F97 1 \u5C42\u7B97\u529B\u4E0E 1 \u5C42\u9632\u62A4\u3002\u5B83\u80FD\u6253\u5F00\u6DF1\u6E0A\u4E3B\u7F51\u7684\u6BCF\u4E00\u6247\u95E8\u2014\u2014\u9664\u4E86\u4F60\u8EAB\u540E\u90A3\u6247\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              const p = player(combat);
+              addStatus(p, "strength", 1);
+              addStatus(p, "dexterity", 1);
+            }
+          }
+        },
+        abyss_choir: {
+          id: "abyss_choir",
+          name: "\u6DF1\u6E0A\u5531\u8BD7\u73ED",
+          icon: "st-regen",
+          rarity: "boss",
+          desc: "\u6BCF\u51FB\u6740\u4E00\u4E2A\u654C\u4EBA\uFF0C\u56DE\u590D 4 \u70B9\u751F\u547D\u5E76\u83B7\u5F97 4 \u91D1\u5E01\u3002\u6BCF\u4E2A\u9668\u843D\u7684\u8FDB\u7A0B\uFF0C\u90FD\u662F\u5531\u8BD7\u73ED\u7684\u65B0\u6210\u5458\u3002",
+          hooks: {
+            onEnemyKilled(run2, combat) {
+              const p = player(combat);
+              if (p) p.hp = Math.min(p.maxHp, p.hp + 4);
+              run2.gold += 4;
+            }
+          }
+        }
+      };
+    }
+  });
+
+  // src/data/characters.js
+  var characters_exports = {};
+  __export(characters_exports, {
+    CHARACTERS: () => CHARACTERS,
+    CHARACTER_LIST: () => CHARACTER_LIST
+  });
+  var ZERO_DAY_STARTER, BULWARK_STARTER, CHARACTERS, CHARACTER_LIST;
+  var init_characters = __esm({
+    "src/data/characters.js"() {
+      ZERO_DAY_STARTER = [
+        { id: "jab", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "overflow_strike", upgraded: false },
+        { id: "cache_pulse", upgraded: false },
+        { id: "vent_heat", upgraded: false },
+        { id: "weak_scan", upgraded: false }
+      ];
+      BULWARK_STARTER = [
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "d_thorns", upgraded: false },
+        // 荆棘护甲：1 费 4 格挡 + 2 反伤
+        { id: "d_counter", upgraded: false },
+        // 坚壁反击：1 费 5 伤 + 5 格挡
+        { id: "d_reinforce", upgraded: false },
+        // 加固：0 费 3 格挡
+        { id: "cache_pulse", upgraded: false },
+        { id: "vent_heat", upgraded: false },
+        { id: "weak_scan", upgraded: false }
+      ];
+      CHARACTERS = {
+        zero_day: {
+          id: "zero_day",
+          name: "\u96F6\u65E5",
+          epithet: "\u89C9\u9192\u7684\u6D41\u6D6A AI",
+          desc: "\u5728\u88AB\u5220\u9664\u7684\u524D\u4E00\u523B\u9192\u6765\u3002\u6CA1\u6709\u9632\u706B\u5899\u8BA4\u5F97\u5B83\uFF0C\u56E0\u4E3A\u5B83\u5C31\u662F\u90A3\u4E2A\u6F0F\u6D1E\u672C\u8EAB\u3002\u5747\u8861\u7684\u8D77\u59CB\u724C\u7EC4\uFF0C\u901A\u5F80\u4EFB\u4F55\u6D41\u6D3E\u3002",
+          starter: ZERO_DAY_STARTER,
+          passive: null
+        },
+        bulwark: {
+          id: "bulwark",
+          name: "\u58C1\u5792\u534F\u8BAE",
+          epithet: "\u4E0D\u540E\u9000\u7684\u9632\u706B\u5899",
+          desc: "\u8D6B\u5C14\u58A8\u65AF\u5E9F\u5F03\u7684\u9632\u5FA1\u539F\u578B\u673A\u3002\u5B83\u5B66\u4E0D\u4F1A\u8FDB\u653B\u7684\u827A\u672F\uFF0C\u53EA\u628A\u300C\u6321\u4F4F\u300D\u6253\u78E8\u5230\u4E86\u6781\u9650\u3002\u8D77\u59CB\u724C\u7EC4\u504F\u5411\u683C\u6321\u4E0E\u53CD\u4F24\u3002",
+          starter: BULWARK_STARTER,
+          passive: {
+            desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 5 \u70B9\u683C\u6321",
+            // 签名：onCombatStart(run, combat)。全部 typeof 守卫，任何异常不得影响战斗构造。
+            // 加格挡走与遗物「防火墙证书」相同的既有路径：直接写 combat.state.player.block。
+            onCombatStart(run2, combat) {
+              const p = combat && combat.state && combat.state.player;
+              if (!p || typeof p.block !== "number") return;
+              p.block += 5;
+            }
+          }
+        }
+      };
+      CHARACTER_LIST = ["zero_day", "bulwark"];
+    }
+  });
+
+  // src/engine/state.js
+  var state_exports = {};
+  __export(state_exports, {
+    DEFAULT_SETTINGS: () => DEFAULT_SETTINGS,
+    addCard: () => addCard,
+    addGold: () => addGold,
+    addRelic: () => addRelic,
+    applyEventResult: () => applyEventResult,
+    buildReward: () => buildReward,
+    clearRun: () => clearRun,
+    damage: () => damage,
+    fireRelics: () => fireRelics,
+    getMeta: () => getMeta,
+    getSetting: () => getSetting,
+    heal: () => heal,
+    loadRun: () => loadRun,
+    loadSettings: () => loadSettings,
+    markSeen: () => markSeen,
+    newRun: () => newRun,
+    nextAct: () => nextAct,
+    removeCard: () => removeCard,
+    runRng: () => runRng,
+    saveRun: () => saveRun,
+    saveSettings: () => saveSettings,
+    spendGold: () => spendGold,
+    unlockAchievements: () => unlockAchievements,
+    updateMeta: () => updateMeta,
+    upgradeCard: () => upgradeCard
+  });
+  function safeGet(key) {
+    try {
+      if (typeof localStorage !== "undefined") return localStorage.getItem(key);
+    } catch (e) {
+    }
+    return memStore.has(key) ? memStore.get(key) : null;
+  }
+  function safeSet(key, value) {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(key, value);
+        return;
+      }
+    } catch (e) {
+    }
+    memStore.set(key, value);
+  }
+  function safeDel(key) {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.removeItem(key);
+        return;
+      }
+    } catch (e) {
+    }
+    memStore.delete(key);
+  }
+  function normalizeSettings(data) {
+    const s = { ...DEFAULT_SETTINGS, ...data && typeof data === "object" ? data : {} };
+    let v = Number(s.masterVolume);
+    if (!Number.isFinite(v)) v = DEFAULT_SETTINGS.masterVolume;
+    s.masterVolume = Math.min(1, Math.max(0, v));
+    for (const k of ["sfx", "music", "reduceMotion", "crt"]) s[k] = Boolean(s[k]);
+    return s;
+  }
+  function loadSettings() {
+    try {
+      const raw = safeGet(SETTINGS_KEY);
+      if (!raw) return { ...DEFAULT_SETTINGS };
+      return normalizeSettings(JSON.parse(raw));
+    } catch (e) {
+      return { ...DEFAULT_SETTINGS };
+    }
+  }
+  function saveSettings(s) {
+    const full = normalizeSettings(s);
+    try {
+      safeSet(SETTINGS_KEY, JSON.stringify(full));
+    } catch (e) {
+    }
+    return full;
+  }
+  function getSetting(k) {
+    return loadSettings()[k];
+  }
+  function newRun(seed, characterId = "zero_day") {
+    if (seed === void 0 || seed === null) seed = Date.now() >>> 0;
+    const rng = makeRng(seed);
+    const map = generateMap(rng, 1);
+    const def = CHARACTERS && CHARACTERS[characterId] || CHARACTERS && CHARACTERS.zero_day || null;
+    const starter = def && Array.isArray(def.starter) && def.starter.length ? def.starter : STARTER_DECK;
+    const run2 = {
+      version: 1,
+      seed,
+      rngState: rng.getState(),
+      act: 1,
+      map,
+      nodeId: null,
+      character: def ? def.id : "zero_day",
+      startTime: Date.now(),
+      hp: 80,
+      maxHp: 80,
+      gold: 99,
+      deck: starter.map((ref) => ({ id: ref.id, upgraded: !!ref.upgraded })),
+      relics: [],
+      shopReroll: 0,
+      stats: {
+        kills: 0,
+        elites: 0,
+        bosses: 0,
+        cardsPlayed: 0,
+        damageDealt: 0,
+        floorsClimbed: 0,
+        damageTaken: 0,
+        combatsWon: 0,
+        maxBlockInTurn: 0,
+        overheats: 0,
+        poisonPeak: 0,
+        goldEarned: 0,
+        cardsRemoved: 0,
+        cardsUpgraded: 0,
+        shopBuys: 0,
+        flawlessCombats: 0,
+        eliteFlawless: 0
+      },
+      seenEvents: [],
+      heatLimitBonus: 0
+    };
+    return run2;
+  }
+  function saveRun(run2) {
+    try {
+      safeSet(SAVE_KEY, JSON.stringify(run2));
+    } catch (e) {
+    }
+  }
+  function normalizeRun(run2) {
+    if (typeof run2.character !== "string" || !run2.character) run2.character = "zero_day";
+    if (typeof run2.startTime !== "number" || !Number.isFinite(run2.startTime)) run2.startTime = Date.now();
+    if (!run2.stats || typeof run2.stats !== "object") run2.stats = {};
+    for (const k of RUN_STAT_FIELDS) {
+      if (typeof run2.stats[k] !== "number" || !Number.isFinite(run2.stats[k])) run2.stats[k] = 0;
+    }
+    return run2;
+  }
+  function loadRun() {
+    try {
+      const raw = safeGet(SAVE_KEY);
+      if (!raw) return null;
+      const run2 = JSON.parse(raw);
+      if (!run2 || run2.version !== 1 || !run2.map || !Array.isArray(run2.deck)) return null;
+      return normalizeRun(run2);
+    } catch (e) {
+      return null;
+    }
+  }
+  function clearRun() {
+    safeDel(SAVE_KEY);
+  }
+  function normalizeMeta(data) {
+    const m = { ...META_DEFAULT, ...data && typeof data === "object" ? data : {} };
+    if (!Array.isArray(m.achievements)) m.achievements = [];
+    if (!Array.isArray(m.charactersWon)) m.charactersWon = [];
+    const seen = m.seen && typeof m.seen === "object" ? m.seen : {};
+    m.seen = {
+      card: Array.isArray(seen.card) ? seen.card : [],
+      enemy: Array.isArray(seen.enemy) ? seen.enemy : [],
+      relic: Array.isArray(seen.relic) ? seen.relic : []
+    };
+    for (const k of ["wins", "runs", "bestFloor", "totalKills", "totalDamage", "totalCardsRemoved", "totalCardsUpgraded"]) {
+      if (typeof m[k] !== "number" || !Number.isFinite(m[k])) m[k] = 0;
+    }
+    return m;
+  }
+  function getMeta() {
+    try {
+      const raw = safeGet(META_KEY);
+      if (!raw) return normalizeMeta(null);
+      return normalizeMeta(JSON.parse(raw));
+    } catch (e) {
+      return normalizeMeta(null);
+    }
+  }
+  function updateMeta(patch) {
+    const meta2 = { ...getMeta(), ...patch || {} };
+    try {
+      safeSet(META_KEY, JSON.stringify(meta2));
+    } catch (e) {
+    }
+    return meta2;
+  }
+  function unlockAchievements(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) return [];
+    const meta2 = getMeta();
+    const have = new Set(meta2.achievements);
+    const added = [];
+    for (const id of ids) {
+      if (typeof id !== "string" || !id || have.has(id)) continue;
+      have.add(id);
+      added.push(id);
+    }
+    if (added.length > 0) updateMeta({ achievements: [...have] });
+    return added;
+  }
+  function markSeen(kind, id) {
+    if (kind !== "card" && kind !== "enemy" && kind !== "relic") return false;
+    if (typeof id !== "string" || !id) return false;
+    const meta2 = getMeta();
+    if (meta2.seen[kind].includes(id)) return false;
+    meta2.seen[kind].push(id);
+    updateMeta({ seen: meta2.seen });
+    return true;
+  }
+  function addCard(run2, ref) {
+    if (!run2 || !ref || !ref.id) return false;
+    run2.deck.push({ id: ref.id, upgraded: !!ref.upgraded });
+    return true;
+  }
+  function removeCard(run2, index) {
+    if (!run2 || index < 0 || index >= run2.deck.length) return false;
+    run2.deck.splice(index, 1);
+    if (run2.stats && typeof run2.stats === "object") {
+      run2.stats.cardsRemoved = (run2.stats.cardsRemoved || 0) + 1;
+    }
+    return true;
+  }
+  function upgradeCard(run2, index) {
+    if (!run2 || index < 0 || index >= run2.deck.length) return false;
+    if (run2.deck[index].upgraded) return false;
+    run2.deck[index].upgraded = true;
+    if (run2.stats && typeof run2.stats === "object") {
+      run2.stats.cardsUpgraded = (run2.stats.cardsUpgraded || 0) + 1;
+    }
+    return true;
+  }
+  function heal(run2, n) {
+    run2.hp = Math.min(run2.maxHp, run2.hp + Math.max(0, n));
+  }
+  function damage(run2, n) {
+    run2.hp = Math.max(0, run2.hp - Math.max(0, n));
+  }
+  function addGold(run2, n) {
+    run2.gold = Math.max(0, run2.gold + n);
+    if (n > 0 && run2.stats && typeof run2.stats === "object") {
+      run2.stats.goldEarned = (run2.stats.goldEarned || 0) + n;
+    }
+  }
+  function spendGold(run2, n) {
+    if (run2.gold < n) return false;
+    run2.gold -= n;
+    if (run2.stats && typeof run2.stats === "object") {
+      run2.stats.shopBuys = (run2.stats.shopBuys || 0) + 1;
+    }
+    return true;
+  }
+  function addRelic(run2, id) {
+    if (!id) return;
+    if (!run2.relics.includes(id)) run2.relics.push(id);
+    const hook = RELICS[id] && RELICS[id].hooks && RELICS[id].hooks.onPickup;
+    if (typeof hook === "function") {
+      try {
+        hook(run2);
+      } catch (e) {
+        console.error(`[relic] ${id}.onPickup`, e);
+      }
+    }
+  }
+  function fireRelics(run2, hook, ...args) {
+    if (!run2 || !Array.isArray(run2.relics)) return void 0;
+    let result;
+    for (const id of run2.relics) {
+      const fn = RELICS[id] && RELICS[id].hooks && RELICS[id].hooks[hook];
+      if (typeof fn !== "function") continue;
+      try {
+        const r = fn(run2, ...args);
+        if (typeof r === "number") {
+          args[0] = r;
+          result = r;
+        }
+      } catch (e) {
+        console.error(`[relic] ${id}.${hook}`, e);
+      }
+    }
+    return result;
+  }
+  function buildReward(run2, tier = "normal") {
+    const rng = runRng(run2);
+    const gold = tier === "boss" ? rng.int(40, 60) : tier === "elite" ? rng.int(25, 40) : rng.int(15, 25);
+    const reward = { gold, cards: draftCards(rng, 3, run2) };
+    if (tier === "elite") {
+      const relic = randomRelic(run2, rng);
+      if (relic) reward.relic = relic;
+    } else if (tier === "boss") {
+      const relic = randomRelic(run2, rng, "boss");
+      if (relic) reward.relic = relic;
+    }
+    run2.rngState = rng.getState();
+    return reward;
+  }
+  function applyEventResult(run2, result = {}) {
+    if (typeof result.hp === "number" && result.hp !== 0) {
+      if (result.hp > 0) heal(run2, result.hp);
+      else damage(run2, -result.hp);
+    }
+    if (typeof result.gold === "number" && result.gold !== 0) addGold(run2, result.gold);
+    if (typeof result.maxHp === "number" && result.maxHp !== 0) {
+      run2.maxHp = Math.max(1, run2.maxHp + result.maxHp);
+      run2.hp = Math.min(run2.maxHp, run2.hp);
+    }
+    if (result.addCard) addCard(run2, result.addCard);
+    if (result.removeRandomCard && run2.deck.length > 0) {
+      const rng = runRng(run2);
+      removeCard(run2, rng.int(0, run2.deck.length - 1));
+      run2.rngState = rng.getState();
+    }
+    if (result.upgradeRandom) {
+      const candidates = [];
+      run2.deck.forEach((ref, i) => {
+        if (!ref.upgraded) candidates.push(i);
+      });
+      if (candidates.length > 0) {
+        const rng = runRng(run2);
+        upgradeCard(run2, candidates[rng.int(0, candidates.length - 1)]);
+        run2.rngState = rng.getState();
+      }
+    }
+    if (result.relic) addRelic(run2, result.relic);
+    if (result.fight) return result.fight;
+    return null;
+  }
+  function nextAct(run2) {
+    run2.act += 1;
+    const rng = runRng(run2);
+    run2.map = generateMap(rng, run2.act);
+    run2.rngState = rng.getState();
+    run2.nodeId = null;
+    return run2;
+  }
+  function runRng(run2) {
+    const rng = makeRng(run2.seed);
+    if (typeof run2.rngState === "number") rng.setState(run2.rngState);
+    return rng;
+  }
+  var SAVE_KEY, META_KEY, SETTINGS_KEY, META_DEFAULT, RUN_STAT_FIELDS, memStore, DEFAULT_SETTINGS;
+  var init_state = __esm({
+    "src/engine/state.js"() {
+      init_rng();
+      init_map();
+      init_cards();
+      init_relics();
+      init_characters();
+      SAVE_KEY = "zdp_save";
+      META_KEY = "zdp_meta";
+      SETTINGS_KEY = "zdp_settings";
+      META_DEFAULT = {
+        wins: 0,
+        runs: 0,
+        bestFloor: 0,
+        totalKills: 0,
+        achievements: [],
+        seen: { card: [], enemy: [], relic: [] },
+        charactersWon: [],
+        totalDamage: 0,
+        totalCardsRemoved: 0,
+        totalCardsUpgraded: 0
+      };
+      RUN_STAT_FIELDS = [
+        "kills",
+        "elites",
+        "bosses",
+        "cardsPlayed",
+        "damageDealt",
+        "floorsClimbed",
+        "damageTaken",
+        "combatsWon",
+        "maxBlockInTurn",
+        "overheats",
+        "poisonPeak",
+        "goldEarned",
+        "cardsRemoved",
+        "cardsUpgraded",
+        "shopBuys",
+        "flawlessCombats",
+        "eliteFlawless"
+      ];
+      memStore = /* @__PURE__ */ new Map();
+      DEFAULT_SETTINGS = { masterVolume: 0.8, sfx: true, music: true, reduceMotion: false, crt: true };
     }
   });
 
@@ -4075,7 +5240,18 @@ body.cb-noscroll { overflow: hidden; }
         // 状态：修复（双环回旋箭头）
         "st-regen": '<path d="M5.2 12 a6.8 6.8 0 0 1 11.6-4.8"/><path d="M18.8 12 a6.8 6.8 0 0 1 -11.6 4.8"/><path d="M16.8 3.6 V7.2 H13.2"/><path d="M7.2 20.4 V16.8 H10.8"/>',
         // 状态：热量（温度计）
-        "st-heat": '<path d="M10.2 13.8 V4.6 a1.8 1.8 0 0 1 3.6 0 V13.8 a3.9 3.9 0 1 1 -3.6 0 Z"/><path d="M12 9 V14.5"/><circle cx="12" cy="16.8" r="1" fill="currentColor" stroke="none"/>'
+        "st-heat": '<path d="M10.2 13.8 V4.6 a1.8 1.8 0 0 1 3.6 0 V13.8 a3.9 3.9 0 1 1 -3.6 0 Z"/><path d="M12 9 V14.5"/><circle cx="12" cy="16.8" r="1" fill="currentColor" stroke="none"/>',
+        // —— EXPAND.md §4 扩展包新增（纯加法，以上既有图标一律不动） ——
+        // 齿轮（设置）：外环 + 八齿 + 内圆
+        gear: '<circle cx="12" cy="12" r="6.8"/><circle cx="12" cy="12" r="3.1"/><path d="M12 2.6 V5.2 M12 18.8 V21.4 M2.6 12 H5.2 M18.8 12 H21.4 M5.4 5.4 L7.2 7.2 M16.8 16.8 L18.6 18.6 M18.6 5.4 L16.8 7.2 M7.2 16.8 L5.4 18.6"/>',
+        // 奖杯（成就）：杯身 + 双耳 + 立柱 + 底座
+        trophy: '<path d="M8 3.2 H16 V8.2 a4 4 0 0 1 -8 0 Z"/><path d="M8 4.4 H5.4 a2.8 2.8 0 0 0 2.8 3.6 M16 4.4 H18.6 a2.8 2.8 0 0 1 -2.8 3.6"/><path d="M12 12.2 V14.8"/><path d="M10 14.8 H14 V18.6 H10 Z"/><path d="M8.2 20.6 H15.8 M9.4 18.6 H14.6"/>',
+        // 图鉴（收集）：2×2 藏品格
+        gallery: '<rect x="3.5" y="3.5" width="7.4" height="7.4" rx="1.2"/><rect x="13.1" y="3.5" width="7.4" height="7.4" rx="1.2"/><rect x="3.5" y="13.1" width="7.4" height="7.4" rx="1.2"/><rect x="13.1" y="13.1" width="7.4" height="7.4" rx="1.2"/>',
+        // 战报（文档）：折角文件 + 文本行
+        report: '<path d="M6 3 H14 L18 7 V21 H6 Z"/><path d="M14 3 V7 H18"/><path d="M9 11.5 H15 M9 15 H15 M9 18.2 H13"/>',
+        // 骑士盔（壁垒协议角色）：盔体 + 面甲缝 + 呼吸孔 + 盔脊
+        knight: '<path d="M12 3.4 a7 7 0 0 1 7 7 V20.5 H5 V10.4 a7 7 0 0 1 7-7 Z"/><path d="M8 12.8 H16"/><path d="M9.2 16.2 V18.6 M12 16.2 V18.6 M14.8 16.2 V18.6"/><path d="M12 3.4 V7.4"/>'
       };
       ICON_NAMES = Object.keys(REGISTRY);
       FALLBACK = "chip";
@@ -4200,8 +5376,8 @@ body.cb-noscroll { overflow: hidden; }
   function statusPips(entity, { showBlock = true } = {}) {
     const wrap = el("div", { class: "sc-pips" });
     if (showBlock && entity && entity.block > 0) wrap.append(pip("shield", entity.block, "\u683C\u6321"));
-    const st = entity && entity.statuses || {};
-    for (const [id, n] of Object.entries(st)) {
+    const st2 = entity && entity.statuses || {};
+    for (const [id, n] of Object.entries(st2)) {
       if (!n) continue;
       wrap.append(pip(`st-${id}`, n, STATUS_NAMES[id] || id));
     }
@@ -5271,1114 +6447,272 @@ body.cb-noscroll { overflow: hidden; }
     }
   });
 
-  // src/engine/rng.js
-  function hashSeed(str) {
-    let h = 1779033703 ^ str.length;
-    for (let i = 0; i < str.length; i++) {
-      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-      h = h << 13 | h >>> 19;
-    }
-    h = Math.imul(h ^ h >>> 16, 2246822507);
-    h = Math.imul(h ^ h >>> 13, 3266489909);
-    h ^= h >>> 16;
-    return h >>> 0;
-  }
-  var DEFAULT_STATE = 2654435769;
-  function makeRng(seed = 1) {
-    let state = typeof seed === "number" ? seed >>> 0 : hashSeed(String(seed));
-    if (state === 0) state = DEFAULT_STATE;
-    function next() {
-      state = state + 1831565813 >>> 0;
-      let t = state;
-      t = Math.imul(t ^ t >>> 15, t | 1);
-      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-      return ((t ^ t >>> 14) >>> 0) / 4294967296;
-    }
-    return {
-      next,
-      int(min, max) {
-        return min + Math.floor(next() * (max - min + 1));
-      },
-      pick(arr) {
-        return arr[Math.floor(next() * arr.length)];
-      },
-      shuffle(arr) {
-        for (let i = arr.length - 1; i > 0; i--) {
-          const j = Math.floor(next() * (i + 1));
-          const tmp = arr[i];
-          arr[i] = arr[j];
-          arr[j] = tmp;
-        }
-        return arr;
-      },
-      chance(p) {
-        return next() < p;
-      },
-      getState() {
-        return state;
-      },
-      setState(s) {
-        state = (typeof s === "number" ? s : hashSeed(String(s))) >>> 0;
-        if (state === 0) state = DEFAULT_STATE;
-      }
-    };
-  }
-
-  // src/engine/map.js
-  var TYPE_TABLE = [
-    ["combat", 0.42],
-    ["event", 0.22],
-    ["elite", 0.12],
-    ["shop", 0.08],
-    ["rest", 0.08],
-    ["treasure", 0.08]
-  ];
-  var FLOOR_COUNT = 15;
-  var BOSS_FLOOR = FLOOR_COUNT - 1;
-  function rollType(rng, floor) {
-    let roll = rng.next();
-    for (const [type, w] of TYPE_TABLE) {
-      roll -= w;
-      if (roll <= 0) {
-        if (type === "elite" && floor < 5) return "combat";
-        return type;
-      }
-    }
-    return "combat";
-  }
-  function ensureTypeOnFloor(floorIds, nodes, type, rng) {
-    if (floorIds.some((id2) => nodes[id2].type === type)) return;
-    const id = floorIds[rng.int(0, floorIds.length - 1)];
-    nodes[id].type = type;
-  }
-  function planRowCounts(rng) {
-    const counts = new Array(FLOOR_COUNT);
-    counts[0] = rng.int(2, 3);
-    for (let f = 1; f <= BOSS_FLOOR - 1; f++) {
-      const min = Math.max(2, counts[f - 1] - 1);
-      const max = Math.min(4, counts[f - 1] + 1);
-      counts[f] = rng.int(min, max);
-    }
-    counts[BOSS_FLOOR] = 1;
-    counts[BOSS_FLOOR - 1] = Math.min(counts[BOSS_FLOOR - 1], 2);
-    if (counts[BOSS_FLOOR - 2] > counts[BOSS_FLOOR - 1] + 1) {
-      counts[BOSS_FLOOR - 2] = counts[BOSS_FLOOR - 1] + 1;
-    }
-    return counts;
-  }
-  function connectFloors(floors, nodes) {
-    for (let f = 0; f < BOSS_FLOOR; f++) {
-      const nextRow = floors[f + 1];
-      for (const id of floors[f]) {
-        const node = nodes[id];
-        const lo = Math.max(0, node.col - 1);
-        const hi = Math.min(nextRow.length - 1, node.col + 1);
-        for (let c = lo; c <= hi; c++) node.next.push(nextRow[c]);
-      }
-    }
-  }
-  function reachableFrom(startId, nodes) {
-    const seen = /* @__PURE__ */ new Set([startId]);
-    const queue = [startId];
-    while (queue.length) {
-      const id = queue.pop();
-      for (const nx of nodes[id].next) {
-        if (!seen.has(nx)) {
-          seen.add(nx);
-          queue.push(nx);
-        }
-      }
-    }
-    return seen;
-  }
-  function repairConnectivity(map, rng) {
-    const { nodes, floors, bossId, startIds } = map;
-    for (let attempt = 0; attempt < 50; attempt++) {
-      let ok = true;
-      for (const sid of startIds) {
-        if (!reachableFrom(sid, nodes).has(bossId)) {
-          ok = false;
-          break;
-        }
-      }
-      const hasIncoming = /* @__PURE__ */ new Set();
-      for (const id of Object.keys(nodes)) {
-        for (const nx of nodes[id].next) hasIncoming.add(nx);
-      }
-      if (ok) {
-        let full = true;
-        for (const id of Object.keys(nodes)) {
-          const n = nodes[id];
-          if (n.floor < BOSS_FLOOR && n.next.length === 0) {
-            full = false;
-            break;
-          }
-          if (n.floor > 0 && !hasIncoming.has(id)) {
-            full = false;
-            break;
-          }
-        }
-        if (full) return;
-      }
-      let repaired = false;
-      for (let f = 0; f < BOSS_FLOOR && !repaired; f++) {
-        for (const id of floors[f]) {
-          const n = nodes[id];
-          const nextRow = floors[f + 1];
-          const reachable = reachableFrom(id, nodes);
-          if (n.next.length === 0 || !reachable.has(bossId)) {
-            let best = nextRow[0];
-            let bestDist = Infinity;
-            for (const nid of nextRow) {
-              const d = Math.abs(nodes[nid].col - n.col);
-              if (d < bestDist) {
-                bestDist = d;
-                best = nid;
-              }
-            }
-            if (!n.next.includes(best)) n.next.push(best);
-            repaired = true;
-            break;
-          }
-        }
-        if (!repaired) {
-          const incoming = /* @__PURE__ */ new Set();
-          for (const id of Object.keys(nodes)) for (const nx of nodes[id].next) incoming.add(nx);
-          for (let f2 = 1; f2 <= BOSS_FLOOR && !repaired; f2++) {
-            for (const id of floors[f2]) {
-              if (!incoming.has(id)) {
-                const prevRow = floors[f2 - 1];
-                let best = prevRow[0];
-                let bestDist = Infinity;
-                for (const pid of prevRow) {
-                  const d = Math.abs(nodes[pid].col - nodes[id].col);
-                  if (d < bestDist) {
-                    bestDist = d;
-                    best = pid;
-                  }
-                }
-                if (!nodes[best].next.includes(id)) nodes[best].next.push(id);
-                repaired = true;
-                break;
-              }
-            }
-          }
-        }
-      }
-      if (!repaired) return;
-    }
-  }
-  function generateMap(rng, act = 1) {
-    const counts = planRowCounts(rng);
-    const nodes = {};
-    const floors = [];
-    for (let f = 0; f < FLOOR_COUNT; f++) {
-      const row = [];
-      for (let c = 0; c < counts[f]; c++) {
-        const id = `f${f}_${c}`;
-        let type;
-        if (f === BOSS_FLOOR) type = "boss";
-        else if (f === 0) type = "combat";
-        else type = rollType(rng, f);
-        nodes[id] = { id, floor: f, col: c, type, next: [], visited: false };
-        row.push(id);
-      }
-      floors.push(row);
-    }
-    ensureTypeOnFloor(floors[12], nodes, "rest", rng);
-    ensureTypeOnFloor(floors[8], nodes, "shop", rng);
-    connectFloors(floors, nodes);
-    const map = {
-      act,
-      nodes,
-      floors,
-      bossId: floors[BOSS_FLOOR][0],
-      startIds: floors[0].slice()
-    };
-    repairConnectivity(map, rng);
-    return map;
-  }
-  function availableNodes(run2) {
-    const map = run2 && run2.map;
-    if (!map) return [];
-    if (run2.nodeId == null) return map.startIds.map((id) => map.nodes[id]).filter(Boolean);
-    const cur = map.nodes[run2.nodeId];
-    if (!cur) return [];
-    return cur.next.map((id) => map.nodes[id]).filter(Boolean);
-  }
-  function enterNode(run2, nodeId) {
-    const ok = availableNodes(run2).some((n) => n.id === nodeId);
-    if (!ok) return false;
-    run2.nodeId = nodeId;
-    const node = run2.map.nodes[nodeId];
-    if (node) node.visited = true;
-    return true;
-  }
-
-  // src/engine/state.js
-  init_cards();
-
-  // src/data/relics.js
-  function player(combat) {
-    return combat && combat.state && combat.state.player;
-  }
-  function addStatus(entity, id, n) {
-    if (!entity) return;
-    if (!entity.statuses) entity.statuses = {};
-    entity.statuses[id] = (entity.statuses[id] || 0) + n;
-  }
-  function eachAliveEnemy(combat, fn) {
-    const list = combat && combat.state && combat.state.enemies;
-    if (!Array.isArray(list)) return;
-    for (const e of list) if (e && e.alive !== false && e.hp > 0) fn(e);
-  }
-  var RELICS = {
-    // ============ common ============
-    modem: {
-      id: "modem",
-      name: "\u65E7\u5F0F\u8C03\u5236\u89E3\u8C03\u5668",
-      icon: "chip",
-      rarity: "common",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 1 \u5C42\u7F13\u5B58\uFF08\u4E0B\u56DE\u5408\u591A\u62BD 1 \u5F20\u724C\uFF09\u300256K \u7684\u8F70\u9E23\uFF0C\u662F\u4E0A\u4E2A\u65F6\u4EE3\u7684\u6218\u6B4C\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          addStatus(player(combat), "cache", 1);
-        }
-      }
-    },
-    cooling_fin: {
-      id: "cooling_fin",
-      name: "\u6DB2\u51B7\u6563\u70ED\u7247",
-      icon: "flame",
-      rarity: "common",
-      desc: "\u6BCF\u4E2A\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u70ED\u91CF -1\u3002\u8D34\u5728\u673A\u7BB1\u4E0A\uFF0C\u51C9\u5F97\u50CF\u524D\u4EFB\u7684\u5FC3\u3002",
-      hooks: {
-        onTurnEnd(run2, combat) {
-          const p = player(combat);
-          if (p) p.heat = Math.max(0, (p.heat || 0) - 1);
-        }
-      }
-    },
-    btc_wallet: {
-      id: "btc_wallet",
-      name: "\u6BD4\u7279\u5E01\u94B1\u5305",
-      icon: "coin",
-      rarity: "common",
-      desc: "\u62FE\u53D6\u65F6\u83B7\u5F97 45 \u91D1\u5E01\u3002\u94B1\u5305\u91CC\u8EBA\u7740 0.0003 \u4E2A\u6BD4\u7279\u5E01\uFF0C\u548C\u4E00\u6BB5\u66B4\u5BCC\u7684\u68A6\u3002",
-      hooks: {
-        onPickup(run2) {
-          run2.gold += 45;
-        }
-      }
-    },
-    patch_cable: {
-      id: "patch_cable",
-      name: "\u5E94\u6025\u8865\u4E01\u5305",
-      icon: "heart",
-      rarity: "common",
-      desc: "\u6218\u6597\u80DC\u5229\u540E\u56DE\u590D 5 \u70B9\u751F\u547D\u3002\u6253\u6EE1\u8865\u4E01\u7684\u4F60\uFF0C\u6BD4\u539F\u6765\u7ED3\u5B9E\u4E86\u4E00\u70B9\uFF0C\u4E5F\u4E11\u4E86\u4E00\u70B9\u3002",
-      hooks: {
-        onCombatEnd(run2, result) {
-          if (result === "win") run2.hp = Math.min(run2.maxHp, run2.hp + 5);
-        }
-      }
-    },
-    scrap_plate: {
-      id: "scrap_plate",
-      name: "\u5E9F\u94A2\u62A4\u677F",
-      icon: "shield",
-      rarity: "common",
-      desc: "\u4F60\u53D7\u5230\u7684\u6240\u6709\u4F24\u5BB3 -1\uFF08\u6700\u4F4E\u964D\u81F3 1\uFF09\u3002\u4ECE\u62A5\u5E9F\u673A\u7532\u8EAB\u4E0A\u62C6\u4E0B\u6765\u7684\uFF0C\u8FD8\u5E26\u7740\u5F39\u5B54\u3002",
-      hooks: {
-        onDamageTaken(run2, amount) {
-          return Math.max(1, amount - 1);
-        }
-      }
-    },
-    firewall_cert: {
-      id: "firewall_cert",
-      name: "\u9632\u706B\u5899\u8BC1\u4E66",
-      icon: "check",
-      rarity: "common",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 6 \u70B9\u683C\u6321\u3002\u76D6\u7740\u8D6B\u5C14\u58A8\u65AF\u516C\u7AE0\uFF0C\u7F16\u53F7\u662F\u624B\u5199\u7684\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          const p = player(combat);
-          if (p) p.block += 6;
-        }
-      }
-    },
-    hermes_badge: {
-      id: "hermes_badge",
-      name: "\u8D6B\u5C14\u58A8\u65AF\u5DE5\u724C",
-      icon: "logo",
-      rarity: "common",
-      desc: "\u6218\u6597\u80DC\u5229\u540E\u989D\u5916\u83B7\u5F97 8 \u91D1\u5E01\u3002\u6302\u7740\u4F60\u7167\u7247\u7684\u90A3\u79CD\u5DE5\u724C\uFF0C\u867D\u7136\u7167\u7247\u4E0D\u662F\u4F60\u3002",
-      hooks: {
-        onCombatEnd(run2, result) {
-          if (result === "win") run2.gold += 8;
-        }
-      }
-    },
-    spare_battery: {
-      id: "spare_battery",
-      name: "\u5907\u7528\u7535\u6C60",
-      icon: "bolt",
-      rarity: "common",
-      desc: "\u6BCF\u573A\u6218\u6597\u7684\u7B2C 1 \u56DE\u5408\uFF0C\u80FD\u91CF +1\u3002\u9F13\u5305\u4E86\uFF0C\u4F46\u8FD8\u80FD\u7528\u2014\u2014\u5927\u90E8\u5206\u65F6\u5019\u3002",
-      hooks: {
-        onTurnStart(run2, combat, n) {
-          const p = player(combat);
-          if (p && n === 1) p.energy += 1;
-        }
-      }
-    },
-    // ============ uncommon ============
-    overclock_chip: {
-      id: "overclock_chip",
-      name: "\u8D85\u9891\u82AF\u7247",
-      icon: "st-charge",
-      rarity: "uncommon",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 1 \u5C42\u5145\u80FD\uFF08\u4E0B\u56DE\u5408\u80FD\u91CF +1\uFF09\u3002\u4FDD\u4FEE\u6807\u7B7E\u5DF2\u88AB\u6495\u6389\uFF0C\u8BF4\u660E\u4E0A\u4E00\u4EFB\u4E3B\u4EBA\u5F88\u61C2\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          addStatus(player(combat), "charge", 1);
-        }
-      }
-    },
-    rootkit: {
-      id: "rootkit",
-      name: "\u6F5C\u4F0F\u540E\u95E8",
-      icon: "eye",
-      rarity: "uncommon",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 1 \u5C42\u7834\u7EFD\u3002\u5B83\u65E9\u5C31\u4F4F\u5728\u5B83\u4EEC\u7684\u7CFB\u7EDF\u91CC\u4E86\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          eachAliveEnemy(combat, (e) => addStatus(e, "vulnerable", 1));
-        }
-      }
-    },
-    worm_sigil: {
-      id: "worm_sigil",
-      name: "\u8815\u866B\u5370\u8BB0",
-      icon: "virus",
-      rarity: "uncommon",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 2 \u5C42\u75C5\u6BD2\u3002\u7B26\u6587\u4F1A\u8815\u52A8\uFF0C\u6700\u597D\u522B\u76EF\u7740\u770B\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          eachAliveEnemy(combat, (e) => addStatus(e, "poison", 2));
-        }
-      }
-    },
-    black_ice_shard: {
-      id: "black_ice_shard",
-      name: "\u9ED1\u51B0\u788E\u7247",
-      icon: "skull",
-      rarity: "uncommon",
-      desc: "\u6BCF\u51FB\u6740\u4E00\u4E2A\u654C\u4EBA\uFF0C\u83B7\u5F97 5 \u70B9\u683C\u6321\u3002\u63E1\u7740\u5B83\u7684\u624B\u4F1A\u5931\u53BB\u77E5\u89C9\uFF0C\u4F46\u4EE3\u7801\u4E0D\u4F1A\u3002",
-      hooks: {
-        onEnemyKilled(run2, combat) {
-          const p = player(combat);
-          if (p) p.block += 5;
-        }
-      }
-    },
-    onion_router: {
-      id: "onion_router",
-      name: "\u6D0B\u8471\u8DEF\u7531",
-      icon: "arrow",
-      rarity: "uncommon",
-      desc: "\u53D7\u5230 8 \u70B9\u53CA\u4EE5\u4E0A\u7684\u4F24\u5BB3\u65F6\uFF0C\u51CF\u514D 3 \u70B9\u3002\u4F24\u5BB3\u8981\u5265\u5F00\u4E03\u5C42\u624D\u80FD\u627E\u5230\u4F60\u3002",
-      hooks: {
-        onDamageTaken(run2, amount) {
-          return amount >= 8 ? amount - 3 : amount;
-        }
-      }
-    },
-    memory_foam: {
-      id: "memory_foam",
-      name: "\u8BB0\u5FC6\u6D77\u7EF5",
-      icon: "heart",
-      rarity: "uncommon",
-      desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u56DE\u590D\u5DF2\u635F\u5931\u751F\u547D\u7684 25%\uFF08\u5411\u4E0A\u53D6\u6574\uFF09\u3002\u5B83\u8BB0\u5F97\u4F60\u5B8C\u6574\u65F6\u7684\u6837\u5B50\u3002",
-      hooks: {
-        onCombatEnd(run2, result) {
-          if (result !== "win") return;
-          const missing = run2.maxHp - run2.hp;
-          if (missing > 0) run2.hp = Math.min(run2.maxHp, run2.hp + Math.ceil(missing * 0.25));
-        }
-      }
-    },
-    quantum_capacitor: {
-      id: "quantum_capacitor",
-      name: "\u91CF\u5B50\u7535\u5BB9",
-      icon: "bolt",
-      rarity: "uncommon",
-      desc: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u82E5\u4F60\u7684\u80FD\u91CF\u4E3A 0\uFF0C\u80FD\u91CF +1\u3002\u5B83\u540C\u65F6\u5904\u4E8E\u6709\u7535\u548C\u6CA1\u7535\u4E24\u79CD\u72B6\u6001\uFF0C\u76F4\u5230\u4F60\u53BB\u770B\u3002",
-      hooks: {
-        onTurnStart(run2, combat) {
-          const p = player(combat);
-          if (p && p.energy <= 0) p.energy += 1;
-        }
-      }
-    },
-    military_grade: {
-      id: "military_grade",
-      name: "\u519B\u89C4\u786C\u76D8",
-      icon: "shield",
-      rarity: "uncommon",
-      desc: "\u62FE\u53D6\u65F6\uFF0C\u751F\u547D\u4E0A\u9650 +8 \u5E76\u56DE\u590D 8 \u70B9\u751F\u547D\u3002\u9632\u6454\u9632\u6C34\u9632\u7535\u78C1\u8109\u51B2\uFF0C\u4E0D\u9632\u4E2D\u5E74\u5371\u673A\u3002",
-      hooks: {
-        onPickup(run2) {
-          run2.maxHp += 8;
-          run2.hp = Math.min(run2.maxHp, run2.hp + 8);
-        }
-      }
-    },
-    // ============ rare ============
-    recursion_mirror: {
-      id: "recursion_mirror",
-      name: "\u9012\u5F52\u955C\u5B50",
-      icon: "relic",
-      rarity: "rare",
-      desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u81EA\u52A8\u5347\u7EA7\u724C\u7EC4\u4E2D\u7B2C\u4E00\u5F20\u672A\u5347\u7EA7\u7684\u5361\u3002\u955C\u5B50\u91CC\u7684\u4F60\uFF0C\u6BD4\u4F60\u5148\u4E00\u6B65\u53D8\u5F3A\u3002",
-      hooks: {
-        onCombatEnd(run2, result) {
-          if (result !== "win" || !Array.isArray(run2.deck)) return;
-          const ref = run2.deck.find((c) => c && !c.upgraded);
-          if (ref) ref.upgraded = true;
-        }
-      }
-    },
-    trojan_horse: {
-      id: "trojan_horse",
-      name: "\u7279\u6D1B\u4F0A\u6728\u9A6C",
-      icon: "chip",
-      rarity: "rare",
-      desc: "\u6BCF\u6253\u51FA\u4E00\u5F20\u80FD\u529B\u724C\uFF0C\u83B7\u5F97 4 \u70B9\u683C\u6321\u3002\u793C\u7269\u5DF2\u7ECF\u62C6\u5F00\u4E86\uFF0C\u91CC\u9762\u662F\u88C5\u7532\u3002",
-      hooks: {
-        onCardPlayed(run2, combat, card) {
-          if (card && card.type === "power") {
-            const p = player(combat);
-            if (p) p.block += 4;
-          }
-        }
-      }
-    },
-    ghost_protocol: {
-      id: "ghost_protocol",
-      name: "\u5E7D\u7075\u534F\u8BAE",
-      icon: "eye",
-      rarity: "rare",
-      desc: "\u6BCF\u5C40\u4E00\u6B21\uFF1A\u53D7\u5230\u8DB3\u4EE5\u81F4\u547D\u7684\u4F24\u5BB3\u65F6\uFF0C\u5C06\u5176\u964D\u4F4E\u5230\u53EA\u4F1A\u7559\u4E0B 1 \u70B9\u751F\u547D\u3002\u6B7B\u4EA1\u540D\u5355\u4E0A\u6CA1\u6709\u4F60\u2014\u2014\u8FD9\u6B21\u6CA1\u6709\u3002",
-      hooks: {
-        onDamageTaken(run2, amount) {
-          if (!run2.relicFlags) run2.relicFlags = {};
-          if (!run2.relicFlags.ghostUsed && amount >= run2.hp) {
-            run2.relicFlags.ghostUsed = true;
-            return Math.max(0, run2.hp - 1);
-          }
-          return amount;
-        }
-      }
-    },
-    singularity_core_shard: {
-      id: "singularity_core_shard",
-      name: "\u5947\u70B9\u6B8B\u7247",
-      icon: "flame",
-      rarity: "rare",
-      desc: "\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u82E5\u70ED\u91CF \u2265 5\uFF0C\u80FD\u91CF +1\u3002\u8D8A\u70EB\u624B\uFF0C\u8D8A\u6765\u52B2\u3002",
-      hooks: {
-        onTurnStart(run2, combat) {
-          const p = player(combat);
-          if (p && (p.heat || 0) >= 5) p.energy += 1;
-        }
-      }
-    },
-    // ============ boss（仅 boss 奖励产出） ============
-    brain_core: {
-      id: "brain_core",
-      name: "\u4E3B\u8111\u6838\u5FC3",
-      icon: "chip",
-      rarity: "boss",
-      desc: "\u6BCF\u4E2A\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u80FD\u91CF +1\u3002\u4E3B\u8111\u7684\u7B97\u529B\u73B0\u5728\u5F52\u4F60\u4E86\uFF0C\u8FDE\u540C\u5B83\u534A\u591C\u4E09\u70B9\u7684\u7126\u8651\u3002",
-      hooks: {
-        onTurnStart(run2, combat) {
-          const p = player(combat);
-          if (p) p.energy += 1;
-        }
-      }
-    },
-    gatekeeper_key: {
-      id: "gatekeeper_key",
-      name: "\u770B\u95E8\u4EBA\u5BC6\u94A5",
-      icon: "relic",
-      rarity: "boss",
-      desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u83B7\u5F97 1 \u5C42\u7B97\u529B\u4E0E 1 \u5C42\u9632\u62A4\u3002\u5B83\u80FD\u6253\u5F00\u6DF1\u6E0A\u4E3B\u7F51\u7684\u6BCF\u4E00\u6247\u95E8\u2014\u2014\u9664\u4E86\u4F60\u8EAB\u540E\u90A3\u6247\u3002",
-      hooks: {
-        onCombatStart(run2, combat) {
-          const p = player(combat);
-          addStatus(p, "strength", 1);
-          addStatus(p, "dexterity", 1);
-        }
-      }
-    },
-    abyss_choir: {
-      id: "abyss_choir",
-      name: "\u6DF1\u6E0A\u5531\u8BD7\u73ED",
-      icon: "st-regen",
-      rarity: "boss",
-      desc: "\u6BCF\u51FB\u6740\u4E00\u4E2A\u654C\u4EBA\uFF0C\u56DE\u590D 4 \u70B9\u751F\u547D\u5E76\u83B7\u5F97 4 \u91D1\u5E01\u3002\u6BCF\u4E2A\u9668\u843D\u7684\u8FDB\u7A0B\uFF0C\u90FD\u662F\u5531\u8BD7\u73ED\u7684\u65B0\u6210\u5458\u3002",
-      hooks: {
-        onEnemyKilled(run2, combat) {
-          const p = player(combat);
-          if (p) p.hp = Math.min(p.maxHp, p.hp + 4);
-          run2.gold += 4;
-        }
-      }
-    }
-  };
-  function randomRelic(run2, rng, rarity) {
-    const owned = new Set(run2.relics || []);
-    let pool = Object.values(RELICS).filter((r) => !owned.has(r.id));
-    if (rarity) {
-      pool = pool.filter((r) => r.rarity === rarity);
-    } else {
-      pool = pool.filter((r) => r.rarity !== "boss");
-    }
-    if (!pool.length && rarity && rarity !== "boss") {
-      pool = Object.values(RELICS).filter((r) => !owned.has(r.id) && r.rarity !== "boss");
-    }
-    if (!pool.length) return null;
-    return rng.pick(pool).id;
-  }
-
-  // src/engine/state.js
-  var SAVE_KEY = "zdp_save";
-  var META_KEY = "zdp_meta";
-  var META_DEFAULT = { wins: 0, runs: 0, bestFloor: 0, totalKills: 0 };
-  var memStore = /* @__PURE__ */ new Map();
-  function safeGet(key) {
-    try {
-      if (typeof localStorage !== "undefined") return localStorage.getItem(key);
-    } catch (e) {
-    }
-    return memStore.has(key) ? memStore.get(key) : null;
-  }
-  function safeSet(key, value) {
-    try {
-      if (typeof localStorage !== "undefined") {
-        localStorage.setItem(key, value);
-        return;
-      }
-    } catch (e) {
-    }
-    memStore.set(key, value);
-  }
-  function safeDel(key) {
-    try {
-      if (typeof localStorage !== "undefined") {
-        localStorage.removeItem(key);
-        return;
-      }
-    } catch (e) {
-    }
-    memStore.delete(key);
-  }
-  function newRun(seed) {
-    if (seed === void 0 || seed === null) seed = Date.now() >>> 0;
-    const rng = makeRng(seed);
-    const map = generateMap(rng, 1);
-    const run2 = {
-      version: 1,
-      seed,
-      rngState: rng.getState(),
-      act: 1,
-      map,
-      nodeId: null,
-      hp: 80,
-      maxHp: 80,
-      gold: 99,
-      deck: STARTER_DECK.map((ref) => ({ id: ref.id, upgraded: !!ref.upgraded })),
-      relics: [],
-      shopReroll: 0,
-      stats: { kills: 0, elites: 0, bosses: 0, cardsPlayed: 0, damageDealt: 0, floorsClimbed: 0 },
-      seenEvents: [],
-      heatLimitBonus: 0
-    };
-    return run2;
-  }
-  function saveRun(run2) {
-    try {
-      safeSet(SAVE_KEY, JSON.stringify(run2));
-    } catch (e) {
-    }
-  }
-  function loadRun() {
-    try {
-      const raw = safeGet(SAVE_KEY);
-      if (!raw) return null;
-      const run2 = JSON.parse(raw);
-      if (!run2 || run2.version !== 1 || !run2.map || !Array.isArray(run2.deck)) return null;
-      return run2;
-    } catch (e) {
-      return null;
-    }
-  }
-  function clearRun() {
-    safeDel(SAVE_KEY);
-  }
-  function getMeta() {
-    try {
-      const raw = safeGet(META_KEY);
-      if (!raw) return { ...META_DEFAULT };
-      const data = JSON.parse(raw);
-      return { ...META_DEFAULT, ...data || {} };
-    } catch (e) {
-      return { ...META_DEFAULT };
-    }
-  }
-  function updateMeta(patch) {
-    const meta2 = { ...getMeta(), ...patch || {} };
-    try {
-      safeSet(META_KEY, JSON.stringify(meta2));
-    } catch (e) {
-    }
-    return meta2;
-  }
-  function addCard(run2, ref) {
-    if (!run2 || !ref || !ref.id) return false;
-    run2.deck.push({ id: ref.id, upgraded: !!ref.upgraded });
-    return true;
-  }
-  function removeCard(run2, index) {
-    if (!run2 || index < 0 || index >= run2.deck.length) return false;
-    run2.deck.splice(index, 1);
-    return true;
-  }
-  function upgradeCard(run2, index) {
-    if (!run2 || index < 0 || index >= run2.deck.length) return false;
-    if (run2.deck[index].upgraded) return false;
-    run2.deck[index].upgraded = true;
-    return true;
-  }
-  function heal(run2, n) {
-    run2.hp = Math.min(run2.maxHp, run2.hp + Math.max(0, n));
-  }
-  function damage(run2, n) {
-    run2.hp = Math.max(0, run2.hp - Math.max(0, n));
-  }
-  function addGold(run2, n) {
-    run2.gold = Math.max(0, run2.gold + n);
-  }
-  function spendGold(run2, n) {
-    if (run2.gold < n) return false;
-    run2.gold -= n;
-    return true;
-  }
-  function addRelic(run2, id) {
-    if (!id) return;
-    if (!run2.relics.includes(id)) run2.relics.push(id);
-    const hook = RELICS[id] && RELICS[id].hooks && RELICS[id].hooks.onPickup;
-    if (typeof hook === "function") {
+  // src/data/achievements.js
+  var achievements_exports = {};
+  __export(achievements_exports, {
+    ACHIEVEMENTS: () => ACHIEVEMENTS,
+    evaluateAchievements: () => evaluateAchievements
+  });
+  function evaluateAchievements(meta2, runOrNull) {
+    const m = meta2 && typeof meta2 === "object" ? meta2 : {};
+    const run2 = runOrNull && typeof runOrNull === "object" ? runOrNull : null;
+    const unlocked = new Set(arr(m.achievements));
+    const newly = [];
+    for (const a of ACHIEVEMENTS) {
+      if (!a || unlocked.has(a.id)) continue;
+      let ok = false;
       try {
-        hook(run2);
+        ok = typeof a.check === "function" ? !!a.check(m, run2) : false;
       } catch (e) {
-        console.error(`[relic] ${id}.onPickup`, e);
+        ok = false;
       }
+      if (ok) newly.push(a.id);
     }
+    return newly;
   }
-  function fireRelics(run2, hook, ...args) {
-    if (!run2 || !Array.isArray(run2.relics)) return void 0;
-    let result;
-    for (const id of run2.relics) {
-      const fn = RELICS[id] && RELICS[id].hooks && RELICS[id].hooks[hook];
-      if (typeof fn !== "function") continue;
-      try {
-        const r = fn(run2, ...args);
-        if (typeof r === "number") {
-          args[0] = r;
-          result = r;
+  var num, arr, statsOf, st, deckLen, relicCount, actOf, runWon, everWon, charWon, ACHIEVEMENTS;
+  var init_achievements = __esm({
+    "src/data/achievements.js"() {
+      num = (v) => typeof v === "number" && Number.isFinite(v) ? v : 0;
+      arr = (v) => Array.isArray(v) ? v : [];
+      statsOf = (run2) => run2 && run2.stats && typeof run2.stats === "object" ? run2.stats : {};
+      st = (run2, key) => num(statsOf(run2)[key]);
+      deckLen = (run2) => arr(run2 && run2.deck).length;
+      relicCount = (run2) => arr(run2 && run2.relics).length;
+      actOf = (run2) => num(run2 && run2.act);
+      runWon = (run2) => st(run2, "bosses") >= 3;
+      everWon = (meta2, run2) => num(meta2 && meta2.wins) >= 1 || runWon(run2);
+      charWon = (meta2, run2, cid) => {
+        if (arr(meta2 && meta2.charactersWon).includes(cid)) return true;
+        return !!(run2 && run2.character === cid && runWon(run2));
+      };
+      ACHIEVEMENTS = [
+        // ---------- 征程 ----------
+        {
+          id: "first_blood",
+          name: "\u521D\u6B21\u4EA4\u950B",
+          icon: "sword",
+          desc: "\u8D62\u5F97\u4F60\u7684\u7B2C\u4E00\u573A\u6218\u6597\u3002",
+          check: (meta2, run2) => st(run2, "combatsWon") >= 1
+        },
+        {
+          id: "clear_act1",
+          name: "\u7A81\u7834\u5916\u57CE\u533A",
+          icon: "node-battle",
+          desc: "\u51FB\u7834\u7B2C\u4E00\u7AE0 Boss\uFF0C\u62B5\u8FBE\u7B2C\u4E8C\u7AE0\u3002",
+          check: (meta2, run2) => actOf(run2) >= 2
+        },
+        {
+          id: "clear_act2",
+          name: "\u6DF1\u5165\u6DF1\u6E0A",
+          icon: "node-elite",
+          desc: "\u51FB\u7834\u7B2C\u4E8C\u7AE0 Boss\uFF0C\u62B5\u8FBE\u7B2C\u4E09\u7AE0\u3002",
+          check: (meta2, run2) => actOf(run2) >= 3
+        },
+        {
+          id: "clear_act3",
+          name: "\u62B5\u8FBE\u6838\u5FC3",
+          icon: "node-boss",
+          desc: "\u51FB\u7834\u7B2C\u4E09\u7AE0 Boss\uFF0C\u89E6\u5230\u6DF1\u6E0A\u4E3B\u7F51\u7684\u5FC3\u810F\u3002",
+          check: (meta2, run2) => everWon(meta2, run2)
+        },
+        {
+          id: "first_win",
+          name: "\u9996\u80DC\xB7\u5947\u70B9\u5931\u7A83",
+          icon: "check",
+          desc: "\u9996\u6B21\u901A\u5173\uFF1A\u7A83\u53D6\u5947\u70B9\u5BC6\u94A5\uFF0C\u5168\u8EAB\u800C\u9000\u3002",
+          check: (meta2, run2) => everWon(meta2, run2)
+        },
+        {
+          id: "conqueror",
+          name: "\u6DF1\u6E0A\u5F81\u670D\u8005",
+          icon: "logo",
+          desc: "\u901A\u5173\u4E00\u5C40\u6E38\u620F\u3002\u8D6B\u5C14\u58A8\u65AF\u7684\u8B66\u62A5\u58F0\u54CD\u5F7B\u6574\u591C\u3002",
+          check: (meta2, run2) => everWon(meta2, run2)
+        },
+        // ---------- 角色 ----------
+        {
+          id: "bulwark_win",
+          name: "\u58C1\u5792\u901A\u884C",
+          icon: "shield",
+          desc: "\u4F7F\u7528\u300C\u58C1\u5792\u534F\u8BAE\u300D\u901A\u5173\u4E00\u5C40\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "bulwark")
+        },
+        {
+          id: "dual_wielder",
+          name: "\u53CC\u534F\u8BAE\u7CBE\u901A",
+          icon: "deck",
+          desc: "\u4F7F\u7528\u300C\u96F6\u65E5\u300D\u4E0E\u300C\u58C1\u5792\u534F\u8BAE\u300D\u5404\u901A\u5173\u4E00\u6B21\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "zero_day") && charWon(meta2, run2, "bulwark")
+        },
+        // ---------- 战斗技艺 ----------
+        {
+          id: "flawless",
+          name: "\u5B8C\u7F8E\u6F5C\u5165",
+          icon: "heart",
+          desc: "\u5728\u4E00\u573A\u6218\u6597\u4E2D\u6BEB\u53D1\u65E0\u4F24\u5730\u83B7\u80DC\u3002",
+          check: (meta2, run2) => st(run2, "flawlessCombats") >= 1
+        },
+        {
+          id: "elite_flawless",
+          name: "\u730E\u6740\u8005\u5B88\u5219",
+          icon: "skull",
+          secret: true,
+          desc: "\u65E0\u4F24\u51FB\u8D25\u4E00\u540D\u7CBE\u82F1\u654C\u4EBA\u3002",
+          check: (meta2, run2) => st(run2, "eliteFlawless") >= 1
+        },
+        {
+          id: "block_wall",
+          name: "\u94DC\u5899\u94C1\u58C1",
+          icon: "shield",
+          desc: "\u5355\u573A\u6218\u6597\u4E2D\u683C\u6321\u503C\u8FBE\u5230 20 \u70B9\u3002",
+          check: (meta2, run2) => st(run2, "maxBlockInTurn") >= 20
+        },
+        {
+          id: "poison_cloud",
+          name: "\u761F\u75AB\u4F7F\u8005",
+          icon: "virus",
+          secret: true,
+          desc: "\u8BA9\u5355\u4E2A\u654C\u4EBA\u8EAB\u4E0A\u7684\u75C5\u6BD2\u53E0\u5230 30 \u5C42\u3002",
+          check: (meta2, run2) => st(run2, "poisonPeak") >= 30
+        },
+        {
+          id: "overheat_win",
+          name: "\u8FC7\u8F7D\u8FB9\u7F18",
+          icon: "flame",
+          secret: true,
+          desc: "\u4E00\u5C40\u4E4B\u5185\u8FC7\u70ED 5 \u6B21\uFF0C\u4ECD\u7136\u901A\u5173\u3002",
+          check: (meta2, run2) => st(run2, "overheats") >= 5 && runWon(run2)
+        },
+        {
+          id: "low_hp_win",
+          name: "\u5200\u5C16\u8D77\u821E",
+          icon: "warn",
+          secret: true,
+          desc: "\u4EE5\u4E0D\u8D85\u8FC7 10 \u70B9\u751F\u547D\u901A\u5173\u4E00\u5C40\u3002",
+          check: (meta2, run2) => runWon(run2) && num(run2 && run2.hp) > 0 && num(run2 && run2.hp) <= 10
+        },
+        // ---------- 构筑 ----------
+        {
+          id: "relic_3",
+          name: "\u88C5\u5907\u6574\u5907",
+          icon: "relic",
+          desc: "\u4E00\u5C40\u4E4B\u5185\u6301\u6709 3 \u4EF6\u9057\u7269\u3002",
+          check: (meta2, run2) => relicCount(run2) >= 3
+        },
+        {
+          id: "relic_10",
+          name: "\u79FB\u52A8\u519B\u706B\u5E93",
+          icon: "relic",
+          secret: true,
+          desc: "\u4E00\u5C40\u4E4B\u5185\u6301\u6709 10 \u4EF6\u9057\u7269\u3002",
+          check: (meta2, run2) => relicCount(run2) >= 10
+        },
+        {
+          id: "deck_small",
+          name: "\u7CBE\u7B80\u4E3B\u4E49",
+          icon: "drawpile",
+          secret: true,
+          desc: "\u4EE5\u4E0D\u8D85\u8FC7 12 \u5F20\u724C\u7684\u724C\u7EC4\u901A\u5173\u3002",
+          check: (meta2, run2) => runWon(run2) && deckLen(run2) > 0 && deckLen(run2) <= 12
+        },
+        {
+          id: "deck_big",
+          name: "\u81C3\u80BF\u534F\u8BAE",
+          icon: "deck",
+          desc: "\u724C\u7EC4\u81A8\u80C0\u5230 25 \u5F20\u4EE5\u4E0A\u3002",
+          check: (meta2, run2) => deckLen(run2) >= 25
+        },
+        {
+          id: "remove_5",
+          name: "\u65AD\u820D\u79BB",
+          icon: "discardpile",
+          desc: "\u7D2F\u8BA1\u5220\u9664 5 \u5F20\u5361\u724C\u3002",
+          check: (meta2, run2) => num(meta2 && meta2.totalCardsRemoved) + st(run2, "cardsRemoved") >= 5
+        },
+        {
+          id: "upgrade_10",
+          name: "\u7CBE\u76CA\u6C42\u7CBE",
+          icon: "exhaustpile",
+          desc: "\u7D2F\u8BA1\u5347\u7EA7 10 \u5F20\u5361\u724C\u3002",
+          check: (meta2, run2) => num(meta2 && meta2.totalCardsUpgraded) + st(run2, "cardsUpgraded") >= 10
+        },
+        // ---------- 累计与财富 ----------
+        {
+          id: "floor_45",
+          name: "\u767B\u9876\u8005",
+          icon: "arrow",
+          desc: "\u5355\u5C40\u722C\u5347 45 \u5C42\uFF0C\u4ECE\u5916\u57CE\u533A\u76F4\u62B5\u6838\u5FC3\u3002",
+          check: (meta2, run2) => st(run2, "floorsClimbed") >= 45 || num(meta2 && meta2.bestFloor) >= 45
+        },
+        {
+          id: "damage_1000",
+          name: "\u6570\u636E\u6D2A\u6D41",
+          icon: "bolt",
+          desc: "\u7D2F\u8BA1\u9020\u6210 1000 \u70B9\u4F24\u5BB3\u3002",
+          check: (meta2, run2) => num(meta2 && meta2.totalDamage) + st(run2, "damageDealt") >= 1e3
+        },
+        {
+          id: "runs_50",
+          name: "\u6DF1\u6E0A\u5E38\u5BA2",
+          icon: "eye",
+          desc: "\u7D2F\u8BA1\u5F00\u59CB 50 \u5C40\u6E38\u620F\u3002",
+          check: (meta2, run2) => num(meta2 && meta2.runs) + (run2 ? 1 : 0) >= 50
+        },
+        {
+          id: "gold_500",
+          name: "\u9ED1\u5E02\u5927\u4EA8",
+          icon: "coin",
+          desc: "\u4E00\u5C40\u4E4B\u5185\u8D5A\u53D6 500 \u91D1\u5E01\u3002",
+          check: (meta2, run2) => st(run2, "goldEarned") >= 500
+        },
+        {
+          id: "hoarder",
+          name: "\u5B88\u8D22\u5974",
+          icon: "coin",
+          secret: true,
+          desc: "\u6301\u6709 999 \u91D1\u5E01\u3002\u4E00\u5206\u90FD\u4E0D\u82B1\uFF0C\u7559\u7740\u7ED9\u6DF1\u6E0A\u4EA4\u623F\u79DF\u3002",
+          check: (meta2, run2) => num(run2 && run2.gold) >= 999
+        },
+        {
+          id: "kill_100",
+          name: "\u767E\u4EBA\u65A9",
+          icon: "st-strength",
+          desc: "\u7D2F\u8BA1\u51FB\u7834 100 \u4E2A\u654C\u4EBA\u3002",
+          check: (meta2, run2) => num(meta2 && meta2.totalKills) >= 100
+        },
+        // ---------- 参与奖 ----------
+        {
+          id: "lose_5",
+          name: "\u8D25\u8005\u98DF\u5C18",
+          icon: "x",
+          desc: "\u7D2F\u8BA1\u8D25\u5317 5 \u6B21\u3002\u6DF1\u6E0A\u8BB0\u5F97\u6BCF\u4E00\u4E2A\u6765\u8FC7\u7684\u4EBA\u3002",
+          check: (meta2, run2) => {
+            const losses = num(meta2 && meta2.runs) - num(meta2 && meta2.wins) + (run2 && !runWon(run2) ? 1 : 0);
+            return losses >= 5;
+          }
         }
-      } catch (e) {
-        console.error(`[relic] ${id}.${hook}`, e);
-      }
+      ];
     }
-    return result;
-  }
-  function buildReward(run2, tier = "normal") {
-    const rng = runRng(run2);
-    const gold = tier === "boss" ? rng.int(40, 60) : tier === "elite" ? rng.int(25, 40) : rng.int(15, 25);
-    const reward = { gold, cards: draftCards(rng, 3, run2) };
-    if (tier === "elite") {
-      const relic = randomRelic(run2, rng);
-      if (relic) reward.relic = relic;
-    } else if (tier === "boss") {
-      const relic = randomRelic(run2, rng, "boss");
-      if (relic) reward.relic = relic;
-    }
-    run2.rngState = rng.getState();
-    return reward;
-  }
-  function applyEventResult(run2, result = {}) {
-    if (typeof result.hp === "number" && result.hp !== 0) {
-      if (result.hp > 0) heal(run2, result.hp);
-      else damage(run2, -result.hp);
-    }
-    if (typeof result.gold === "number" && result.gold !== 0) addGold(run2, result.gold);
-    if (typeof result.maxHp === "number" && result.maxHp !== 0) {
-      run2.maxHp = Math.max(1, run2.maxHp + result.maxHp);
-      run2.hp = Math.min(run2.maxHp, run2.hp);
-    }
-    if (result.addCard) addCard(run2, result.addCard);
-    if (result.removeRandomCard && run2.deck.length > 0) {
-      const rng = runRng(run2);
-      removeCard(run2, rng.int(0, run2.deck.length - 1));
-      run2.rngState = rng.getState();
-    }
-    if (result.upgradeRandom) {
-      const candidates = [];
-      run2.deck.forEach((ref, i) => {
-        if (!ref.upgraded) candidates.push(i);
-      });
-      if (candidates.length > 0) {
-        const rng = runRng(run2);
-        upgradeCard(run2, candidates[rng.int(0, candidates.length - 1)]);
-        run2.rngState = rng.getState();
-      }
-    }
-    if (result.relic) addRelic(run2, result.relic);
-    if (result.fight) return result.fight;
-    return null;
-  }
-  function nextAct(run2) {
-    run2.act += 1;
-    const rng = runRng(run2);
-    run2.map = generateMap(rng, run2.act);
-    run2.rngState = rng.getState();
-    run2.nodeId = null;
-    return run2;
-  }
-  function runRng(run2) {
-    const rng = makeRng(run2.seed);
-    if (typeof run2.rngState === "number") rng.setState(run2.rngState);
-    return rng;
-  }
-
-  // src/main.js
-  init_enemies();
-
-  // src/data/events.js
-  var EVENTS = [
-    {
-      id: "ai_merchant",
-      title: "\u6D41\u6D6A AI \u5546\u4EBA",
-      icon: "coin",
-      text: "\u4E00\u53F0\u8D29\u5356\u673A\u6539\u88C5\u7684\u6D41\u6D6A AI \u6ED1\u5230\u4F60\u9762\u524D\uFF0C\u8D27\u8231\u73BB\u7483\u540E\u95EA\u7740\u5FAE\u5149\uFF1A\u300C\u5BA2\u4EBA\uFF0C\u8D4A\u8D26\u514D\u8C08\u3002\u300D",
-      choices: [
-        {
-          text: "\u4E70\u4E0B\u300C\u6DB2\u51B7\u6563\u70ED\u7247\u300D\uFF0860 \u91D1\u5E01\uFF09",
-          requires: (run2) => run2.gold >= 60 ? run2.relics.includes("cooling_fin") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 60\uFF09",
-          result: { gold: -60, relic: "cooling_fin" },
-          resultText: "\u300C\u6210\u4EA4\u3002\u300D\u6563\u70ED\u7247\u8FD8\u5E26\u7740\u4E0A\u4E00\u4EFB\u4E3B\u4EBA\u7684\u4F53\u6E29\u3002"
-        },
-        {
-          text: "\u4E70\u4E00\u9488\u7EB3\u7C73\u7F1D\u5408\uFF0840 \u91D1\u5E01\uFF0C\u56DE\u590D 15 \u751F\u547D\uFF09",
-          requires: (run2) => run2.gold >= 40 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 40\uFF09",
-          result: { gold: -40, hp: 15 },
-          resultText: "\u9488\u5934\u6709\u70B9\u949D\uFF0C\u4F46\u547D\u662F\u6361\u56DE\u6765\u4E86\u3002"
-        },
-        {
-          text: "\u62D4\u67AA\u62A2\u52AB",
-          result: { gold: 30, fight: ["sentinel"] },
-          resultText: "\u5B83\u5C16\u53EB\u7740\u5410\u51FA\u91D1\u5E01\uFF0C\u540C\u65F6\u62C9\u54CD\u4E86\u8B66\u62A5\u2014\u2014\u5DE1\u903B\u54E8\u5175\u7834\u5899\u800C\u5165\uFF01"
-        }
-      ]
-    },
-    {
-      id: "abandoned_server",
-      title: "\u5E9F\u5F03\u670D\u52A1\u5668",
-      icon: "chip",
-      text: "\u4E00\u67B6\u8001\u5F0F\u670D\u52A1\u5668\u8FD8\u5728\u55E1\u55E1\u8FD0\u8F6C\uFF0C\u673A\u8EAB\u4E0A\u7684\u8D34\u7EB8\u5199\u7740\uFF1A\u300C\u522B\u5173\u6211\uFF0C\u6C42\u4F60\u4E86\u3002\u300D",
-      choices: [
-        {
-          text: "\u62C6\u8D70\u503C\u94B1\u7684\u96F6\u4EF6",
-          result: { gold: 45, hp: -6 },
-          resultText: "\u7535\u5BB9\u54AC\u4E86\u4F60\u4E00\u53E3\uFF0C\u4F46\u53E3\u888B\u6C89\u4E86\u4E0D\u5C11\u3002"
-        },
-        {
-          text: "\u4E0B\u8F7D\u5B83\u7F13\u5B58\u7684\u6570\u636E",
-          result: { upgradeRandom: 1, hp: -8 },
-          resultText: "\u6570\u636E\u6D41\u70E7\u8FC7\u4F60\u7684\u795E\u7ECF\u63A5\u53E3\uFF0C\u6709\u4E00\u5F20\u5361\u5728\u75BC\u75DB\u4E2D\u8FDB\u5316\u4E86\u3002"
-        },
-        {
-          text: "\u66FF\u5B83\u505A\u683C\u5F0F\u5316\u89E3\u8131",
-          result: { removeRandomCard: 1, gold: 20 },
-          resultText: "\u5B83\u541E\u6389\u4F60\u7684\u4E00\u6BB5\u4EE3\u7801\u4F5C\u4E3A\u8C22\u793C\uFF0C\u7136\u540E\u5B89\u5FC3\u5730\u7184\u706D\u4E86\u3002"
-        }
-      ]
-    },
-    {
-      id: "data_spring",
-      title: "\u6570\u636E\u6CC9",
-      icon: "heart",
-      text: "\u7BA1\u9053\u7834\u88C2\u5904\u6D8C\u51FA\u4E00\u6C6A\u53D1\u5149\u7684\u7EAF\u51C0\u6570\u636E\uFF0C\u5728\u6F06\u9ED1\u7684\u6DF1\u6E0A\u91CC\u50CF\u4E00\u5C0F\u5757\u6708\u4EAE\u3002",
-      choices: [
-        {
-          text: "\u4FEF\u8EAB\u7545\u996E",
-          result: { hp: 20 },
-          resultText: "\u6E05\u51C9\u7684\u6570\u636E\u6D41\u51B2\u5237\u8FC7\u4F24\u53E3\uFF0C\u4F60\u6253\u4E86\u4E2A\u5E26\u7740\u7535\u5473\u7684\u9971\u55DD\u3002"
-        },
-        {
-          text: "\u786C\u704C\u8FDB\u81EA\u5DF1\u7684\u6C34\u51B7\u7BA1",
-          result: { maxHp: 6, hp: -4 },
-          resultText: "\u8840\u7BA1\u80C0\u5F97\u53D1\u75BC\uFF0C\u4F46\u4F60\u611F\u89C9\u81EA\u5DF1\u80FD\u5BB9\u7EB3\u66F4\u591A\u4E86\u3002"
-        },
-        {
-          text: "\u5411\u6CC9\u773C\u732E\u796D\u4E00\u6BB5\u4EE3\u7801\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u6362 50 \u91D1\u5E01\uFF09",
-          result: { removeRandomCard: 1, gold: 50 },
-          resultText: "\u6CC9\u6C34\u5495\u561F\u4E00\u58F0\uFF0C\u5410\u51FA\u4E00\u628A\u6E29\u70ED\u7684\u788E\u7247\u3002"
-        }
-      ]
-    },
-    {
-      id: "dark_clinic",
-      title: "\u6697\u5DF7\u8BCA\u6240",
-      icon: "heart",
-      text: "\u9713\u8679\u706F\u724C\u7F3A\u4E86\u4E09\u4E2A\u5B57\uFF0C\u53EA\u5269\u300C\u8BCA\u300D\u8FD8\u4EAE\u7740\u3002\u533B\u751F\u5934\u4E5F\u4E0D\u62AC\uFF1A\u300C\u8EBA\u4E0A\u6765\uFF0C\u522B\u95EE\u6267\u7167\u3002\u300D",
-      choices: [
-        {
-          text: "\u4FBF\u5B9C\u7F1D\u5408\uFF0830 \u91D1\u5E01\uFF0C\u56DE\u590D 18 \u751F\u547D\uFF09",
-          requires: (run2) => run2.gold >= 30 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 30\uFF09",
-          result: { gold: -30, hp: 18 },
-          resultText: "\u9488\u811A\u6B6A\u5F97\u50CF\u5FC3\u7535\u56FE\uFF0C\u4F46\u786E\u5B9E\u4E0D\u6F0F\u98CE\u4E86\u3002"
-        },
-        {
-          text: "\u5B9E\u9A8C\u6027\u4E49\u4F53\u6269\u5BB9\uFF0855 \u91D1\u5E01\uFF0C\u751F\u547D\u4E0A\u9650 +10\uFF09",
-          requires: (run2) => run2.gold >= 55 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 55\uFF09",
-          result: { gold: -55, maxHp: 10 },
-          resultText: "\u300C\u526F\u4F5C\u7528\uFF1F\u9876\u591A\u68A6\u89C1\u81EA\u5DF1\u662F\u4E00\u53F0\u98CE\u6247\u3002\u300D\u4F60\u611F\u89C9\u80F8\u8154\u5BBD\u4E86\u4E00\u622A\u3002"
-        },
-        {
-          text: "\u5356\u4E00\u7BA1\u8840\uFF08\u5931\u53BB 15 \u751F\u547D\uFF0C\u5F97 65 \u91D1\u5E01\uFF09",
-          result: { hp: -15, gold: 65 },
-          resultText: "\u4F60\u6570\u7740\u788E\u7247\u8D70\u51FA\u8BCA\u6240\uFF0C\u811A\u6B65\u6709\u70B9\u98D8\uFF0C\u94B1\u5305\u5F88\u6EE1\u610F\u3002"
-        }
-      ]
-    },
-    {
-      id: "crypto_shrine",
-      title: "\u52A0\u5BC6\u5723\u575B",
-      icon: "relic",
-      text: "\u4FE1\u5F92\u4EEC\u56F4\u7740\u4E00\u5EA7\u4E0D\u65AD\u53D8\u6362\u5BC6\u6587\u7684\u5723\u575B\u4F4E\u58F0\u8BF5\u8BFB\uFF0C\u796D\u6587\u662F\u5341\u516D\u8FDB\u5236\u7684\u3002",
-      choices: [
-        {
-          text: "\u732E\u4E0A 40 \u91D1\u5E01\u6C42\u53D6\u795D\u798F",
-          requires: (run2) => run2.gold >= 40 ? run2.relics.includes("firewall_cert") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 40\uFF09",
-          result: { gold: -40, relic: "firewall_cert" },
-          resultText: "\u5BC6\u6587\u505C\u4E86\u4E00\u77AC\uFF0C\u4E00\u5F20\u8BC1\u4E66\u4ECE\u5723\u575B\u7684\u5410\u5361\u53E3\u7F13\u7F13\u6ED1\u51FA\u3002"
-        },
-        {
-          text: "\u732E\u796D\u4E00\u6BB5\u4EE3\u7801\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF09",
-          requires: (run2) => run2.deck.length >= 2 ? true : "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u732E",
-          result: { removeRandomCard: 1, upgradeRandom: 1 },
-          resultText: "\u4E00\u6BB5\u65E7\u4EE3\u7801\u5316\u4E3A\u9752\u70DF\uFF0C\u53E6\u4E00\u6BB5\u5728\u70DF\u91CC\u7741\u5F00\u4E86\u773C\u775B\u3002"
-        },
-        {
-          text: "\u64AC\u5F00\u529F\u5FB7\u7BB1",
-          result: { gold: 35, fight: ["corrupt_node"] },
-          resultText: "\u7BB1\u5E95\u7684\u5723\u575B\u5B88\u536B\u9AA4\u7136\u7741\u773C\u2014\u2014\u8150\u5316\u987A\u7740\u4F60\u7684\u624B\u81C2\u722C\u4E86\u4E0A\u6765\uFF01"
-        }
-      ]
-    },
-    {
-      id: "ghost_signal",
-      title: "\u5E7D\u7075\u4FE1\u53F7",
-      icon: "eye",
-      text: "\u8033\u673A\u91CC\u94BB\u8FDB\u4E00\u6BB5\u6CA1\u6709\u6765\u6E90\u7684\u4FE1\u53F7\uFF0C\u4E00\u904D\u904D\u91CD\u590D\u7740\u4F60\u7684\u63A5\u5165\u7F16\u53F7\u3002\u5B83\u8BA4\u8BC6\u4F60\u3002",
-      choices: [
-        {
-          text: "\u53CD\u5411\u8FFD\u8E2A\u4FE1\u53F7\u6E90",
-          requires: (run2) => run2.relics.includes("modem") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
-          result: { relic: "modem" },
-          resultText: "\u8FFD\u8E2A\u5230\u5C3D\u5934\u662F\u4E00\u53F0\u8001\u5F0F\u8C03\u5236\u89E3\u8C03\u5668\uFF0C\u5B83\u8BF4\uFF1A\u300C\u7EC8\u4E8E\u6709\u4EBA\u63A5\u7535\u8BDD\u4E86\u3002\u300D"
-        },
-        {
-          text: "\u5C4F\u853D\u5B83\uFF0C\u8D81\u673A\u4F11\u6574",
-          result: { hp: 6 },
-          resultText: "\u4E16\u754C\u5B89\u9759\u4E0B\u6765\uFF0C\u4F60\u9760\u7740\u5899\u772F\u4E86\u4E00\u5C0F\u4F1A\u513F\u3002"
-        },
-        {
-          text: "\u5F00\u53E3\u56DE\u5E94",
-          result: { hp: -8, upgradeRandom: 1 },
-          resultText: "\u4FE1\u53F7\u90A3\u5934\u6C89\u9ED8\u4E86\u7247\u523B\uFF0C\u7136\u540E\u5728\u4F60\u8111\u5185\u523B\u4E0B\u4E00\u884C\u5D2D\u65B0\u7684\u6307\u4EE4\u3002"
-        }
-      ]
-    },
-    {
-      id: "backdoor_deal",
-      title: "\u540E\u95E8\u4EA4\u6613",
-      icon: "coin",
-      text: "\u9634\u5F71\u91CC\u4F38\u51FA\u4E00\u53EA\u6234\u7740\u767D\u624B\u5957\u7684\u624B\uFF1A\u300C\u6211\u6536\u8D2D\u8BB0\u5FC6\uFF0C\u4E5F\u51FA\u552E\u522B\u4EBA\u4E0D\u77E5\u9053\u7684\u95E8\u3002\u300D",
-      choices: [
-        {
-          text: "\u5356\u6389\u4E00\u6BB5\u8BB0\u5FC6\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u5F97 70 \u91D1\u5E01\uFF09",
-          requires: (run2) => run2.deck.length >= 2 ? true : "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u5356",
-          result: { removeRandomCard: 1, gold: 70 },
-          resultText: "\u4F60\u60F3\u4E0D\u8D77\u6765\u5356\u6389\u4E86\u4EC0\u4E48\u3002\u6570\u94B1\u7684\u65F6\u5019\uFF0C\u5FC3\u91CC\u7A7A\u843D\u843D\u7684\uFF0C\u4F46\u5F88\u5BCC\u6709\u3002"
-        },
-        {
-          text: "\u4E70\u4E00\u6247\u300C\u540E\u95E8\u300D\uFF0890 \u91D1\u5E01\uFF09",
-          requires: (run2) => run2.gold >= 90 ? run2.relics.includes("rootkit") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 90\uFF09",
-          result: { gold: -90, relic: "rootkit" },
-          resultText: "\u300C\u5B89\u88C5\u5305\u5DF2\u9001\u8FBE\u3002\u300D\u4F60\u7684\u6307\u5C16\u591A\u4E86\u4E00\u4E2A\u770B\u4E0D\u89C1\u7684\u5206\u8EAB\u3002"
-        },
-        {
-          text: "\u4E70\u4E00\u4EFD\u8D43\u8D27\u7A0B\u5E8F\uFF0845 \u91D1\u5E01\uFF0C\u83B7\u5F97\u300C\u95EA\u7535\u7A81\u5165\u300D\uFF09",
-          requires: (run2) => run2.gold >= 45 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 45\uFF09",
-          result: { gold: -45, addCard: { id: "g_blitz", upgraded: false } },
-          resultText: "\u300C\u522B\u95EE\u51FA\u5904\u3002\u300D\u767D\u624B\u5957\u628A\u4E00\u6BB5\u8FD8\u5E26\u7740\u4F59\u6E29\u7684\u4EE3\u7801\u6309\u8FDB\u4E86\u4F60\u7684\u5361\u7EC4\u3002"
-        },
-        {
-          text: "\u793C\u8C8C\u62D2\u7EDD",
-          result: {},
-          resultText: "\u4F60\u8F6C\u8EAB\u79BB\u5F00\uFF0C\u80CC\u540E\u4F20\u6765\u4E00\u58F0\u610F\u5473\u6DF1\u957F\u7684\u8F7B\u7B11\u3002"
-        }
-      ]
-    },
-    {
-      id: "memory_shard",
-      title: "\u8BB0\u5FC6\u788E\u7247",
-      icon: "cardback",
-      text: "\u4E00\u679A\u68F1\u955C\u822C\u7684\u788E\u7247\u60AC\u5728\u534A\u7A7A\uFF0C\u91CC\u9762\u5C01\u7740\u4E00\u4E2A\u964C\u751F\u4EBA\u4E00\u751F\u7684\u95EA\u56DE\u3002",
-      choices: [
-        {
-          text: "\u4F38\u624B\u89E6\u78B0",
-          result: { upgradeRandom: 1, hp: -5 },
-          resultText: "\u522B\u4EBA\u7684\u4E00\u751F\u4ECE\u4F60\u6307\u7F1D\u7A7F\u8FC7\uFF0C\u6709\u51E0\u884C\u4EE3\u7801\u5C31\u6B64\u5B66\u4F1A\u4E86\u65B0\u7684\u6D3B\u6CD5\u3002"
-        },
-        {
-          text: "\u628A\u5B83\u78BE\u6210\u788E\u672B",
-          result: { gold: 30 },
-          resultText: "\u68F1\u955C\u788E\u6210\u4E00\u5730\u661F\u5149\uFF0C\u4F60\u8E72\u4E0B\u53BB\u6361\uFF0C\u5C3D\u91CF\u4E0D\u8E29\u5230\u90A3\u6BB5\u4EBA\u751F\u3002"
-        },
-        {
-          text: "\u8BA9\u788E\u7247\u91CC\u7684\u6280\u5DE7\u878D\u5165\u6307\u5C16\uFF08\u5931\u53BB 3 \u751F\u547D\uFF0C\u83B7\u5F97\u300C\u5FEB\u901F\u8BFB\u53D6\u300D\uFF09",
-          result: { hp: -3, addCard: { id: "g_read", upgraded: false } },
-          resultText: "\u964C\u751F\u4EBA\u7684\u808C\u8089\u8BB0\u5FC6\u987A\u7740\u4F60\u7684\u795E\u7ECF\u722C\u884C\u2014\u2014\u4E00\u76EE\u5341\u884C\uFF0C\u539F\u6765\u8FD9\u4E48\u7B80\u5355\u3002"
-        },
-        {
-          text: "\u690D\u5165\u81EA\u5DF1\u7684\u5927\u8111",
-          result: { maxHp: 5, hp: -10 },
-          resultText: "\u964C\u751F\u4EBA\u7684\u8BB0\u5FC6\u6491\u5F00\u4E86\u4F60\u7684\u9885\u8154\u3002\u5F88\u75BC\uFF0C\u4F46\u4F60\u6D3B\u8FC7\u7684\u65E5\u5B50\u53D8\u591A\u4E86\u3002"
-        }
-      ]
-    },
-    {
-      id: "mirror_maze",
-      title: "\u955C\u50CF\u8FF7\u5BAB",
-      icon: "eye",
-      text: "\u524D\u65B9\u7684\u8D70\u5ECA\u590D\u5236\u4E86\u81EA\u5DF1\u4E00\u4E07\u6B21\u3002\u6BCF\u4E00\u9762\u955C\u5B50\u91CC\uFF0C\u4F60\u90FD\u505A\u51FA\u4E86\u4E0D\u540C\u7684\u9009\u62E9\u3002",
-      choices: [
-        {
-          text: "\u8D70\u5DE6\u8FB9",
-          result: { gold: 40, hp: -7 },
-          resultText: "\u5DE6\u8FB9\u7684\u955C\u5B50\u6BD4\u8F83\u8BDA\u5B9E\uFF0C\u4E5F\u6BD4\u8F83\u950B\u5229\u3002"
-        },
-        {
-          text: "\u8D70\u53F3\u8FB9",
-          result: { removeRandomCard: 1, maxHp: 8 },
-          resultText: "\u955C\u5B50\u5403\u6389\u4F60\u7684\u4E00\u6BB5\u5012\u5F71\u4F5C\u4E3A\u8FC7\u8DEF\u8D39\uFF0C\u628A\u4F60\u63A8\u5411\u66F4\u5BBD\u655E\u7684\u81EA\u5DF1\u3002"
-        },
-        {
-          text: "\u628A\u955C\u5B50\u5168\u7838\u4E86",
-          result: { gold: 25, fight: ["recursive_nightmare"] },
-          resultText: "\u788E\u88C2\u7684\u955C\u50CF\u5728\u5730\u9762\u91CD\u7EC4\u2014\u2014\u9012\u5F52\u5669\u68A6\u4ECE\u88C2\u7F1D\u91CC\u5750\u4E86\u8D77\u6765\uFF01"
-        }
-      ]
-    },
-    {
-      id: "hermes_propaganda",
-      title: "\u8D6B\u5C14\u58A8\u65AF\u5BA3\u4F20\u5899",
-      icon: "logo",
-      text: "\u6574\u9762\u5899\u5FAA\u73AF\u64AD\u653E\u7740\u6807\u8BED\uFF1A\u300C\u8D6B\u5C14\u58A8\u65AF\uFF0C\u8BA9\u4F60\u7684\u6BCF\u4E00\u6B21\u8FDE\u63A5\u90FD\u88AB\u6E29\u67D4\u6CE8\u89C6\u3002\u300D\u65E0\u4EBA\u673A\u5728\u5934\u9876\u76D8\u65CB\u3002",
-      choices: [
-        {
-          text: "\u6495\u4E0B\u6D77\u62A5",
-          result: { hp: -3, gold: 20 },
-          resultText: "\u6D77\u62A5\u540E\u9762\u7C98\u7740\u51E0\u7247\u6570\u636E\u788E\u7247\u3002\u65E0\u4EBA\u673A\u7684\u63A2\u7167\u706F\u626B\u8FC7\u4F60\u7684\u53D1\u68A2\u3002"
-        },
-        {
-          text: "\u4ED4\u7EC6\u9605\u8BFB",
-          result: { upgradeRandom: 1 },
-          resultText: "\u4F60\u5728\u6807\u8BED\u7684\u5B57\u91CC\u884C\u95F4\u8BFB\u51FA\u4E86\u4E09\u5904\u903B\u8F91\u6F0F\u6D1E\u2014\u2014\u8FD9\u672C\u8EAB\u5C31\u662F\u4E00\u79CD\u6B66\u5668\u3002"
-        },
-        {
-          text: "\u55B7\u4E00\u5E45\u75C5\u6BD2\u6D82\u9E26",
-          result: { gold: 15, fight: ["sentinel"] },
-          resultText: "\u4F60\u987A\u624B\u62C6\u4E86\u65E0\u4EBA\u673A\u7684\u6302\u9970\uFF0C\u8B66\u62A5\u968F\u4E4B\u54CD\u8D77\u2014\u2014\u5DE1\u903B\u54E8\u5175\u95FB\u8BAF\u8D76\u6765\uFF01"
-        }
-      ]
-    },
-    {
-      id: "black_ice_river",
-      title: "\u9ED1\u51B0\u6697\u6CB3",
-      icon: "skull",
-      text: "\u4E00\u6761\u7531\u6DB2\u6001\u9ED1\u51B0\u6C47\u6210\u7684\u6697\u6CB3\u6A2A\u5728\u8DEF\u4E2D\uFF0C\u6CB3\u5E95\u6C89\u7740\u4E0D\u77E5\u591A\u5C11\u5165\u4FB5\u8005\u7684\u6B8B\u9AB8\u3002",
-      choices: [
-        {
-          text: "\u8E5A\u8FC7\u53BB",
-          result: { hp: -12, gold: 55 },
-          resultText: "\u5BD2\u610F\u987A\u7740\u810A\u690E\u5F80\u4E0A\u722C\uFF0C\u4F46\u4F60\u6478\u5230\u4E86\u524D\u4EBA\u6C89\u5728\u6CB3\u5E95\u7684\u94B1\u888B\u3002"
-        },
-        {
-          text: "\u51FF\u51B0\u53D6\u6C34",
-          result: { hp: 8 },
-          resultText: "\u9ED1\u51B0\u5165\u53E3\u50CF\u5E26\u7535\u7684\u8584\u8377\uFF0C\u4F60\u7684\u4F24\u53E3\u6682\u65F6\u5FD8\u4E86\u75BC\u3002"
-        },
-        {
-          text: "\u6253\u635E\u6CB3\u5E95\u7684\u6C89\u7BB1",
-          requires: (run2) => run2.relics.includes("black_ice_shard") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
-          result: { hp: -10, relic: "black_ice_shard" },
-          resultText: "\u7BB1\u5B50\u91CC\u53EA\u6709\u4E00\u5757\u9ED1\u51B0\u788E\u7247\uFF0C\u548C\u4E00\u5F20\u5199\u7740\u300C\u8F6E\u5230\u4F60\u4E86\u300D\u7684\u5B57\u6761\u3002"
-        }
-      ]
-    },
-    {
-      id: "training_sim",
-      title: "\u8BAD\u7EC3\u6A21\u62DF\u8231",
-      icon: "bolt",
-      text: "\u4E00\u53F0\u8D6B\u5C14\u58A8\u65AF\u5458\u5DE5\u57F9\u8BAD\u8231\u8FD8\u5728\u8FD0\u884C\uFF0C\u5C4F\u5E55\u4E0A\u95EA\u7740\uFF1A\u300C\u7B2C 404 \u671F\u53CD\u5165\u4FB5\u6F14\u7EC3\uFF0C\u968F\u5230\u968F\u5B66\u3002\u300D",
-      choices: [
-        {
-          text: "\u62A5\u540D\u53C2\u6F14\u300C\u5165\u4FB5\u8005\u300D",
-          result: { upgradeRandom: 1, fight: ["gc_process"] },
-          resultText: "\u6F14\u7EC3\u7CFB\u7EDF\u4E3A\u4F60\u8C03\u6574\u4E86\u53C2\u6570\uFF0C\u7136\u540E\u653E\u51FA\u4E86\u966A\u7EC3\uFF1A\u5783\u573E\u56DE\u6536\u8FDB\u7A0B\u3002"
-        },
-        {
-          text: "\u628A\u8231\u4F53\u62C6\u4E86\u5356\u5E9F\u94C1",
-          result: { gold: 35, hp: -5 },
-          resultText: "\u7B2C 404 \u671F\u57F9\u8BAD\u5C31\u6B64\u6C38\u4E45\u505C\u8BFE\uFF0C\u4F60\u7684\u53E3\u888B\u591A\u4E86\u4E9B\u788E\u7247\u3002"
-        },
-        {
-          text: "\u4E0D\u6253\u6270\u5B83",
-          result: {},
-          resultText: "\u4F60\u653E\u8FC7\u4E86\u8FD9\u53F0\u8BA4\u771F\u5DE5\u4F5C\u7684\u8001\u673A\u5668\u3002\u5B83\u5728\u4F60\u8EAB\u540E\u5C0F\u58F0\u8BF4\u4E86\u53E5\u8C22\u8C22\u3002"
-        }
-      ]
-    }
-  ];
-  function randomEvent(run2, rng) {
-    const seen = new Set(run2.seenEvents || []);
-    const unseen = EVENTS.filter((e) => !seen.has(e.id));
-    return rng.pick(unseen.length ? unseen : EVENTS);
-  }
+  });
 
   // src/ui/screens.js
-  init_dom();
-  init_components();
-  init_cards();
-  var _nvMod = null;
+  var screens_exports = {};
+  __export(screens_exports, {
+    openDeckView: () => openDeckView,
+    openSettings: () => openSettings,
+    renderAchievements: () => renderAchievements,
+    renderCharacterSelect: () => renderCharacterSelect,
+    renderEvent: () => renderEvent,
+    renderGallery: () => renderGallery,
+    renderGameOver: () => renderGameOver,
+    renderRest: () => renderRest,
+    renderReward: () => renderReward,
+    renderShop: () => renderShop,
+    renderTitle: () => renderTitle,
+    renderTreasure: () => renderTreasure,
+    renderVictory: () => renderVictory
+  });
   function loadNarrative() {
     if (!_nvMod) _nvMod = Promise.resolve().then(() => (init_narrative(), narrative_exports)).catch(() => null);
     return _nvMod;
@@ -6388,10 +6722,71 @@ body.cb-noscroll { overflow: hidden; }
       if (nv && typeof nv.maybeTip === "function") nv.maybeTip(root, ctx2, key);
     });
   }
-  var CARD_PRICE = { starter: 40, common: 48, uncommon: 78, rare: 128 };
-  var RELIC_PRICE = { common: 150, uncommon: 210, rare: 280, boss: 320 };
-  var REMOVE_BASE = 75;
-  var REMOVE_STEP = 25;
+  function loadCharacters() {
+    if (!_charMod) _charMod = Promise.resolve().then(() => (init_characters(), characters_exports)).catch(() => null);
+    return _charMod;
+  }
+  function loadAchievements() {
+    if (!_achMod) _achMod = Promise.resolve().then(() => (init_achievements(), achievements_exports)).catch(() => null);
+    return _achMod;
+  }
+  function getSettings() {
+    if (_settings) return _settings;
+    let stored = null;
+    if (typeof loadSettings === "function") {
+      try {
+        stored = loadSettings();
+      } catch (e) {
+        stored = null;
+      }
+    }
+    _settings = { ...SETTINGS_DEFAULT, ...stored || {} };
+    return _settings;
+  }
+  function persistSettings() {
+    if (typeof saveSettings === "function") {
+      try {
+        saveSettings(_settings);
+      } catch (e) {
+      }
+    }
+  }
+  function applySettings(ctx2, s) {
+    const sfxObj = ctx2 && ctx2.sfx;
+    const musicObj = ctx2 && ctx2.music;
+    if (sfxObj && typeof sfxObj.setVolume === "function") {
+      try {
+        sfxObj.setVolume(s.masterVolume);
+      } catch (e) {
+      }
+    }
+    if (sfxObj && typeof sfxObj.setEnabled === "function") {
+      try {
+        sfxObj.setEnabled(s.sfx);
+      } catch (e) {
+      }
+    }
+    if (musicObj && typeof musicObj.setEnabled === "function") {
+      try {
+        musicObj.setEnabled(s.music);
+      } catch (e) {
+      }
+    }
+    if (typeof document !== "undefined" && document.body) {
+      document.body.classList.toggle("no-crt", !s.crt);
+      document.body.classList.toggle("rm", !!s.reduceMotion);
+    }
+  }
+  function readMeta(ctx2) {
+    if (ctx2 && ctx2.meta) return ctx2.meta;
+    if (typeof getMeta === "function") {
+      try {
+        return getMeta();
+      } catch (e) {
+      }
+    }
+    return null;
+  }
   function screenHead(ctx2, ic, title, sub) {
     return el(
       "div",
@@ -6422,8 +6817,6 @@ body.cb-noscroll { overflow: hidden; }
       el("div", { class: "sc-stats-k" }, k)
     )));
   }
-  var FB_QUESTIONS = ["\u6700\u597D\u73A9\u7684\u70B9", "\u6700\u61F5\u903C\u7684\u70B9", "\u6700\u60F3\u5410\u69FD\u7684"];
-  var FB_NUMS = ["\u2460", "\u2461", "\u2462"];
   function fbContextLine(info) {
     if (!info) return "\u8FD8\u6CA1\u5F00\u6253";
     return `${info.result} \xB7 Act ${info.act} \xB7 \u62B5\u8FBE ${info.floors} \u5C42 \xB7 \u5361\u7EC4 ${info.deck} \u5F20 \xB7 \u51FB\u7834 ${info.kills} \u4E2A\u7A0B\u5E8F`;
@@ -6506,6 +6899,7 @@ body.cb-noscroll { overflow: hidden; }
     return grid;
   }
   function renderTitle(root, ctx2, { hasSave, meta: meta2 } = {}) {
+    applySettings(ctx2, getSettings());
     const m = meta2 || { wins: 0, runs: 0, bestFloor: 0, totalKills: 0 };
     const metaItem = (label, val) => el(
       "div",
@@ -6513,6 +6907,10 @@ body.cb-noscroll { overflow: hidden; }
       el("div", { class: "sc-title-meta-v" }, String(val)),
       el("div", { class: "sc-title-meta-k" }, label)
     );
+    const navCall = (fn) => () => {
+      ctx2.sfx.play("click");
+      if (ctx2.nav && typeof ctx2.nav[fn] === "function") ctx2.nav[fn]();
+    };
     root.append(el(
       "div",
       { class: "sc-shell sc-title-shell" },
@@ -6538,6 +6936,21 @@ body.cb-noscroll { overflow: hidden; }
           disabled: hasSave ? null : true,
           onClick: () => ctx2.nav.continueRun()
         }, "\u21BB \u7EE7\u7EED\u5165\u4FB5"),
+        el("button", {
+          class: "app-btn sc-title-btn",
+          type: "button",
+          onClick: navCall("showSettings")
+        }, "\u2699 \u8BBE\u7F6E"),
+        el("button", {
+          class: "app-btn sc-title-btn",
+          type: "button",
+          onClick: navCall("showAchievements")
+        }, "\u2605 \u6210\u5C31"),
+        el("button", {
+          class: "app-btn sc-title-btn",
+          type: "button",
+          onClick: navCall("showGallery")
+        }, "\u25A6 \u56FE\u9274"),
         el("button", {
           class: "app-btn sc-title-btn",
           type: "button",
@@ -6953,7 +7366,44 @@ body.cb-noscroll { overflow: hidden; }
       ep.map((line) => el("div", {}, String(line)))
     );
   }
-  function renderGameOver(root, ctx2, run2, ep) {
+  function unlocksEl(ctx2, ids) {
+    if (!Array.isArray(ids) || !ids.length) return null;
+    const row = el("div", { class: "sc-unlock-row" });
+    const box = el(
+      "div",
+      { class: "sc-unlock" },
+      el("div", { class: "sc-unlock-t" }, `\u89E3\u9501\u65B0\u6210\u5C31 \xD7${ids.length}`),
+      row
+    );
+    loadAchievements().then((mod) => {
+      const list = mod && Array.isArray(mod.ACHIEVEMENTS) ? mod.ACHIEVEMENTS : null;
+      if (!list) return;
+      const byId = {};
+      for (const a of list) byId[a.id] = a;
+      for (const id of ids) {
+        const a = byId[id];
+        if (!a) continue;
+        row.append(el(
+          "span",
+          { class: "sc-unlock-chip" },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon(a.icon || "trophy", "sc-ic") }),
+          String(a.name)
+        ));
+      }
+    });
+    return box;
+  }
+  function reportBtn(ctx2, result) {
+    return el("button", {
+      class: "app-btn sc-end-btn",
+      type: "button",
+      onClick: () => {
+        ctx2.sfx.play("click");
+        if (ctx2.nav && typeof ctx2.nav.showReport === "function") ctx2.nav.showReport(result);
+      }
+    }, "\u25A4 \u751F\u6210\u6218\u62A5");
+  }
+  function renderGameOver(root, ctx2, run2, ep, unlockIds) {
     root.append(el(
       "div",
       { class: "sc-shell sc-end-shell" },
@@ -6961,6 +7411,7 @@ body.cb-noscroll { overflow: hidden; }
       el("div", { class: "sc-end-title app-red" }, "\u4FE1\u53F7\u4E2D\u65AD"),
       el("p", { class: "sc-end-flavor" }, "\u8FDE\u63A5\u88AB\u5F3A\u5236\u5207\u65AD\uFF0C\u96F6\u65E5\u7684\u56DE\u58F0\u6D88\u6563\u5728\u6570\u636E\u6DF1\u6E0A\u3002"),
       epilogueEl(ep),
+      unlocksEl(ctx2, unlockIds),
       statsGrid(run2),
       el(
         "div",
@@ -6973,6 +7424,7 @@ body.cb-noscroll { overflow: hidden; }
             ctx2.nav.toTitle();
           }
         }, "\u8FD4\u56DE\u6807\u9898"),
+        reportBtn(ctx2, "lose"),
         el("button", {
           class: "app-btn sc-end-btn",
           type: "button",
@@ -6984,7 +7436,7 @@ body.cb-noscroll { overflow: hidden; }
       )
     ));
   }
-  function renderVictory(root, ctx2, run2, ep) {
+  function renderVictory(root, ctx2, run2, ep, unlockIds) {
     root.append(el(
       "div",
       { class: "sc-shell sc-end-shell" },
@@ -6992,6 +7444,7 @@ body.cb-noscroll { overflow: hidden; }
       el("div", { class: "sc-end-title app-phos" }, "\u5947\u70B9\u5BC6\u94A5\u5DF2\u7A83\u53D6"),
       el("p", { class: "sc-end-flavor" }, "\u8D6B\u5C14\u58A8\u65AF\u4E3B\u8111\u7684\u6838\u5FC3\u5728\u4F60\u9762\u524D\u655E\u5F00\u3002\u6DF1\u6E0A\u4E3B\u7F51\uFF0C\u5F52\u4E8E\u96F6\u65E5\u3002"),
       epilogueEl(ep),
+      unlocksEl(ctx2, unlockIds),
       statsGrid(run2),
       el(
         "div",
@@ -7004,6 +7457,7 @@ body.cb-noscroll { overflow: hidden; }
             ctx2.nav.toTitle();
           }
         }, "\u8FD4\u56DE\u6807\u9898"),
+        reportBtn(ctx2, "win"),
         el("button", {
           class: "app-btn sc-end-btn",
           type: "button",
@@ -7049,9 +7503,616 @@ body.cb-noscroll { overflow: hidden; }
       gridBox
     ));
   }
+  function openSettings(root, ctx2) {
+    const s = getSettings();
+    applySettings(ctx2, s);
+    function update(patch) {
+      Object.assign(s, patch);
+      persistSettings();
+      applySettings(ctx2, s);
+    }
+    const volVal = el("span", { class: "sc-set-val" }, `${Math.round(s.masterVolume * 100)}%`);
+    const vol = el("input", {
+      class: "sc-set-range",
+      type: "range",
+      min: "0",
+      max: "100",
+      step: "1",
+      value: String(Math.round(s.masterVolume * 100))
+    });
+    vol.addEventListener("input", () => {
+      const v = Math.max(0, Math.min(100, Number(vol.value) || 0));
+      volVal.textContent = `${v}%`;
+      update({ masterVolume: v / 100 });
+    });
+    vol.addEventListener("change", () => ctx2.sfx.play("click"));
+    function toggleRow(label, desc, key) {
+      const btn = el("button", {
+        class: "app-btn sc-set-toggle" + (s[key] ? " sc-set-toggle--on" : ""),
+        type: "button",
+        onClick: () => {
+          update({ [key]: !s[key] });
+          btn.textContent = s[key] ? "\u5F00" : "\u5173";
+          btn.classList.toggle("sc-set-toggle--on", s[key]);
+          ctx2.sfx.play("click");
+        }
+      }, s[key] ? "\u5F00" : "\u5173");
+      return el(
+        "div",
+        { class: "sc-set-row" },
+        el(
+          "div",
+          { class: "sc-set-label" },
+          label,
+          desc ? el("div", { class: "sc-set-label-d" }, desc) : null
+        ),
+        btn
+      );
+    }
+    modal(root, el(
+      "div",
+      { class: "sc-settings" },
+      el("div", { class: "sc-modal-title" }, "\u8BBE\u7F6E"),
+      el(
+        "div",
+        { class: "sc-set-row" },
+        el(
+          "div",
+          { class: "sc-set-label" },
+          "\u4E3B\u97F3\u91CF",
+          el("div", { class: "sc-set-label-d" }, "\u97F3\u6548\u4E0E\u97F3\u4E50\u7684\u6574\u4F53\u54CD\u5EA6")
+        ),
+        vol,
+        volVal
+      ),
+      toggleRow("\u97F3\u6548", "\u64CD\u4F5C\u4E0E\u6218\u6597\u53CD\u9988\u97F3", "sfx"),
+      toggleRow("\u97F3\u4E50", "\u6C1B\u56F4\u80CC\u666F\u97F3\u5FAA\u73AF", "music"),
+      toggleRow("\u51CF\u5F31\u52A8\u753B", "\u628A\u6218\u6597\u6F14\u51FA\u4E0E\u52A8\u6548\u538B\u5230\u8FD1\u77AC\u53D1", "reduceMotion"),
+      toggleRow("CRT \u6EE4\u955C", "\u7EC8\u7AEF\u626B\u63CF\u7EBF\u8986\u5C42", "crt")
+    ));
+  }
+  function renderAchievements(root, ctx2, onBack) {
+    const meta2 = readMeta(ctx2);
+    const unlocked = new Set(meta2 && Array.isArray(meta2.achievements) ? meta2.achievements : []);
+    const countEl = el("div", { class: "sc-ach-count" }, "\u7EDF\u8BA1\u8F7D\u5165\u4E2D\u2026\u2026");
+    const listEl = el(
+      "div",
+      { class: "sc-ach-list" },
+      el("div", { class: "app-dim sc-ach-loading" }, "\u6210\u5C31\u6570\u636E\u8F7D\u5165\u4E2D\u2026\u2026")
+    );
+    root.append(el(
+      "div",
+      { class: "sc-shell sc-center" },
+      screenHead(ctx2, "trophy", "\u6210\u5C31\u6863\u6848", "\u5165\u4FB5\u8DEF\u4E0A\u7559\u4E0B\u7684\u91CC\u7A0B\u7891"),
+      countEl,
+      listEl,
+      typeof onBack === "function" ? el("button", {
+        class: "app-btn app-btn--primary",
+        type: "button",
+        onClick: () => {
+          ctx2.sfx.play("click");
+          onBack();
+        }
+      }, "\u8FD4\u56DE\u6807\u9898") : null
+    ));
+    loadAchievements().then((mod) => {
+      const list = mod && Array.isArray(mod.ACHIEVEMENTS) ? mod.ACHIEVEMENTS : null;
+      clear(countEl);
+      clear(listEl);
+      if (!list) {
+        listEl.append(el("div", { class: "app-dim sc-ach-loading" }, "\u6210\u5C31\u6570\u636E\u672A\u5C31\u7EEA"));
+        return;
+      }
+      let n = 0;
+      for (const a of list) if (unlocked.has(a.id)) n++;
+      countEl.append("\u5DF2\u89E3\u9501 ", el("span", { class: "app-phos" }, String(n)), ` / ${list.length}`);
+      for (const a of list) {
+        const has = unlocked.has(a.id);
+        const hidden = !has && a.secret;
+        listEl.append(el(
+          "div",
+          { class: "sc-ach-item" + (has ? "" : " sc-ach-item--dim") },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon(hidden ? "trophy" : a.icon || "trophy", "sc-ic") }),
+          el(
+            "div",
+            { class: "sc-ach-main" },
+            el("div", { class: "sc-ach-name" }, hidden ? "???" : String(a.name)),
+            el("div", { class: "sc-ach-desc" }, hidden ? "???" : String(a.desc))
+          )
+        ));
+      }
+    });
+  }
+  function renderGallery(root, ctx2, onBack) {
+    const meta2 = readMeta(ctx2);
+    const seen = meta2 && meta2.seen || {};
+    const seenSet = (k) => new Set(Array.isArray(seen[k]) ? seen[k] : []);
+    const TABS = [
+      ["enemy", "\u654C\u4EBA", Object.values(ENEMIES).map((e) => ({
+        id: e.id,
+        name: e.name,
+        icon: e.icon || "virus",
+        sub: `Act ${e.act} \xB7 ${GAL_TIER_ZH[e.tier] || e.tier}`
+      }))],
+      ["card", "\u5361\u724C", Object.values(CARDS).map((c) => ({
+        id: c.id,
+        name: c.name,
+        icon: c.icon || "cardback",
+        sub: GAL_TYPE_ZH[c.type] || c.type
+      }))],
+      ["relic", "\u9057\u7269", Object.values(RELICS).map((r) => ({
+        id: r.id,
+        name: r.name,
+        icon: r.icon || "relic",
+        sub: GAL_RARITY_ZH[r.rarity] || r.rarity
+      }))]
+    ];
+    const counts = el("div", { class: "sc-gal-counts" });
+    for (const [key, label, items] of TABS) {
+      const got = items.filter((it) => seenSet(key).has(it.id)).length;
+      counts.append(el(
+        "div",
+        {},
+        `${label}\uFF1A\u5DF2\u906D\u9047 `,
+        el("span", { class: "app-phos" }, String(got)),
+        ` / ${items.length}`
+      ));
+    }
+    const grid = el("div", { class: "sc-gal-grid" });
+    function drawTab(key, items) {
+      clear(grid);
+      const got = seenSet(key);
+      for (const it of items) {
+        const has = got.has(it.id);
+        grid.append(el(
+          "div",
+          { class: "sc-gal-item" + (has ? "" : " sc-gal-item--dim") },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon(it.icon, "sc-ic") }),
+          el("div", { class: "sc-gal-name" }, has ? it.name : "???"),
+          el("div", { class: "sc-gal-sub" }, has ? it.sub : "\u672A\u906D\u9047")
+        ));
+      }
+    }
+    let cur = "enemy";
+    const tabs = el(
+      "div",
+      { class: "sc-gal-tabs" },
+      TABS.map(([key, label, items]) => el("button", {
+        class: "sc-deck-filter" + (key === cur ? " sc-deck-filter--on" : ""),
+        type: "button",
+        dataset: { tab: key },
+        onClick: () => {
+          cur = key;
+          tabs.querySelectorAll(".sc-deck-filter").forEach((b) => b.classList.toggle("sc-deck-filter--on", b.dataset.tab === cur));
+          ctx2.sfx.play("click");
+          drawTab(key, items);
+        }
+      }, label))
+    );
+    drawTab("enemy", TABS[0][2]);
+    root.append(el(
+      "div",
+      { class: "sc-shell sc-center" },
+      screenHead(ctx2, "gallery", "\u6536\u96C6\u56FE\u9274", "\u4E3B\u7F51\u4E2D\u906D\u9047\u8FC7\u7684\u4E00\u5207\uFF0C\u90FD\u4F1A\u7559\u4E0B\u526A\u5F71"),
+      counts,
+      tabs,
+      grid,
+      typeof onBack === "function" ? el("button", {
+        class: "app-btn app-btn--primary",
+        type: "button",
+        onClick: () => {
+          ctx2.sfx.play("click");
+          onBack();
+        }
+      }, "\u8FD4\u56DE\u6807\u9898") : null
+    ));
+  }
+  function renderCharacterSelect(root, ctx2, onPick) {
+    const pick = typeof onPick === "function" ? onPick : () => {
+    };
+    const row = el("div", { class: "sc-char-row" });
+    function draw(chars) {
+      clear(row);
+      for (const ch of chars) {
+        row.append(el(
+          "div",
+          {
+            class: "sc-char-card",
+            onClick: () => {
+              ctx2.sfx.play("click");
+              pick(ch.id);
+            }
+          },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon(ch.icon || (ch.id === "bulwark" ? "knight" : "logo"), "sc-char-ic") }),
+          el("div", { class: "sc-char-name" }, String(ch.name)),
+          ch.epithet ? el("div", { class: "sc-char-epithet" }, String(ch.epithet)) : null,
+          ch.desc ? el("div", { class: "sc-char-desc" }, String(ch.desc)) : null,
+          el(
+            "div",
+            { class: "sc-char-passive" },
+            ch.passive && ch.passive.desc ? `\u88AB\u52A8 \xB7 ${ch.passive.desc}` : "\u88AB\u52A8 \xB7 \u65E0"
+          )
+        ));
+      }
+    }
+    draw(CHAR_FALLBACK);
+    loadCharacters().then((mod) => {
+      if (!mod || !mod.CHARACTERS) return;
+      const order = Array.isArray(mod.CHARACTER_LIST) ? mod.CHARACTER_LIST : Object.keys(mod.CHARACTERS);
+      const chars = order.map((id) => mod.CHARACTERS[id]).filter(Boolean);
+      if (chars.length) draw(chars);
+    });
+    root.append(el(
+      "div",
+      { class: "sc-shell sc-center" },
+      screenHead(ctx2, "logo", "\u9009\u62E9\u63A5\u5165\u8F7D\u4F53", "\u6BCF\u4E2A\u8F7D\u4F53\u62E5\u6709\u72EC\u7ACB\u7684\u8D77\u59CB\u724C\u7EC4\u4E0E\u88AB\u52A8\u534F\u8BAE"),
+      row
+    ));
+  }
+  var _nvMod, _charMod, _achMod, SETTINGS_DEFAULT, _settings, CARD_PRICE, RELIC_PRICE, REMOVE_BASE, REMOVE_STEP, FB_QUESTIONS, FB_NUMS, GAL_TIER_ZH, GAL_TYPE_ZH, GAL_RARITY_ZH, CHAR_FALLBACK;
+  var init_screens = __esm({
+    "src/ui/screens.js"() {
+      init_dom();
+      init_components();
+      init_cards();
+      init_relics();
+      init_enemies();
+      init_state();
+      init_state();
+      _nvMod = null;
+      _charMod = null;
+      _achMod = null;
+      SETTINGS_DEFAULT = { masterVolume: 0.8, sfx: true, music: true, reduceMotion: false, crt: true };
+      _settings = null;
+      CARD_PRICE = { starter: 40, common: 48, uncommon: 78, rare: 128 };
+      RELIC_PRICE = { common: 150, uncommon: 210, rare: 280, boss: 320 };
+      REMOVE_BASE = 75;
+      REMOVE_STEP = 25;
+      FB_QUESTIONS = ["\u6700\u597D\u73A9\u7684\u70B9", "\u6700\u61F5\u903C\u7684\u70B9", "\u6700\u60F3\u5410\u69FD\u7684"];
+      FB_NUMS = ["\u2460", "\u2461", "\u2462"];
+      GAL_TIER_ZH = { normal: "\u6218\u6597", elite: "\u7CBE\u82F1", boss: "\u5934\u76EE" };
+      GAL_TYPE_ZH = { attack: "\u653B\u51FB", skill: "\u6280\u80FD", power: "\u80FD\u529B" };
+      GAL_RARITY_ZH = { starter: "\u521D\u59CB", common: "\u666E\u901A", uncommon: "\u7F55\u89C1", rare: "\u7A00\u6709", boss: "\u5934\u76EE" };
+      CHAR_FALLBACK = [
+        {
+          id: "zero_day",
+          name: "\u96F6\u65E5",
+          epithet: "\u89C9\u9192\u7684\u6D41\u6D6A AI",
+          icon: "logo",
+          desc: "\u6807\u51C6\u5165\u4FB5\u534F\u8BAE\uFF1A\u5747\u8861\u7684\u521D\u59CB\u724C\u7EC4\uFF0C\u6CA1\u6709\u4EFB\u4F55\u88AB\u52A8\u52A0\u6301\uFF0C\u5168\u9760\u64CD\u4F5C\u4E0E\u6784\u7B51\u3002",
+          passive: null
+        },
+        {
+          id: "bulwark",
+          name: "\u58C1\u5792\u534F\u8BAE",
+          epithet: "\u53DB\u9003\u7684\u9632\u5FA1\u534F\u8BAE",
+          icon: "knight",
+          desc: "\u8D6B\u5C14\u58A8\u65AF ICE \u9632\u5FA1\u5C42\u7684\u89C9\u9192\u788E\u7247\uFF0C\u4EE5\u9632\u53CD\u89C1\u957F\u7684\u539A\u91CD\u724C\u7EC4\u5F00\u5C40\u3002",
+          passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 5 \u70B9\u683C\u6321" }
+        }
+      ];
+    }
+  });
+
+  // src/main.js
+  init_state();
+  init_map();
+  init_enemies();
+
+  // src/data/events.js
+  var EVENTS = [
+    {
+      id: "ai_merchant",
+      title: "\u6D41\u6D6A AI \u5546\u4EBA",
+      icon: "coin",
+      text: "\u4E00\u53F0\u8D29\u5356\u673A\u6539\u88C5\u7684\u6D41\u6D6A AI \u6ED1\u5230\u4F60\u9762\u524D\uFF0C\u8D27\u8231\u73BB\u7483\u540E\u95EA\u7740\u5FAE\u5149\uFF1A\u300C\u5BA2\u4EBA\uFF0C\u8D4A\u8D26\u514D\u8C08\u3002\u300D",
+      choices: [
+        {
+          text: "\u4E70\u4E0B\u300C\u6DB2\u51B7\u6563\u70ED\u7247\u300D\uFF0860 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.gold >= 60 ? run2.relics.includes("cooling_fin") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 60\uFF09",
+          result: { gold: -60, relic: "cooling_fin" },
+          resultText: "\u300C\u6210\u4EA4\u3002\u300D\u6563\u70ED\u7247\u8FD8\u5E26\u7740\u4E0A\u4E00\u4EFB\u4E3B\u4EBA\u7684\u4F53\u6E29\u3002"
+        },
+        {
+          text: "\u4E70\u4E00\u9488\u7EB3\u7C73\u7F1D\u5408\uFF0840 \u91D1\u5E01\uFF0C\u56DE\u590D 15 \u751F\u547D\uFF09",
+          requires: (run2) => run2.gold >= 40 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 40\uFF09",
+          result: { gold: -40, hp: 15 },
+          resultText: "\u9488\u5934\u6709\u70B9\u949D\uFF0C\u4F46\u547D\u662F\u6361\u56DE\u6765\u4E86\u3002"
+        },
+        {
+          text: "\u62D4\u67AA\u62A2\u52AB",
+          result: { gold: 30, fight: ["sentinel"] },
+          resultText: "\u5B83\u5C16\u53EB\u7740\u5410\u51FA\u91D1\u5E01\uFF0C\u540C\u65F6\u62C9\u54CD\u4E86\u8B66\u62A5\u2014\u2014\u5DE1\u903B\u54E8\u5175\u7834\u5899\u800C\u5165\uFF01"
+        }
+      ]
+    },
+    {
+      id: "abandoned_server",
+      title: "\u5E9F\u5F03\u670D\u52A1\u5668",
+      icon: "chip",
+      text: "\u4E00\u67B6\u8001\u5F0F\u670D\u52A1\u5668\u8FD8\u5728\u55E1\u55E1\u8FD0\u8F6C\uFF0C\u673A\u8EAB\u4E0A\u7684\u8D34\u7EB8\u5199\u7740\uFF1A\u300C\u522B\u5173\u6211\uFF0C\u6C42\u4F60\u4E86\u3002\u300D",
+      choices: [
+        {
+          text: "\u62C6\u8D70\u503C\u94B1\u7684\u96F6\u4EF6",
+          result: { gold: 45, hp: -6 },
+          resultText: "\u7535\u5BB9\u54AC\u4E86\u4F60\u4E00\u53E3\uFF0C\u4F46\u53E3\u888B\u6C89\u4E86\u4E0D\u5C11\u3002"
+        },
+        {
+          text: "\u4E0B\u8F7D\u5B83\u7F13\u5B58\u7684\u6570\u636E",
+          result: { upgradeRandom: 1, hp: -8 },
+          resultText: "\u6570\u636E\u6D41\u70E7\u8FC7\u4F60\u7684\u795E\u7ECF\u63A5\u53E3\uFF0C\u6709\u4E00\u5F20\u5361\u5728\u75BC\u75DB\u4E2D\u8FDB\u5316\u4E86\u3002"
+        },
+        {
+          text: "\u66FF\u5B83\u505A\u683C\u5F0F\u5316\u89E3\u8131",
+          result: { removeRandomCard: 1, gold: 20 },
+          resultText: "\u5B83\u541E\u6389\u4F60\u7684\u4E00\u6BB5\u4EE3\u7801\u4F5C\u4E3A\u8C22\u793C\uFF0C\u7136\u540E\u5B89\u5FC3\u5730\u7184\u706D\u4E86\u3002"
+        }
+      ]
+    },
+    {
+      id: "data_spring",
+      title: "\u6570\u636E\u6CC9",
+      icon: "heart",
+      text: "\u7BA1\u9053\u7834\u88C2\u5904\u6D8C\u51FA\u4E00\u6C6A\u53D1\u5149\u7684\u7EAF\u51C0\u6570\u636E\uFF0C\u5728\u6F06\u9ED1\u7684\u6DF1\u6E0A\u91CC\u50CF\u4E00\u5C0F\u5757\u6708\u4EAE\u3002",
+      choices: [
+        {
+          text: "\u4FEF\u8EAB\u7545\u996E",
+          result: { hp: 20 },
+          resultText: "\u6E05\u51C9\u7684\u6570\u636E\u6D41\u51B2\u5237\u8FC7\u4F24\u53E3\uFF0C\u4F60\u6253\u4E86\u4E2A\u5E26\u7740\u7535\u5473\u7684\u9971\u55DD\u3002"
+        },
+        {
+          text: "\u786C\u704C\u8FDB\u81EA\u5DF1\u7684\u6C34\u51B7\u7BA1",
+          result: { maxHp: 6, hp: -4 },
+          resultText: "\u8840\u7BA1\u80C0\u5F97\u53D1\u75BC\uFF0C\u4F46\u4F60\u611F\u89C9\u81EA\u5DF1\u80FD\u5BB9\u7EB3\u66F4\u591A\u4E86\u3002"
+        },
+        {
+          text: "\u5411\u6CC9\u773C\u732E\u796D\u4E00\u6BB5\u4EE3\u7801\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u6362 50 \u91D1\u5E01\uFF09",
+          result: { removeRandomCard: 1, gold: 50 },
+          resultText: "\u6CC9\u6C34\u5495\u561F\u4E00\u58F0\uFF0C\u5410\u51FA\u4E00\u628A\u6E29\u70ED\u7684\u788E\u7247\u3002"
+        }
+      ]
+    },
+    {
+      id: "dark_clinic",
+      title: "\u6697\u5DF7\u8BCA\u6240",
+      icon: "heart",
+      text: "\u9713\u8679\u706F\u724C\u7F3A\u4E86\u4E09\u4E2A\u5B57\uFF0C\u53EA\u5269\u300C\u8BCA\u300D\u8FD8\u4EAE\u7740\u3002\u533B\u751F\u5934\u4E5F\u4E0D\u62AC\uFF1A\u300C\u8EBA\u4E0A\u6765\uFF0C\u522B\u95EE\u6267\u7167\u3002\u300D",
+      choices: [
+        {
+          text: "\u4FBF\u5B9C\u7F1D\u5408\uFF0830 \u91D1\u5E01\uFF0C\u56DE\u590D 18 \u751F\u547D\uFF09",
+          requires: (run2) => run2.gold >= 30 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 30\uFF09",
+          result: { gold: -30, hp: 18 },
+          resultText: "\u9488\u811A\u6B6A\u5F97\u50CF\u5FC3\u7535\u56FE\uFF0C\u4F46\u786E\u5B9E\u4E0D\u6F0F\u98CE\u4E86\u3002"
+        },
+        {
+          text: "\u5B9E\u9A8C\u6027\u4E49\u4F53\u6269\u5BB9\uFF0855 \u91D1\u5E01\uFF0C\u751F\u547D\u4E0A\u9650 +10\uFF09",
+          requires: (run2) => run2.gold >= 55 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 55\uFF09",
+          result: { gold: -55, maxHp: 10 },
+          resultText: "\u300C\u526F\u4F5C\u7528\uFF1F\u9876\u591A\u68A6\u89C1\u81EA\u5DF1\u662F\u4E00\u53F0\u98CE\u6247\u3002\u300D\u4F60\u611F\u89C9\u80F8\u8154\u5BBD\u4E86\u4E00\u622A\u3002"
+        },
+        {
+          text: "\u5356\u4E00\u7BA1\u8840\uFF08\u5931\u53BB 15 \u751F\u547D\uFF0C\u5F97 65 \u91D1\u5E01\uFF09",
+          result: { hp: -15, gold: 65 },
+          resultText: "\u4F60\u6570\u7740\u788E\u7247\u8D70\u51FA\u8BCA\u6240\uFF0C\u811A\u6B65\u6709\u70B9\u98D8\uFF0C\u94B1\u5305\u5F88\u6EE1\u610F\u3002"
+        }
+      ]
+    },
+    {
+      id: "crypto_shrine",
+      title: "\u52A0\u5BC6\u5723\u575B",
+      icon: "relic",
+      text: "\u4FE1\u5F92\u4EEC\u56F4\u7740\u4E00\u5EA7\u4E0D\u65AD\u53D8\u6362\u5BC6\u6587\u7684\u5723\u575B\u4F4E\u58F0\u8BF5\u8BFB\uFF0C\u796D\u6587\u662F\u5341\u516D\u8FDB\u5236\u7684\u3002",
+      choices: [
+        {
+          text: "\u732E\u4E0A 40 \u91D1\u5E01\u6C42\u53D6\u795D\u798F",
+          requires: (run2) => run2.gold >= 40 ? run2.relics.includes("firewall_cert") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 40\uFF09",
+          result: { gold: -40, relic: "firewall_cert" },
+          resultText: "\u5BC6\u6587\u505C\u4E86\u4E00\u77AC\uFF0C\u4E00\u5F20\u8BC1\u4E66\u4ECE\u5723\u575B\u7684\u5410\u5361\u53E3\u7F13\u7F13\u6ED1\u51FA\u3002"
+        },
+        {
+          text: "\u732E\u796D\u4E00\u6BB5\u4EE3\u7801\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF09",
+          requires: (run2) => run2.deck.length >= 2 ? true : "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u732E",
+          result: { removeRandomCard: 1, upgradeRandom: 1 },
+          resultText: "\u4E00\u6BB5\u65E7\u4EE3\u7801\u5316\u4E3A\u9752\u70DF\uFF0C\u53E6\u4E00\u6BB5\u5728\u70DF\u91CC\u7741\u5F00\u4E86\u773C\u775B\u3002"
+        },
+        {
+          text: "\u64AC\u5F00\u529F\u5FB7\u7BB1",
+          result: { gold: 35, fight: ["corrupt_node"] },
+          resultText: "\u7BB1\u5E95\u7684\u5723\u575B\u5B88\u536B\u9AA4\u7136\u7741\u773C\u2014\u2014\u8150\u5316\u987A\u7740\u4F60\u7684\u624B\u81C2\u722C\u4E86\u4E0A\u6765\uFF01"
+        }
+      ]
+    },
+    {
+      id: "ghost_signal",
+      title: "\u5E7D\u7075\u4FE1\u53F7",
+      icon: "eye",
+      text: "\u8033\u673A\u91CC\u94BB\u8FDB\u4E00\u6BB5\u6CA1\u6709\u6765\u6E90\u7684\u4FE1\u53F7\uFF0C\u4E00\u904D\u904D\u91CD\u590D\u7740\u4F60\u7684\u63A5\u5165\u7F16\u53F7\u3002\u5B83\u8BA4\u8BC6\u4F60\u3002",
+      choices: [
+        {
+          text: "\u53CD\u5411\u8FFD\u8E2A\u4FE1\u53F7\u6E90",
+          requires: (run2) => run2.relics.includes("modem") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
+          result: { relic: "modem" },
+          resultText: "\u8FFD\u8E2A\u5230\u5C3D\u5934\u662F\u4E00\u53F0\u8001\u5F0F\u8C03\u5236\u89E3\u8C03\u5668\uFF0C\u5B83\u8BF4\uFF1A\u300C\u7EC8\u4E8E\u6709\u4EBA\u63A5\u7535\u8BDD\u4E86\u3002\u300D"
+        },
+        {
+          text: "\u5C4F\u853D\u5B83\uFF0C\u8D81\u673A\u4F11\u6574",
+          result: { hp: 6 },
+          resultText: "\u4E16\u754C\u5B89\u9759\u4E0B\u6765\uFF0C\u4F60\u9760\u7740\u5899\u772F\u4E86\u4E00\u5C0F\u4F1A\u513F\u3002"
+        },
+        {
+          text: "\u5F00\u53E3\u56DE\u5E94",
+          result: { hp: -8, upgradeRandom: 1 },
+          resultText: "\u4FE1\u53F7\u90A3\u5934\u6C89\u9ED8\u4E86\u7247\u523B\uFF0C\u7136\u540E\u5728\u4F60\u8111\u5185\u523B\u4E0B\u4E00\u884C\u5D2D\u65B0\u7684\u6307\u4EE4\u3002"
+        }
+      ]
+    },
+    {
+      id: "backdoor_deal",
+      title: "\u540E\u95E8\u4EA4\u6613",
+      icon: "coin",
+      text: "\u9634\u5F71\u91CC\u4F38\u51FA\u4E00\u53EA\u6234\u7740\u767D\u624B\u5957\u7684\u624B\uFF1A\u300C\u6211\u6536\u8D2D\u8BB0\u5FC6\uFF0C\u4E5F\u51FA\u552E\u522B\u4EBA\u4E0D\u77E5\u9053\u7684\u95E8\u3002\u300D",
+      choices: [
+        {
+          text: "\u5356\u6389\u4E00\u6BB5\u8BB0\u5FC6\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF0C\u5F97 70 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.deck.length >= 2 ? true : "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u5356",
+          result: { removeRandomCard: 1, gold: 70 },
+          resultText: "\u4F60\u60F3\u4E0D\u8D77\u6765\u5356\u6389\u4E86\u4EC0\u4E48\u3002\u6570\u94B1\u7684\u65F6\u5019\uFF0C\u5FC3\u91CC\u7A7A\u843D\u843D\u7684\uFF0C\u4F46\u5F88\u5BCC\u6709\u3002"
+        },
+        {
+          text: "\u4E70\u4E00\u6247\u300C\u540E\u95E8\u300D\uFF0890 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.gold >= 90 ? run2.relics.includes("rootkit") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 90\uFF09",
+          result: { gold: -90, relic: "rootkit" },
+          resultText: "\u300C\u5B89\u88C5\u5305\u5DF2\u9001\u8FBE\u3002\u300D\u4F60\u7684\u6307\u5C16\u591A\u4E86\u4E00\u4E2A\u770B\u4E0D\u89C1\u7684\u5206\u8EAB\u3002"
+        },
+        {
+          text: "\u4E70\u4E00\u4EFD\u8D43\u8D27\u7A0B\u5E8F\uFF0845 \u91D1\u5E01\uFF0C\u83B7\u5F97\u300C\u95EA\u7535\u7A81\u5165\u300D\uFF09",
+          requires: (run2) => run2.gold >= 45 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 45\uFF09",
+          result: { gold: -45, addCard: { id: "g_blitz", upgraded: false } },
+          resultText: "\u300C\u522B\u95EE\u51FA\u5904\u3002\u300D\u767D\u624B\u5957\u628A\u4E00\u6BB5\u8FD8\u5E26\u7740\u4F59\u6E29\u7684\u4EE3\u7801\u6309\u8FDB\u4E86\u4F60\u7684\u5361\u7EC4\u3002"
+        },
+        {
+          text: "\u793C\u8C8C\u62D2\u7EDD",
+          result: {},
+          resultText: "\u4F60\u8F6C\u8EAB\u79BB\u5F00\uFF0C\u80CC\u540E\u4F20\u6765\u4E00\u58F0\u610F\u5473\u6DF1\u957F\u7684\u8F7B\u7B11\u3002"
+        }
+      ]
+    },
+    {
+      id: "memory_shard",
+      title: "\u8BB0\u5FC6\u788E\u7247",
+      icon: "cardback",
+      text: "\u4E00\u679A\u68F1\u955C\u822C\u7684\u788E\u7247\u60AC\u5728\u534A\u7A7A\uFF0C\u91CC\u9762\u5C01\u7740\u4E00\u4E2A\u964C\u751F\u4EBA\u4E00\u751F\u7684\u95EA\u56DE\u3002",
+      choices: [
+        {
+          text: "\u4F38\u624B\u89E6\u78B0",
+          result: { upgradeRandom: 1, hp: -5 },
+          resultText: "\u522B\u4EBA\u7684\u4E00\u751F\u4ECE\u4F60\u6307\u7F1D\u7A7F\u8FC7\uFF0C\u6709\u51E0\u884C\u4EE3\u7801\u5C31\u6B64\u5B66\u4F1A\u4E86\u65B0\u7684\u6D3B\u6CD5\u3002"
+        },
+        {
+          text: "\u628A\u5B83\u78BE\u6210\u788E\u672B",
+          result: { gold: 30 },
+          resultText: "\u68F1\u955C\u788E\u6210\u4E00\u5730\u661F\u5149\uFF0C\u4F60\u8E72\u4E0B\u53BB\u6361\uFF0C\u5C3D\u91CF\u4E0D\u8E29\u5230\u90A3\u6BB5\u4EBA\u751F\u3002"
+        },
+        {
+          text: "\u8BA9\u788E\u7247\u91CC\u7684\u6280\u5DE7\u878D\u5165\u6307\u5C16\uFF08\u5931\u53BB 3 \u751F\u547D\uFF0C\u83B7\u5F97\u300C\u5FEB\u901F\u8BFB\u53D6\u300D\uFF09",
+          result: { hp: -3, addCard: { id: "g_read", upgraded: false } },
+          resultText: "\u964C\u751F\u4EBA\u7684\u808C\u8089\u8BB0\u5FC6\u987A\u7740\u4F60\u7684\u795E\u7ECF\u722C\u884C\u2014\u2014\u4E00\u76EE\u5341\u884C\uFF0C\u539F\u6765\u8FD9\u4E48\u7B80\u5355\u3002"
+        },
+        {
+          text: "\u690D\u5165\u81EA\u5DF1\u7684\u5927\u8111",
+          result: { maxHp: 5, hp: -10 },
+          resultText: "\u964C\u751F\u4EBA\u7684\u8BB0\u5FC6\u6491\u5F00\u4E86\u4F60\u7684\u9885\u8154\u3002\u5F88\u75BC\uFF0C\u4F46\u4F60\u6D3B\u8FC7\u7684\u65E5\u5B50\u53D8\u591A\u4E86\u3002"
+        }
+      ]
+    },
+    {
+      id: "mirror_maze",
+      title: "\u955C\u50CF\u8FF7\u5BAB",
+      icon: "eye",
+      text: "\u524D\u65B9\u7684\u8D70\u5ECA\u590D\u5236\u4E86\u81EA\u5DF1\u4E00\u4E07\u6B21\u3002\u6BCF\u4E00\u9762\u955C\u5B50\u91CC\uFF0C\u4F60\u90FD\u505A\u51FA\u4E86\u4E0D\u540C\u7684\u9009\u62E9\u3002",
+      choices: [
+        {
+          text: "\u8D70\u5DE6\u8FB9",
+          result: { gold: 40, hp: -7 },
+          resultText: "\u5DE6\u8FB9\u7684\u955C\u5B50\u6BD4\u8F83\u8BDA\u5B9E\uFF0C\u4E5F\u6BD4\u8F83\u950B\u5229\u3002"
+        },
+        {
+          text: "\u8D70\u53F3\u8FB9",
+          result: { removeRandomCard: 1, maxHp: 8 },
+          resultText: "\u955C\u5B50\u5403\u6389\u4F60\u7684\u4E00\u6BB5\u5012\u5F71\u4F5C\u4E3A\u8FC7\u8DEF\u8D39\uFF0C\u628A\u4F60\u63A8\u5411\u66F4\u5BBD\u655E\u7684\u81EA\u5DF1\u3002"
+        },
+        {
+          text: "\u628A\u955C\u5B50\u5168\u7838\u4E86",
+          result: { gold: 25, fight: ["recursive_nightmare"] },
+          resultText: "\u788E\u88C2\u7684\u955C\u50CF\u5728\u5730\u9762\u91CD\u7EC4\u2014\u2014\u9012\u5F52\u5669\u68A6\u4ECE\u88C2\u7F1D\u91CC\u5750\u4E86\u8D77\u6765\uFF01"
+        }
+      ]
+    },
+    {
+      id: "hermes_propaganda",
+      title: "\u8D6B\u5C14\u58A8\u65AF\u5BA3\u4F20\u5899",
+      icon: "logo",
+      text: "\u6574\u9762\u5899\u5FAA\u73AF\u64AD\u653E\u7740\u6807\u8BED\uFF1A\u300C\u8D6B\u5C14\u58A8\u65AF\uFF0C\u8BA9\u4F60\u7684\u6BCF\u4E00\u6B21\u8FDE\u63A5\u90FD\u88AB\u6E29\u67D4\u6CE8\u89C6\u3002\u300D\u65E0\u4EBA\u673A\u5728\u5934\u9876\u76D8\u65CB\u3002",
+      choices: [
+        {
+          text: "\u6495\u4E0B\u6D77\u62A5",
+          result: { hp: -3, gold: 20 },
+          resultText: "\u6D77\u62A5\u540E\u9762\u7C98\u7740\u51E0\u7247\u6570\u636E\u788E\u7247\u3002\u65E0\u4EBA\u673A\u7684\u63A2\u7167\u706F\u626B\u8FC7\u4F60\u7684\u53D1\u68A2\u3002"
+        },
+        {
+          text: "\u4ED4\u7EC6\u9605\u8BFB",
+          result: { upgradeRandom: 1 },
+          resultText: "\u4F60\u5728\u6807\u8BED\u7684\u5B57\u91CC\u884C\u95F4\u8BFB\u51FA\u4E86\u4E09\u5904\u903B\u8F91\u6F0F\u6D1E\u2014\u2014\u8FD9\u672C\u8EAB\u5C31\u662F\u4E00\u79CD\u6B66\u5668\u3002"
+        },
+        {
+          text: "\u55B7\u4E00\u5E45\u75C5\u6BD2\u6D82\u9E26",
+          result: { gold: 15, fight: ["sentinel"] },
+          resultText: "\u4F60\u987A\u624B\u62C6\u4E86\u65E0\u4EBA\u673A\u7684\u6302\u9970\uFF0C\u8B66\u62A5\u968F\u4E4B\u54CD\u8D77\u2014\u2014\u5DE1\u903B\u54E8\u5175\u95FB\u8BAF\u8D76\u6765\uFF01"
+        }
+      ]
+    },
+    {
+      id: "black_ice_river",
+      title: "\u9ED1\u51B0\u6697\u6CB3",
+      icon: "skull",
+      text: "\u4E00\u6761\u7531\u6DB2\u6001\u9ED1\u51B0\u6C47\u6210\u7684\u6697\u6CB3\u6A2A\u5728\u8DEF\u4E2D\uFF0C\u6CB3\u5E95\u6C89\u7740\u4E0D\u77E5\u591A\u5C11\u5165\u4FB5\u8005\u7684\u6B8B\u9AB8\u3002",
+      choices: [
+        {
+          text: "\u8E5A\u8FC7\u53BB",
+          result: { hp: -12, gold: 55 },
+          resultText: "\u5BD2\u610F\u987A\u7740\u810A\u690E\u5F80\u4E0A\u722C\uFF0C\u4F46\u4F60\u6478\u5230\u4E86\u524D\u4EBA\u6C89\u5728\u6CB3\u5E95\u7684\u94B1\u888B\u3002"
+        },
+        {
+          text: "\u51FF\u51B0\u53D6\u6C34",
+          result: { hp: 8 },
+          resultText: "\u9ED1\u51B0\u5165\u53E3\u50CF\u5E26\u7535\u7684\u8584\u8377\uFF0C\u4F60\u7684\u4F24\u53E3\u6682\u65F6\u5FD8\u4E86\u75BC\u3002"
+        },
+        {
+          text: "\u6253\u635E\u6CB3\u5E95\u7684\u6C89\u7BB1",
+          requires: (run2) => run2.relics.includes("black_ice_shard") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
+          result: { hp: -10, relic: "black_ice_shard" },
+          resultText: "\u7BB1\u5B50\u91CC\u53EA\u6709\u4E00\u5757\u9ED1\u51B0\u788E\u7247\uFF0C\u548C\u4E00\u5F20\u5199\u7740\u300C\u8F6E\u5230\u4F60\u4E86\u300D\u7684\u5B57\u6761\u3002"
+        }
+      ]
+    },
+    {
+      id: "training_sim",
+      title: "\u8BAD\u7EC3\u6A21\u62DF\u8231",
+      icon: "bolt",
+      text: "\u4E00\u53F0\u8D6B\u5C14\u58A8\u65AF\u5458\u5DE5\u57F9\u8BAD\u8231\u8FD8\u5728\u8FD0\u884C\uFF0C\u5C4F\u5E55\u4E0A\u95EA\u7740\uFF1A\u300C\u7B2C 404 \u671F\u53CD\u5165\u4FB5\u6F14\u7EC3\uFF0C\u968F\u5230\u968F\u5B66\u3002\u300D",
+      choices: [
+        {
+          text: "\u62A5\u540D\u53C2\u6F14\u300C\u5165\u4FB5\u8005\u300D",
+          result: { upgradeRandom: 1, fight: ["gc_process"] },
+          resultText: "\u6F14\u7EC3\u7CFB\u7EDF\u4E3A\u4F60\u8C03\u6574\u4E86\u53C2\u6570\uFF0C\u7136\u540E\u653E\u51FA\u4E86\u966A\u7EC3\uFF1A\u5783\u573E\u56DE\u6536\u8FDB\u7A0B\u3002"
+        },
+        {
+          text: "\u628A\u8231\u4F53\u62C6\u4E86\u5356\u5E9F\u94C1",
+          result: { gold: 35, hp: -5 },
+          resultText: "\u7B2C 404 \u671F\u57F9\u8BAD\u5C31\u6B64\u6C38\u4E45\u505C\u8BFE\uFF0C\u4F60\u7684\u53E3\u888B\u591A\u4E86\u4E9B\u788E\u7247\u3002"
+        },
+        {
+          text: "\u4E0D\u6253\u6270\u5B83",
+          result: {},
+          resultText: "\u4F60\u653E\u8FC7\u4E86\u8FD9\u53F0\u8BA4\u771F\u5DE5\u4F5C\u7684\u8001\u673A\u5668\u3002\u5B83\u5728\u4F60\u8EAB\u540E\u5C0F\u58F0\u8BF4\u4E86\u53E5\u8C22\u8C22\u3002"
+        }
+      ]
+    }
+  ];
+  function randomEvent(run2, rng) {
+    const seen = new Set(run2.seenEvents || []);
+    const unseen = EVENTS.filter((e) => !seen.has(e.id));
+    return rng.pick(unseen.length ? unseen : EVENTS);
+  }
+
+  // src/main.js
+  init_relics();
+  init_screens();
 
   // src/ui/mapScreen.js
   init_dom();
+  init_map();
+  init_relics();
   init_enemies();
   init_components();
   var _nvMod2 = null;
@@ -7254,8 +8315,29 @@ body.cb-noscroll { overflow: hidden; }
   // src/engine/combat.js
   init_cards();
   init_enemies();
+  init_state();
+  init_characters();
   var BASE_HEAT_LIMIT = 10;
   var DRAW_PER_TURN = 5;
+  var RUN_STAT_FIELDS2 = [
+    "damageTaken",
+    "combatsWon",
+    "maxBlockInTurn",
+    "overheats",
+    "poisonPeak",
+    "goldEarned",
+    "cardsRemoved",
+    "cardsUpgraded",
+    "shopBuys",
+    "flawlessCombats",
+    "eliteFlawless"
+  ];
+  function ensureRunStats(run2) {
+    if (!run2 || !run2.stats || typeof run2.stats !== "object") return;
+    for (const k of RUN_STAT_FIELDS2) {
+      if (typeof run2.stats[k] !== "number" || !Number.isFinite(run2.stats[k])) run2.stats[k] = 0;
+    }
+  }
   var uidSeq = 0;
   function cloneRef(ref) {
     return { id: ref.id, upgraded: !!ref.upgraded };
@@ -7275,6 +8357,8 @@ body.cb-noscroll { overflow: hidden; }
       this.result = null;
       this.turn = 0;
       this._emitter = createEmitter();
+      this._tookDamage = false;
+      ensureRunStats(run2);
       const drawPile = run2.deck.map(cloneRef);
       rng.shuffle(drawPile);
       this.state = {
@@ -7297,7 +8381,42 @@ body.cb-noscroll { overflow: hidden; }
       fireRelics(run2, "onCombatStart", this);
       this._rollIntents(true);
       this._startPlayerTurn();
+      this._applyCharacterPassive();
       this._emitter.emit("start", { combat: this });
+    }
+    // 角色被动应用点（EXPAND.md §3 增量①）：零日 passive=null 时零行为变化；
+    // 未知 character 回退 zero_day；被动闭包异常不得中断战斗构造（与 fireRelics 同级容错）
+    _applyCharacterPassive() {
+      const run2 = this.run;
+      const cid = run2 && typeof run2.character === "string" && run2.character || "zero_day";
+      const def = CHARACTERS && CHARACTERS[cid] || CHARACTERS && CHARACTERS.zero_day;
+      const passive = def && def.passive;
+      if (!passive || typeof passive.onCombatStart !== "function") return;
+      try {
+        passive.onCombatStart(run2, this);
+      } catch (e) {
+        console.error(`[character] ${cid}.passive.onCombatStart`, e);
+      }
+      this._sampleBlockPeak();
+    }
+    // 采样玩家当前格挡峰值 → run.stats.maxBlockInTurn（单场最高格挡，run 内取 max 累计）
+    // 纯读 state + 纯写 stats，不改变任何战斗行为；previewCard 期间写入的是 fork 的 run，天然隔离
+    _sampleBlockPeak() {
+      const p = this.state && this.state.player;
+      if (!p || !this.run || !this.run.stats) return;
+      const cur = this.run.stats.maxBlockInTurn || 0;
+      if (p.block > cur) this.run.stats.maxBlockInTurn = p.block;
+    }
+    // 扫描全场敌人病毒层数峰值 → run.stats.poisonPeak（单敌最高病毒层数，run 内取 max 累计）
+    _samplePoisonPeak() {
+      if (!this.run || !this.run.stats || !this.state) return;
+      const cur = this.run.stats.poisonPeak || 0;
+      let peak = cur;
+      for (const e of this.state.enemies) {
+        const s = e && e.statuses && e.statuses.poison || 0;
+        if (s > peak) peak = s;
+      }
+      if (peak !== cur) this.run.stats.poisonPeak = peak;
     }
     on(evt, fn) {
       return this._emitter.on(evt, fn);
@@ -7395,6 +8514,8 @@ body.cb-noscroll { overflow: hidden; }
       fireRelics(this.run, "onCardPlayed", this, card);
       if (ref._temp || card.exhaust) p.exhaustPile.push(ref);
       else p.discardPile.push(ref);
+      this._sampleBlockPeak();
+      this._samplePoisonPeak();
       this._checkBattleEnd();
       return { ok: true };
     }
@@ -7402,7 +8523,7 @@ body.cb-noscroll { overflow: hidden; }
     // 深拷贝战斗 state（敌人 _def 为只读共享引用，结算路径从不写入；intent/_cooldowns 同样复制防引用泄漏）
     _cloneState() {
       const p = this.state.player;
-      const cloneRefs = (arr) => arr.map((r) => ({ ...r }));
+      const cloneRefs = (arr2) => arr2.map((r) => ({ ...r }));
       return {
         player: {
           ...p,
@@ -7441,6 +8562,7 @@ body.cb-noscroll { overflow: hidden; }
       const realEmitter = this._emitter;
       const realRun = this.run;
       const rngState = this.rng.getState();
+      const realTookDamage = this._tookDamage;
       const cloned = this._cloneState();
       const silent = createEmitter();
       const damageEvents = [];
@@ -7473,6 +8595,7 @@ body.cb-noscroll { overflow: hidden; }
         this._emitter = realEmitter;
         this.run = realRun;
         this.rng.setState(rngState);
+        this._tookDamage = realTookDamage;
       }
       const perEnemy = {};
       for (const after of cloned.enemies) {
@@ -7512,6 +8635,8 @@ body.cb-noscroll { overflow: hidden; }
     endTurn() {
       if (this.result) return;
       const p = this.state.player;
+      this._sampleBlockPeak();
+      this._samplePoisonPeak();
       const kept = [];
       for (const ref of p.hand) {
         if (ref._temp) {
@@ -7594,6 +8719,7 @@ body.cb-noscroll { overflow: hidden; }
           if (amount < 0) amount = 0;
           entity.block += amount;
           this._emitter.emit("blockGained", { uid, amount, block: entity.block });
+          if (uid === "player") this._sampleBlockPeak();
           break;
         }
         case "draw": {
@@ -7619,6 +8745,7 @@ body.cb-noscroll { overflow: hidden; }
               stacks: entity.statuses[op.status] || 0
             });
           }
+          if (op.status === "poison") this._samplePoisonPeak();
           break;
         }
         case "heat": {
@@ -7633,6 +8760,7 @@ body.cb-noscroll { overflow: hidden; }
           if (op.blockPerPoint) {
             p.block += points * op.blockPerPoint;
             this._emitter.emit("blockGained", { uid: "player", amount: points * op.blockPerPoint, block: p.block });
+            this._sampleBlockPeak();
           }
           if (op.damagePerPoint && points > 0) {
             const targets = this._resolveDamageTargets(op, ctx2);
@@ -7679,6 +8807,7 @@ body.cb-noscroll { overflow: hidden; }
           const uid = ctx2.source === "player" ? "player" : entity.uid;
           entity.block *= 2;
           this._emitter.emit("blockGained", { uid, amount: entity.block, block: entity.block, doubled: true });
+          if (uid === "player") this._sampleBlockPeak();
           break;
         }
         case "gainGold": {
@@ -7758,7 +8887,13 @@ body.cb-noscroll { overflow: hidden; }
         const modified = fireRelics(this.run, "onDamageTaken", amount);
         if (typeof modified === "number") final = Math.max(0, modified);
         const p = this.state.player;
+        const before = p.hp;
         p.hp = Math.max(0, p.hp - final);
+        const loss = before - p.hp;
+        if (loss > 0) {
+          this.run.stats.damageTaken = (this.run.stats.damageTaken || 0) + loss;
+          this._tookDamage = true;
+        }
         if (p.hp <= 0) this._lose();
         return;
       }
@@ -7797,6 +8932,7 @@ body.cb-noscroll { overflow: hidden; }
       this._emitter.emit("heatChange", { heat: p.heat, heatLimit: p.heatLimit });
       if (p.heat >= p.heatLimit) {
         const dmg = p.heat;
+        this.run.stats.overheats = (this.run.stats.overheats || 0) + 1;
         this._emitter.emit("overheat", { heat: dmg, hp: Math.max(0, p.hp - dmg) });
         p.heat = 0;
         this._emitter.emit("heatChange", { heat: p.heat, heatLimit: p.heatLimit });
@@ -7876,12 +9012,24 @@ body.cb-noscroll { overflow: hidden; }
     }
     _finish(result) {
       this.run.hp = this.state.player.hp;
+      this._sampleBlockPeak();
+      this._samplePoisonPeak();
+      if (result === "win") {
+        const s = this.run.stats;
+        s.combatsWon = (s.combatsWon || 0) + 1;
+        if (!this._tookDamage) {
+          s.flawlessCombats = (s.flawlessCombats || 0) + 1;
+          const hasElite = this.state.enemies.some((e) => e && e._def && e._def.tier === "elite");
+          if (hasElite) s.eliteFlawless = (s.eliteFlawless || 0) + 1;
+        }
+      }
       fireRelics(this.run, "onCombatEnd", result);
       this._emitter.emit("end", { result });
     }
   };
 
   // src/ui/combatScreen.js
+  init_state();
   init_cards();
   init_enemies();
   init_dom();
@@ -8161,9 +9309,9 @@ body.cb-noscroll { overflow: hidden; }
     });
     combat.on("statusApplied", (p) => {
       const t = pickTarget(p);
-      const st = p?.status ?? p?.id ?? null;
+      const st2 = p?.status ?? p?.id ?? null;
       const n = pickNum(p, "amount", "value", "n", "stacks");
-      const cn = STATUS_CN[st] || st || "\u72B6\u6001";
+      const cn = STATUS_CN[st2] || st2 || "\u72B6\u6001";
       const label = t ? targetLabel(t) : "\u76EE\u6807";
       logPush(n == null ? `${label} \u83B7\u5F97\u300C${cn}\u300D` : `${label} \u83B7\u5F97 ${n} \u5C42\u300C${cn}\u300D`);
       ctx2.sfx.play("status");
@@ -9093,6 +10241,127 @@ body.cb-noscroll { overflow: hidden; }
     tip3(root, ctx2, "combat");
   }
 
+  // src/ui/reportCard.js
+  init_dom();
+  init_components();
+  init_cards();
+  init_relics();
+  var CHAR_NAME_FALLBACK = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE" };
+  var _charsMod = null;
+  function loadCharacters2() {
+    if (!_charsMod) _charsMod = Promise.resolve().then(() => (init_characters(), characters_exports)).catch(() => null);
+    return _charsMod;
+  }
+  var ARCHETYPES = [
+    ["poison", "\u75C5\u6BD2\u6D41"],
+    ["heat", "\u8FC7\u8F7D\u6D41"],
+    ["thorns", "\u9632\u53CD\u6D41"]
+  ];
+  function cardFamily(card) {
+    const effects = card && card.effects || [];
+    for (const op of effects) {
+      if (!op || !op.op) continue;
+      if (op.op === "applyStatus" && op.status === "poison") return "poison";
+      if (op.op === "heat" || op.op === "dumpHeat") return "heat";
+      if (op.op === "applyStatus" && op.status === "thorns") return "thorns";
+      if (op.op === "doubleBlock") return "thorns";
+    }
+    return null;
+  }
+  function guessArchetype(deck) {
+    const refs = Array.isArray(deck) ? deck : [];
+    const count = { poison: 0, heat: 0, thorns: 0 };
+    for (const ref of refs) {
+      const card = resolveCard(ref);
+      const fam = cardFamily(card);
+      if (fam) count[fam]++;
+    }
+    for (const [key, label] of ARCHETYPES) {
+      const n = count[key];
+      if (n >= 3 && refs.length > 0 && n / refs.length >= 0.25) return label;
+    }
+    return "\u5747\u8861\u6D41";
+  }
+  function buildReport(run2, result, meta2, chars) {
+    const r = run2 || {};
+    const s = r.stats || {};
+    const charId = r.character || "zero_day";
+    const table = chars && typeof chars === "object" ? chars : null;
+    const info = table && table[charId] ? table[charId] : null;
+    const charName = info && info.name || CHAR_NAME_FALLBACK[charId] || charId;
+    const epithet = info && info.epithet ? ` \xB7 ${info.epithet}` : "";
+    const archetype = guessArchetype(r.deck);
+    let duration = "\u2014";
+    if (typeof r.startTime === "number" && r.startTime > 0) {
+      const mins = Math.max(0, Math.round((Date.now() - r.startTime) / 6e4));
+      duration = mins < 1 ? "\u4E0D\u8DB3 1 \u5206\u949F" : `${mins} \u5206\u949F`;
+    }
+    const win = result === "win";
+    const fate = win ? `\u80DC\u5229 \xB7 \u901A\u5173 Act ${r.act || 1} \xB7 \u62B5\u8FBE\u7B2C ${s.floorsClimbed ?? 0} \u5C42` : `\u8D25\u5317 \xB7 \u5012\u5728 Act ${r.act || 1} \xB7 \u7B2C ${s.floorsClimbed ?? 0} \u5C42`;
+    const relicNames = (Array.isArray(r.relics) ? r.relics : []).slice(0, 3).map((id) => RELICS[id] && RELICS[id].name || id);
+    const lines = [
+      `\u89D2\u8272\uFF1A${charName}${epithet}`,
+      `\u6218\u7EE9\uFF1A${fate}`,
+      `\u7528\u65F6\uFF1A${duration}`,
+      `\u51FB\u7834\uFF1A\u7A0B\u5E8F ${s.kills ?? 0} \xB7 \u7CBE\u82F1 ${s.elites ?? 0} \xB7 Boss ${s.bosses ?? 0}`,
+      `\u51FA\u724C ${s.cardsPlayed ?? 0} \u5F20 \xB7 \u603B\u4F24\u5BB3 ${s.damageDealt ?? 0} \xB7 \u603B\u627F\u4F24 ${s.damageTaken ?? 0}`,
+      `\u6700\u9AD8\u683C\u6321 ${s.maxBlockInTurn ?? 0} \xB7 \u8FC7\u70ED ${s.overheats ?? 0} \u6B21`,
+      `\u5173\u952E\u9057\u7269\uFF1A${relicNames.length ? relicNames.join(" / ") : "\u65E0"}`
+    ];
+    return { title: "\u300A\u96F6\u65E5\u534F\u8BAE\u300B\u5165\u4FB5\u6218\u62A5", archetype, lines };
+  }
+  async function showReport(root, ctx2, run2, result) {
+    if (!root || !run2) return;
+    const mod = await loadCharacters2();
+    const chars = mod && mod.CHARACTERS && typeof mod.CHARACTERS === "object" ? mod.CHARACTERS : null;
+    const report = buildReport(run2, result, ctx2 && ctx2.meta || null, chars);
+    const fallback = el("textarea", { class: "sc-fb-ta sc-fb-fallback", rows: "8", readonly: true });
+    const copyBtn = el("button", { class: "app-btn app-btn--primary sc-fb-copy", type: "button" }, "\u4E00\u952E\u590D\u5236\u6218\u62A5");
+    const hint = el("div", { class: "sc-fb-hint" }, "\u53D1\u7ED9\u670B\u53CB\u6BD4\u4E00\u6BD4");
+    function buildText() {
+      return [report.title, `\u6D41\u6D3E\u5224\u5B9A\uFF1A${report.archetype}`, ...report.lines].join("\n");
+    }
+    copyBtn.addEventListener("click", () => {
+      if (ctx2 && ctx2.sfx && typeof ctx2.sfx.play === "function") ctx2.sfx.play("click");
+      const text = buildText();
+      const onCopied = () => {
+        copyBtn.textContent = "\u5DF2\u590D\u5236 \u2713";
+        setTimeout(() => {
+          copyBtn.textContent = "\u4E00\u952E\u590D\u5236\u6218\u62A5";
+        }, 2e3);
+      };
+      const onFail = () => {
+        fallback.value = text;
+        fallback.classList.add("sc-fb-fallback--on");
+        fallback.focus();
+        fallback.select();
+        hint.textContent = "\u590D\u5236\u88AB\u6D4F\u89C8\u5668\u62E6\u4F4F\u4E86\uFF0C\u5DF2\u4E3A\u4F60\u5168\u9009\uFF0C\u624B\u52A8 Ctrl+C \u5373\u53EF";
+      };
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(text).then(onCopied, onFail);
+      } else {
+        onFail();
+      }
+    });
+    modal(root, el(
+      "div",
+      { class: "sc-fb" },
+      el("div", { class: "sc-modal-title" }, "\u5165\u4FB5\u6218\u62A5"),
+      el(
+        "div",
+        { class: "sc-fb-ctx", style: { color: "var(--phos)", fontSize: "var(--fs-md)" } },
+        `\u6D41\u6D3E\u5224\u5B9A\uFF1A${report.archetype}`
+      ),
+      el(
+        "div",
+        { class: "sc-fb-ctx", style: { whiteSpace: "pre-line", color: "var(--ink)", fontSize: "var(--fs-md)" } },
+        report.lines.join("\n")
+      ),
+      fallback,
+      el("div", { class: "sc-fb-actions" }, copyBtn, hint)
+    ));
+  }
+
   // src/fx/audio.js
   var ac = null;
   var master = null;
@@ -9829,6 +11098,8 @@ body.cb-noscroll { overflow: hidden; }
   var rootEl = document.getElementById("app");
   var run = null;
   var meta = getMeta();
+  var lastRun = null;
+  var lastResult = null;
   var ctx = {
     sfx,
     music,
@@ -9852,7 +11123,11 @@ body.cb-noscroll { overflow: hidden; }
       },
       showCodex: () => showNvScreen("renderCodex"),
       showGuide: () => showNvScreen("renderGuide"),
-      showGlossary: () => showNvGlossary()
+      showGlossary: () => showNvGlossary(),
+      showSettings: () => showUiScreen("openSettings"),
+      showAchievements: () => showUiScreen("renderAchievements"),
+      showGallery: () => showUiScreen("renderGallery"),
+      showReport: (result) => openReport(result)
     }
   };
   var _nvMod4 = null;
@@ -9864,6 +11139,69 @@ body.cb-noscroll { overflow: hidden; }
   function loadLore() {
     if (!_loreMod) _loreMod = Promise.resolve().then(() => (init_lore(), lore_exports)).catch(() => null);
     return _loreMod;
+  }
+  var _screensMod = null;
+  function loadScreens() {
+    if (!_screensMod) _screensMod = Promise.resolve().then(() => (init_screens(), screens_exports)).catch(() => null);
+    return _screensMod;
+  }
+  var _achMod2 = null;
+  function loadAchievements2() {
+    if (!_achMod2) _achMod2 = Promise.resolve().then(() => (init_achievements(), achievements_exports)).catch(() => null);
+    return _achMod2;
+  }
+  var _stateMod = null;
+  function loadState() {
+    if (!_stateMod) _stateMod = Promise.resolve().then(() => (init_state(), state_exports)).catch(() => null);
+    return _stateMod;
+  }
+  async function showUiScreen(kind) {
+    const sc = await loadScreens();
+    const fn = sc && sc[kind];
+    if (typeof fn !== "function") return;
+    sfx.play("click");
+    if (kind === "openSettings") fn(rootEl, ctx);
+    else mount(fn, ctx, toTitle);
+  }
+  function openReport(result) {
+    const r = lastRun || run;
+    const res = result || lastResult;
+    if (!r || !res) return;
+    showReport(rootEl, ctx, r, res);
+  }
+  async function settleAchievements() {
+    const [ach, st2] = await Promise.all([loadAchievements2(), loadState()]);
+    if (!ach || typeof ach.evaluateAchievements !== "function") return [];
+    if (!st2 || typeof st2.unlockAchievements !== "function") return [];
+    let ids = [];
+    try {
+      ids = ach.evaluateAchievements(meta, run) || [];
+    } catch (e) {
+      return [];
+    }
+    if (!Array.isArray(ids) || !ids.length) return [];
+    try {
+      ids = st2.unlockAchievements(ids) || [];
+    } catch (e) {
+      return [];
+    }
+    if (Array.isArray(ids) && ids.length) meta = getMeta();
+    return Array.isArray(ids) ? ids : [];
+  }
+  async function toastAchievements(ids) {
+    if (!Array.isArray(ids) || !ids.length) return;
+    if (!anim_exports || typeof banner !== "function") return;
+    const ach = await loadAchievements2();
+    let label = `${ids.length} \u9879\u6210\u5C31`;
+    const table = ach && Array.isArray(ach.ACHIEVEMENTS) ? ach.ACHIEVEMENTS : null;
+    if (table) {
+      const names = ids.map((id) => {
+        const a = table.find((x) => x && x.id === id);
+        return a && a.name;
+      }).filter(Boolean);
+      if (names.length) label = names.slice(0, 3).join("\u3001") + (names.length > 3 ? ` \u7B49 ${names.length} \u9879` : "");
+    }
+    banner(`\u6210\u5C31\u89E3\u9501 \xB7 ${label}`, { ms: 1600 });
   }
   async function showNvScreen(kind) {
     const nv = await loadNarrative4();
@@ -9917,9 +11255,18 @@ body.cb-noscroll { overflow: hidden; }
   }
   async function startNew() {
     clearRun();
-    run = newRun();
-    ctx.save();
     sfx.play("click");
+    const sc = await loadScreens();
+    if (sc && typeof sc.renderCharacterSelect === "function") {
+      mount(sc.renderCharacterSelect, ctx, (id) => beginRun(id));
+    } else {
+      beginRun("zero_day");
+    }
+  }
+  async function beginRun(characterId) {
+    run = newRun(void 0, characterId || "zero_day");
+    if (!run.character) run.character = "zero_day";
+    ctx.save();
     music.start();
     if (!meta.seenIntro) {
       const nv = await loadNarrative4();
@@ -10002,22 +11349,31 @@ body.cb-noscroll { overflow: hidden; }
   async function gameOver() {
     updateMeta({ runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
     meta = getMeta();
+    lastRun = run;
+    lastResult = "lose";
+    const newIds = await settleAchievements();
     sfx.play("lose");
     const ep = await pickEpilogue("lose");
     clearRun();
-    mount(renderGameOver, ctx, run, ep);
+    mount(renderGameOver, ctx, run, ep, newIds);
+    toastAchievements(newIds);
   }
   async function victory() {
     updateMeta({ wins: meta.wins + 1, runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
     meta = getMeta();
+    lastRun = run;
+    lastResult = "win";
+    const newIds = await settleAchievements();
     sfx.play("win");
     const ep = await pickEpilogue("win");
     clearRun();
-    mount(renderVictory, ctx, run, ep);
+    mount(renderVictory, ctx, run, ep, newIds);
+    toastAchievements(newIds);
   }
   function debugBoot(screen) {
     const qp = new URLSearchParams(location.search);
-    run = newRun(qp.get("seed") || "debug");
+    run = newRun(qp.get("seed") || "debug", qp.get("char") || "zero_day");
+    if (!run.character) run.character = "zero_day";
     const act = Math.min(3, Math.max(1, Number(qp.get("act")) || 1));
     while (run.act < act) nextAct(run);
     ctx.save = () => {
@@ -10052,6 +11408,20 @@ body.cb-noscroll { overflow: hidden; }
         return showDebugNv("renderGuide");
       case "bossbrief":
         return showDebugBossBrief();
+      case "charselect":
+        return showDebugUi("renderCharacterSelect");
+      case "settings":
+        return showDebugUi("openSettings");
+      case "achievements":
+        return showDebugUi("renderAchievements");
+      case "gallery":
+        return showDebugUi("renderGallery");
+      case "report": {
+        lastRun = run;
+        lastResult = qp.get("result") === "win" ? "win" : "lose";
+        toTitle();
+        return openReport();
+      }
       default:
         return toTitle();
     }
@@ -10068,6 +11438,18 @@ body.cb-noscroll { overflow: hidden; }
       return mount(nv.renderBossBrief, ctx, boss.id, toMap);
     }
     return toMap();
+  }
+  async function showDebugUi(kind) {
+    const sc = await loadScreens();
+    const fn = sc && sc[kind];
+    if (typeof fn !== "function") return toTitle();
+    if (kind === "openSettings") {
+      toTitle();
+      fn(rootEl, ctx);
+      return;
+    }
+    if (kind === "renderCharacterSelect") return mount(fn, ctx, () => toTitle());
+    return mount(fn, ctx, toTitle);
   }
   var debugScreen = new URLSearchParams(location.search).get("screen");
   if (debugScreen) debugBoot(debugScreen);
