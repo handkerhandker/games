@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- V1.1 终稿（responsive-spec §7.1）：新增 maximum-scale=1.0 与 viewport-fit=cover，
+         canvas 铺进刘海/Home 指示条区，safe-area 由 ui.ts CSS 令牌接管 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>地牢幸存者</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0b0b12;
+        overscroll-behavior: none; /* 禁下拉刷新/橡皮筋（responsive-spec §7.2） */
+      }
+      #game {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh; /* 旧浏览器回退行在前 */
+        height: 100dvh; /* 移动动态视口高（终值） */
+        display: block;
+        touch-action: none;
+        image-rendering: pixelated;
+      }
+      @media (display-mode: standalone) {
+        /* PWA 冷启动 dvh 集体撒谎的修正（responsive-spec §7.2） */
+        #game {
+          height: 100lvh;
+        }
+      }
+      /* UI overlay：UIDev_01 的 DOM HUD 容器。默认不拦截指针，可交互元素需自行开启 pointer-events */
+      #ui {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        user-select: none;
+        font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+        color: #e8e6df;
+      }
+      /* 首帧遮罩（responsive-spec §2.4：safe-area env() 冷启动返回 0 的对策；
+         main.ts 在 loop.start() 后首个 rAF 回调内移除） */
+      #boot-mask {
+        position: fixed;
+        inset: 0;
+        z-index: 90;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #0b0b12;
+        color: #9a8b76;
+        font-size: 14px;
+        letter-spacing: 3px;
+        font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+      }
+      /* 竖屏「请旋转设备」引导层（responsive-spec §6：portrait + coarse 纯 CSS 显隐，
+         先于 JS 可显；JS 自动暂停钩子在 ui.ts init） */
+      #rotate-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #0b0b12;
+        color: #e8d9b8;
+        font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+      }
+      @media (orientation: portrait) and (pointer: coarse) {
+        #rotate-overlay {
+          display: flex;
+        }
+      }
+      /* 手机图标 + 旋转向导动画：2s 循环，竖矩形顺时针转 90° 再回弹 */
+      #rotate-overlay .rotate-phone {
+        width: 44px;
+        height: 72px;
+        border: 3px solid #c9a227;
+        border-radius: 8px;
+        animation: rotate-hint 2s ease-in-out infinite;
+      }
+      @keyframes rotate-hint {
+        0%,
+        25% {
+          transform: rotate(0deg);
+        }
+        55%,
+        80% {
+          transform: rotate(90deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+      #rotate-overlay .rotate-title {
+        font-size: 20px;
+        letter-spacing: 4px;
+      }
+      #rotate-overlay .rotate-sub {
+        font-size: 13px;
+        color: #9a8b76;
+        letter-spacing: 2px;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-BiEJ82pZ.js"></script>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <div id="ui"></div>
+    <div id="boot-mask">深渊开启中……</div>
+    <div id="rotate-overlay">
+      <div class="rotate-phone"></div>
+      <div class="rotate-title">请旋转设备</div>
+      <div class="rotate-sub">横屏进入深渊 · 体验最佳</div>
+    </div>
+  </body>
+</html>

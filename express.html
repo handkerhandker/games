@@ -1,0 +1,234 @@
+<!doctype html>
+<!-- 快捷门厅 · 由 tools/build-express.mjs 依据 src/games.json 生成，请勿手改 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#16110c" />
+<title>快捷门厅 · EXPRESS</title>
+<style>
+  :root {
+    --bg: #16110c;
+    --ink: #efe6d4;
+    --ink-dim: rgba(239, 230, 212, 0.62);
+    --line: rgba(239, 230, 212, 0.16);
+    --amber: #e9ad55;
+    --green: #b5cf94;
+    --serif: "Songti SC", "STSong", "Noto Serif CJK SC", "Source Han Serif SC", "SimSun", serif;
+    --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  }
+  * { box-sizing: border-box; min-width: 0; min-height: 0; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    height: 100dvh;
+    overflow: hidden; /* 一屏展示，永不滚动 */
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+
+  /* 顶条 / 底条：只占必要高度 */
+  header, footer {
+    flex: 0 0 auto;
+    display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+    gap: 0.2rem 1rem;
+    padding: clamp(0.5rem, 1.8vmin, 1rem) clamp(0.8rem, 2.4vmin, 1.6rem);
+    font-size: clamp(0.62rem, 1.7vmin, 0.78rem);
+    letter-spacing: 0.18em; color: var(--ink-dim);
+  }
+  header { border-bottom: 1px solid var(--line); }
+  footer { border-top: 1px solid var(--line); }
+  a.nav { color: var(--amber); text-decoration: none; }
+  a.nav:hover, a.nav:focus-visible { text-decoration: underline; }
+  .sep { margin: 0 0.5em; opacity: 0.4; }
+
+  /* 门区：占满剩余空间 */
+  main.doors {
+    flex: 1 1 auto;
+    display: flex;
+    gap: clamp(4px, 0.9vmin, 10px);
+    padding: clamp(6px, 1.4vmin, 14px);
+  }
+  a.door {
+    position: relative; flex: 1 1 0%;
+    display: flex; align-items: flex-end;
+    border: 1px solid var(--line); border-radius: clamp(6px, 1.2vmin, 12px);
+    overflow: hidden; text-decoration: none; color: var(--ink);
+    outline: none; touch-action: manipulation;
+    transition: flex-grow 0.35s ease, border-color 0.25s ease;
+  }
+  @media (hover: hover) { a.door:hover { flex-grow: 1.7; border-color: rgba(233, 173, 85, 0.55); } }
+  a.door:focus-visible { flex-grow: 1.7; border-color: var(--amber); box-shadow: 0 0 0 3px rgba(233, 173, 85, 0.3); }
+  a.door img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; filter: saturate(0.8) brightness(0.82);
+    transition: filter 0.35s ease;
+  }
+  @media (hover: hover) { a.door:hover img { filter: none; } }
+  a.door:focus-visible img { filter: none; }
+  a.door::after { /* 底部压暗，保证文字可读 */
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(12, 9, 6, 0.82), transparent 46%);
+  }
+  .plate {
+    position: relative; z-index: 1;
+    padding: clamp(0.5rem, 1.8vmin, 1rem);
+    display: grid; gap: 0.1rem; width: 100%;
+  }
+  .plate h2 {
+    margin: 0; font-family: var(--serif); font-weight: 400;
+    font-size: clamp(0.86rem, 3vmin, 1.5rem);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .plate .en {
+    font-size: clamp(0.52rem, 1.5vmin, 0.66rem);
+    letter-spacing: 0.2em; color: var(--ink-dim); text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .plate .status {
+    position: absolute; top: clamp(-2.6rem, -6vmin, -1.6rem); right: clamp(0.4rem, 1.4vmin, 0.8rem);
+    width: clamp(6px, 1.4vmin, 9px); height: clamp(6px, 1.4vmin, 9px);
+    border-radius: 50%;
+  }
+  .status.dev { background: var(--amber); box-shadow: 0 0 8px rgba(233, 173, 85, 0.8); }
+  .status.ok { background: var(--green); box-shadow: 0 0 8px rgba(181, 207, 148, 0.8); }
+
+  /* 竖屏：五扇门改为五条横档 */
+  @media (orientation: portrait) {
+    main.doors { flex-direction: column; }
+    a.door { align-items: center; }
+    a.door::after { background: linear-gradient(to right, rgba(12, 9, 6, 0.85), transparent 55%); }
+  }
+  /* 矮屏（手机横屏）：隐藏英文副标题，防挤压 */
+  @media (max-height: 30rem) { .plate .en { display: none; } }
+
+  /* file:// 提示小 toast */
+  #toast {
+    position: fixed; left: 50%; bottom: calc(3.2rem + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    max-width: min(92vw, 30rem);
+    padding: 0.55rem 1rem; border-radius: 8px;
+    background: rgba(30, 23, 15, 0.95); border: 1px solid rgba(233, 173, 85, 0.4);
+    color: var(--ink); font-size: 0.8rem; text-align: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  #toast.show { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <span>快捷门厅 · EXPRESS</span>
+  </header>
+
+  <main id="doors" class="doors" aria-label="游戏直达"></main>
+
+  <footer>
+    <span id="hint"></span>
+    <span>CYD's games</span>
+  </footer>
+
+  <div id="toast" role="status"></div>
+
+  <noscript><p style="padding:1rem">需要启用 JavaScript。</p></noscript>
+<script>
+const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN","genre":"放置经营 · 抽卡","pitch":"经营一家连接万千世界的旅店：招募奇珍旅客、扩建房间、放置也有收益。","status":"开发中","tags":["放置","经营","抽卡"],"entry":"./games/inn/index.html","cover":"./covers/inn.jpg","needsServer":true,"updatedAt":"2026-07-23"},{"slug":"zero-day","title":"零日协议","subtitle":"ZERO-DAY PROTOCOL","genre":"卡牌 Roguelike","pitch":"扮演觉醒的流浪 AI「零日」，用程序卡牌攻破巨企主网层层 ICE，直抵核心窃取奇点密钥。","status":"可玩","tags":["卡牌","Roguelike","赛博朋克"],"entry":"./games/zero-day/index.html","cover":"./covers/zero-day.jpg","needsServer":false,"updatedAt":"2026-07-22"},{"slug":"embernight","title":"烛夜","subtitle":"EMBERNIGHT","genre":"动作 · 黑暗奇幻","pitch":"一根蜡烛照亮黑夜：十分钟一局的打击感动作小品，零外部素材、纯代码渲染与程序化音频。","status":"可玩","tags":["动作","单文件"],"entry":"./games/embernight/index.html","cover":"./covers/embernight.jpg","needsServer":false,"updatedAt":"2026-07-22"},{"slug":"dungeon","title":"地牢幸存者：巫妖深渊","subtitle":"DUNGEON SURVIVORS","genre":"幸存者类动作","pitch":"吸血鬼幸存者式实时动作：6 武器进化、8 种敌人与三阶段巫妖，在 10 分钟波次中活下来。","status":"可玩","tags":["动作","幸存者","Roguelite"],"entry":"./games/dungeon/index.html","cover":"./covers/dungeon.jpg","needsServer":true,"updatedAt":"2026-07-23"},{"slug":"spellforge","title":"Spellforge","subtitle":"咒锻工坊","genre":"合成休闲","pitch":"拖拽合成咒语与装备，打造属于你的法术工坊——已打包上架 itch.io 与 CrazyGames。","status":"可玩","tags":["合成","休闲"],"entry":"./games/spellforge/index.html","cover":"./covers/spellforge.jpg","needsServer":false,"updatedAt":"2026-07-21"}];
+</script>
+<script>
+(function () {
+  'use strict'
+  var main = document.getElementById('doors')
+  var hint = document.getElementById('hint')
+  var toast = document.getElementById('toast')
+  var isFile = window.location.protocol === 'file:'
+  var HINTS = {
+    kbm: '←→↑↓ 选门 · Enter 进门',
+    touch: '点门即进',
+    pad: '十字键/摇杆选门 · Ⓐ 进门'
+  }
+
+  var games = GAMES.slice().sort(function (a, b) { return a.updatedAt < b.updatedAt ? 1 : -1 })
+  games.forEach(function (g) {
+    var a = document.createElement('a')
+    a.className = 'door'
+    a.href = g.entry
+    a.setAttribute('data-slug', g.slug)
+    a.setAttribute('aria-label', g.title + '（' + g.genre + '，' + g.status + '）')
+    a.innerHTML =
+      '<img src="' + g.cover + '" alt="" loading="eager" decoding="async" />' +
+      '<div class="plate">' +
+        '<span class="status ' + (g.status === '开发中' ? 'dev' : 'ok') + '" title="' + g.status + '"></span>' +
+        '<h2>' + g.title + '</h2>' +
+        '<span class="en">' + g.subtitle + ' · ' + g.genre + '</span>' +
+      '</div>'
+    main.appendChild(a)
+  })
+
+  var toastTimer = 0
+  function showToast(msg) {
+    toast.textContent = msg
+    toast.classList.add('show')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(function () { toast.classList.remove('show') }, 3200)
+  }
+
+  main.addEventListener('click', function (e) {
+    var a = e.target.closest('a.door')
+    if (!a) return
+    var g = games.filter(function (x) { return x.slug === a.getAttribute('data-slug') })[0]
+    if (isFile && g && g.needsServer) {
+      e.preventDefault()
+      showToast('「' + g.title + '」需经本地服务或在线版进入：在门户目录运行 npm run dev，或使用部署后的网址')
+    }
+  })
+
+  // 键盘 / 手柄选门
+  var doors = Array.prototype.slice.call(document.querySelectorAll('a.door'))
+  function cur() { return doors.indexOf(document.activeElement) }
+  function focusAt(i) {
+    var n = doors.length
+    if (!n) return
+    doors[((i % n) + n) % n].focus()
+  }
+  document.addEventListener('keydown', function (e) {
+    setMode('kbm')
+    var i = cur()
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); focusAt(i < 0 ? 0 : i + 1) }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); focusAt(i < 0 ? doors.length - 1 : i - 1) }
+    else if (e.key === 'Escape') { toast.classList.remove('show') }
+  })
+  document.addEventListener('pointerdown', function (e) { setMode(e.pointerType === 'touch' ? 'touch' : 'kbm') }, { passive: true })
+
+  var padPrev = {}
+  function padLoop() {
+    var pads = navigator.getGamepads ? navigator.getGamepads() : []
+    var gp = null
+    for (var k = 0; k < pads.length; k++) if (pads[k] && pads[k].connected) { gp = pads[k]; break }
+    if (gp) {
+      var ax = gp.axes[0] || 0, ay = gp.axes[1] || 0
+      var btn = function (n) { return gp.buttons[n] && gp.buttons[n].pressed }
+      var p = { next: btn(15) || btn(13) || ax > 0.6 || ay > 0.6, prev: btn(14) || btn(12) || ax < -0.6 || ay < -0.6, ok: btn(0), back: btn(1) }
+      if (p.next && !padPrev.next) focusAt(cur() + 1)
+      if (p.prev && !padPrev.prev) focusAt(cur() < 0 ? doors.length - 1 : cur() - 1)
+      if (p.ok && !padPrev.ok && document.activeElement && document.activeElement.classList.contains('door')) document.activeElement.click()
+      if (p.back && !padPrev.back) toast.classList.remove('show')
+      padPrev = p
+    }
+    requestAnimationFrame(padLoop)
+  }
+  window.addEventListener('gamepadconnected', function () { setMode('pad') })
+  padLoop()
+
+  function setMode(m) { hint.textContent = HINTS[m] || HINTS.kbm }
+  setMode('kbm')
+})()
+</script>
+</body>
+</html>
