@@ -769,6 +769,9 @@ body.cb-noscroll { overflow: hidden; }
     justify-content: flex-start;
     scroll-snap-type: x proximity; /* 触屏轻滑不强制吸卡，降低误触位移 */
   }
+  /* 窄屏打牌区不显示风味文本：定高内盒放不下时它被底线腰斩（右侧两卡实锤），
+     与其切坏不如整块隐藏；奖励/商店/卡组等阅读场景由 components.guardFlavor 做"全显或全隐" */
+  .cb-hand .sc-card-flavor { display: none; }
   .cb-bottom .sc-pilebtn { font-size: var(--fs-xs); padding: .5em .7em; }
   .cb-endturn { font-size: var(--fs-md); padding: .55em 1em; letter-spacing: .08em; }
 }
@@ -815,7 +818,9 @@ body.cb-noscroll { overflow: hidden; }
   .cb-avatar-heat { left: calc(var(--avatar) / 2); }
   .cb-hand {
     min-height: calc(var(--card-h) + 6px);
-    padding-top: clamp(4px, .8vh, 6px);
+    /* 上内边距须容纳费用角标凸出（cost-s/3 ≈ 8-10px）+ hover 上抬 10px：
+       旧值 4-6px 会把角标圆圈顶部削掉（矮屏手机实锤），下限抬到 14px */
+    padding-top: clamp(14px, 2.2vh, 18px);
     padding-bottom: clamp(4px, .8vh, 6px);
   }
   .cb-pilebox { padding-bottom: 0; }
@@ -10160,6 +10165,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       }
       const oldBannerHost = root.querySelector ? root.querySelector(".cb-banner-host") : null;
       const liveBanners = oldBannerHost ? [...oldBannerHost.children] : [];
+      const prevHandScroll = root.querySelector ? root.querySelector(".cb-hand")?.scrollLeft || 0 : 0;
       clear(root);
       enemyEls = /* @__PURE__ */ new Map();
       handEls = [];
@@ -10249,6 +10255,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       shell.append(renderLog());
       if (ended) shell.append(renderBanner());
       root.append(shell);
+      const newHand = root.querySelector(".cb-hand");
+      if (newHand && prevHandScroll) newHand.scrollLeft = prevHandScroll;
       fitCombat();
     }
     function fitCombat() {

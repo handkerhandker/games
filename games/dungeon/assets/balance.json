@@ -104,8 +104,10 @@
           "multiTarget": 3,
           "fanAngleDeg": 15
         },
-        "desc": "每轮锁定最近的 3 个敌人各发 1 枚（目标不足 3 时向同一目标扇形连发），穿透 2 个目标"
-      }
+        "desc": "每轮锁定最近的 3 个敌人各发 1 枚（目标不足 3 时向同一目标扇形连发），穿透 2 个目标",
+        "family": "ranged"
+      },
+      "family": "ranged"
     },
     {
       "id": "fireball",
@@ -185,8 +187,10 @@
           "burnDps": 12,
           "burnDuration": 3.0
         },
-        "desc": "在敌群密度最高的 3 处召唤陨星轰击（从天而降、无前摇弹道），留下燃烧区域 3s（12 DPS）"
-      }
+        "desc": "在敌群密度最高的 3 处召唤陨星轰击（从天而降、无前摇弹道），留下燃烧区域 3s（12 DPS）",
+        "family": "ranged"
+      },
+      "family": "ranged"
     },
     {
       "id": "ice",
@@ -286,8 +290,10 @@
           "freezeDuration": 0.5,
           "coneAngleDeg": 60
         },
-        "desc": "60° 扇形射出 6 枚极寒之锥，无限穿透；命中冻结 0.5s（硬控）+ 减速 50% 2.5s"
-      }
+        "desc": "60° 扇形射出 6 枚极寒之锥，无限穿透；命中冻结 0.5s（硬控）+ 减速 50% 2.5s",
+        "family": "ranged"
+      },
+      "family": "ranged"
     },
     {
       "id": "holyNova",
@@ -359,8 +365,10 @@
           "knockback": 220,
           "healOnCast": 3
         },
-        "desc": "半径 230 的圣光冲击波，巨幅击退；每次释放为玩家恢复 3 HP"
-      }
+        "desc": "半径 230 的圣光冲击波，巨幅击退；每次释放为玩家恢复 3 HP",
+        "family": "melee"
+      },
+      "family": "melee"
     },
     {
       "id": "dagger",
@@ -440,8 +448,10 @@
           "ricochet": 1,
           "fanAngleDeg": 60
         },
-        "desc": "向移动方向 ±30° 扇形泼洒 6 柄利刃，穿透 1 且可弹射 1 次（对单体有效命中约 1/3，清群极强）"
-      }
+        "desc": "向移动方向 ±30° 扇形泼洒 6 柄利刃，穿透 1 且可弹射 1 次（对单体有效命中约 1/3，清群极强）",
+        "family": "melee"
+      },
+      "family": "melee"
     },
     {
       "id": "lightning",
@@ -520,8 +530,10 @@
           "knockback": 30,
           "stunDuration": 0.25
         },
-        "desc": "每 2s 在随机敌人位置降下 8 道落雷，每道链式跳跃 4 次并眩晕 0.25s（范围内只有 Boss 时全部轰击 Boss）"
-      }
+        "desc": "每 2s 在随机敌人位置降下 8 道落雷，每道链式跳跃 4 次并眩晕 0.25s（范围内只有 Boss 时全部轰击 Boss）",
+        "family": "ranged"
+      },
+      "family": "ranged"
     },
     {
       "id": "boomerang",
@@ -621,8 +633,10 @@
           "spreadAngleDeg": 10,
           "widthMul": 1.6
         },
-        "desc": "3 柄巨型环刃（刃体 ×1.6）±10° 扇形掷出，往返双程无限穿透；返程伤害 ×1.5（去程 32 / 返程 48），同一敌人可被双程各命中 1 次"
-      }
+        "desc": "3 柄巨型环刃（刃体 ×1.6）±10° 扇形掷出，往返双程无限穿透；返程伤害 ×1.5（去程 32 / 返程 48），同一敌人可被双程各命中 1 次",
+        "family": "melee"
+      },
+      "family": "melee"
     },
     {
       "id": "holyWater",
@@ -708,8 +722,10 @@
           "knockback": 0,
           "vulnerabilityPct": 0.15
         },
-        "desc": "圣域半径 140、持续 7s，每 0.4s 造成 22 伤害；域中敌人受到的所有来源伤害 +15%（多池伤害独立叠加，易伤不叠加取最高）"
-      }
+        "desc": "圣域半径 140、持续 7s，每 0.4s 造成 22 伤害；域中敌人受到的所有来源伤害 +15%（多池伤害独立叠加，易伤不叠加取最高）",
+        "family": "ranged"
+      },
+      "family": "ranged"
     },
     {
       "id": "familiar",
@@ -803,8 +819,10 @@
           "preferTarget": "strongest",
           "sizeMul": 3.0
         },
-        "desc": "全部魔宠合体为 1 只深渊巨口（体型 ×3）：优先扑咬最强敌人，每 0.8s 撕咬造成半径 60 的范围 90 伤害并击退 80"
-      }
+        "desc": "全部魔宠合体为 1 只深渊巨口（体型 ×3）：优先扑咬最强敌人，每 0.8s 撕咬造成半径 60 的范围 90 伤害并击退 80",
+        "family": "ranged"
+      },
+      "family": "ranged"
     }
   ],
   "passives": [
@@ -1977,6 +1995,1224 @@
       "cultist": "自爆黑雾 10 粒",
       "elite": "fx_explosion + 冲击波环（半径 0->120px / 0.3s）",
       "boss": "1.5s 处决演出：3 次连环爆炸 + 0.3x 慢动作 1.2s + 全屏白闪 200ms"
+    }
+  },
+  "characters": [
+    {
+      "id": "mage",
+      "name": "秘法师",
+      "title": "流浪秘法师",
+      "asset": "player_mage",
+      "themeColor": "#9775fa",
+      "unlock": "default",
+      "startWeapon": "magicBolt",
+      "stats": {
+        "maxHpMul": 1.0,
+        "moveSpeedMul": 0.95,
+        "damageMul": 1.0,
+        "projectileDmgMul": 1.0,
+        "cooldownMul": 1.0,
+        "xpMul": 1.2,
+        "regenPerSecondFlat": 0
+      },
+      "resolved": {
+        "maxHp": 100,
+        "speed": 171,
+        "note": "基准 100 HP / 180 速，仅按角色乘区折算，未含特性/祭坛/被动"
+      },
+      "copy": {
+        "flavor": "咒语在血里生长。",
+        "role": "发育流基准：升级更快，身板标准，全能无短板。",
+        "unlockText": "初始角色",
+        "statLines": [
+          {
+            "key": "xpMul",
+            "text": "经验获取 ×1.20",
+            "sign": "good"
+          },
+          {
+            "key": "moveSpeedMul",
+            "text": "移动速度 ×0.95",
+            "sign": "bad"
+          }
+        ]
+      }
+    },
+    {
+      "id": "berserker",
+      "name": "狂战士",
+      "title": "血手",
+      "asset": "player_berserker",
+      "themeColor": "#ff6b6b",
+      "unlock": {
+        "achievement": "ach_blood_awakening"
+      },
+      "startWeapon": "dagger",
+      "stats": {
+        "maxHpMul": 0.75,
+        "moveSpeedMul": 1.15,
+        "damageMul": 1.0,
+        "projectileDmgMul": 0.8,
+        "cooldownMul": 0.85,
+        "xpMul": 1.0,
+        "regenPerSecondFlat": 0
+      },
+      "resolved": {
+        "maxHp": 75,
+        "speed": 207,
+        "note": "基准 100 HP / 180 速，仅按角色乘区折算，未含特性/祭坛/被动"
+      },
+      "copy": {
+        "flavor": "痛觉是速度的燃料。",
+        "role": "刀尖起舞：以速度换血条，贴脸泼刀，远程疲软。",
+        "unlockText": "深渊功业「血怒觉醒」：累计击杀 500",
+        "statLines": [
+          {
+            "key": "moveSpeedMul",
+            "text": "移动速度 ×1.15",
+            "sign": "good"
+          },
+          {
+            "key": "cooldownMul",
+            "text": "攻击冷却 ×0.85",
+            "sign": "good"
+          },
+          {
+            "key": "maxHpMul",
+            "text": "最大生命 ×0.75",
+            "sign": "bad"
+          },
+          {
+            "key": "projectileDmgMul",
+            "text": "远程武器伤害 ×0.80",
+            "sign": "bad"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cleric",
+      "name": "圣职者",
+      "title": "掌灯人",
+      "asset": "player_cleric",
+      "themeColor": "#ffd43b",
+      "unlock": {
+        "achievement": "ach_abyss_baptism"
+      },
+      "startWeapon": "holyNova",
+      "stats": {
+        "maxHpMul": 1.3,
+        "moveSpeedMul": 0.9,
+        "damageMul": 0.85,
+        "projectileDmgMul": 1.0,
+        "cooldownMul": 1.0,
+        "xpMul": 1.0,
+        "regenPerSecondFlat": 1.0
+      },
+      "resolved": {
+        "maxHp": 130,
+        "speed": 162,
+        "note": "基准 100 HP / 180 速，仅按角色乘区折算，未含特性/祭坛/被动"
+      },
+      "copy": {
+        "flavor": "灯还亮着，人就还在。",
+        "role": "站桩续航：用回复拖垮深渊，腿短怕围，输出温和。",
+        "unlockText": "深渊功业「深渊洗礼」：HP 曾降至 50 以下且存活至 5:00",
+        "statLines": [
+          {
+            "key": "maxHpMul",
+            "text": "最大生命 ×1.30",
+            "sign": "good"
+          },
+          {
+            "key": "regenPerSecondFlat",
+            "text": "生命回复 +1.0/秒",
+            "sign": "good"
+          },
+          {
+            "key": "moveSpeedMul",
+            "text": "移动速度 ×0.90",
+            "sign": "bad"
+          },
+          {
+            "key": "damageMul",
+            "text": "全武器伤害 ×0.85",
+            "sign": "bad"
+          }
+        ]
+      }
+    }
+  ],
+  "characterRules": {
+    "equipSlots": 1,
+    "applyTiming": "run 初始化时应用（与特性同刻，先于开局武器授予）；当前 HP 初始化 = 新上限（同特性口径）",
+    "zone": "角色修正为独立乘区：与特性乘区/被动加法区/祭坛/信物全部叠乘（相乘），不与任何乘区做加法合并；regenPerSecondFlat 是加法区，与生命符文 regen 相加",
+    "neutralDefault": "stats 缺省字段视为中性：乘区 1.0、加区 0（防御性读取）",
+    "formulas": {
+      "speed": "speed = 180 × (1 + 0.07×被动swift级 + 0.03×祭坛swiftL) × 特性moveSpeedMul × 角色moveSpeedMul",
+      "maxHp": "maxHp = floor((100 + 15×被动vitality级 + 特性maxHpFlat) × 特性maxHpMul × 角色maxHpMul)",
+      "damage": "dmg = 武器等级dmg × (1 + 0.08×被动power级) × 特性damageMul × 角色damageMul × (family==\"ranged\" ? 角色projectileDmgMul : 1)",
+      "cooldown": "cd = 武器等级cd × (1 - 0.06×被动haste级) × 信物cooldownMul × 角色cooldownMul",
+      "xp": "xp = 基础经验 × (1 + 0.06×被动wisdom级) × (1 + 0.04×祭坛scholarL) × 特性xpMul × 角色xpMul",
+      "regen": "regen = 0.4×被动vitality级 + 角色regenPerSecondFlat"
+    },
+    "startWeaponPriority": "武器信物 grantsWeapon > 角色 startWeapon > draftWeapon > magicBolt；授予均走 addWeapon 同一入口（占 6 武器槽 1 格，emit weaponAdded）；武器信物装备时角色卡开局武器行与 draft 栏均标注「由信物决定」",
+    "familyRule": "family 按 weaponFamilyAdd 逐键标注（基础武器与进化形态各自标注，取值一致）；projectileDmgMul 仅作用于 family==\"ranged\"；family 与信物 appliesTo 正交（信物按 id 白名单，family 按交战距离分类），两者可同帧生效、互不改写",
+    "familySemantics": "melee = 近身/贴身交战武器（飞刀、回旋刃、自中心新星系）；ranged = 远程投放武器（飞弹、火球、冰锥、闪电、圣水、魔宠系）",
+    "selection": "局前角色选择屏单选，确认即持久化 loadout.selectedCharacter；已拥有列表 loadout.characters（默认 [\"mage\"]）；配装变更走存档 immediate 写入点（同信物换装）"
+  },
+  "maps": [
+    {
+      "id": "dungeon",
+      "name": "无限地牢",
+      "nameEn": "The Endless Dungeon",
+      "flavor": "深渊的第一层，也是最后一层。",
+      "introLines": [],
+      "selectCard": {
+        "tilePreviewKeys": [
+          "tile_floor_1",
+          "tile_wall"
+        ],
+        "diffBullets": [
+          "近战海与肉墙推进，正面对撞",
+          "无环境机制，纯波次曲线",
+          "标准难度，初次远征推荐"
+        ],
+        "unlock": {
+          "type": "always",
+          "seconds": 0,
+          "lockedText": "",
+          "progressText": ""
+        }
+      }
+    },
+    {
+      "id": "library",
+      "name": "腐化图书馆",
+      "nameEn": "The Corrupted Library",
+      "flavor": "知识腐坏后，比无知更饿。",
+      "introLines": [
+        "书架尽头，烛火还亮着。",
+        "别碰那些无风自翻的书。",
+        "十分钟后，唯一的读者到场。"
+      ],
+      "selectCard": {
+        "tilePreviewKeys": [
+          "tile_lib_floor_1",
+          "tile_lib_wall"
+        ],
+        "diffBullets": [
+          "住民以书灵与邪教徒为主，弹雨取代肉墙",
+          "禁忌书页周期洇开墨雾，站位即生死",
+          "经验更密、节奏更快，老手向"
+        ],
+        "unlock": {
+          "type": "singleRunSurviveSeconds",
+          "mapId": "dungeon",
+          "seconds": 300,
+          "lockedText": "在无限地牢单局存活 300s 解锁",
+          "progressText": "最佳 {best}s / 300s"
+        }
+      },
+      "palette": {
+        "floorBase": "#1c2f2a",
+        "floorVariant": "#22382f",
+        "floorCrack": "#16241f",
+        "shelfWood": "#241d16",
+        "bookSpines": [
+          "#3a2a28",
+          "#2a3a34",
+          "#2e3440"
+        ],
+        "fogCore": "rgba(31,78,68,0.55)",
+        "fogEdge": "rgba(31,78,68,0)",
+        "fogRing": "#8fd8c8",
+        "candleFlame": "#e8c07a",
+        "accentGlow": "#66c2b0",
+        "vignette": "#0b1412"
+      },
+      "tileKeys": [
+        {
+          "key": "tile_lib_floor_1",
+          "kind": "floor",
+          "weight": 0.625,
+          "desc": "主地板：深色胡桃木地板，墨绿冷调（palette.floorBase 基色），磨损纹理 + 偶发浅划痕；16×16 源图 4 倍放大至 64px。建议 Tiny Dungeon 木地板瓦片经 Pillow 调色（色相偏 160°、饱和 -30%、明度 -25%）"
+        },
+        {
+          "key": "tile_lib_floor_2",
+          "kind": "floor",
+          "weight": 0.25,
+          "desc": "地板变体 A：同基底，一角溅墨渍（floorCrack 色）+ 半页残纸（#d8cfae 污损纸色）"
+        },
+        {
+          "key": "tile_lib_floor_3",
+          "kind": "floor",
+          "weight": 0.125,
+          "desc": "地板变体 B：同基底，蜡泪滴痕（candleFlame 暗化色）+ 细裂纹"
+        },
+        {
+          "key": "tile_lib_wall",
+          "kind": "wall",
+          "weight": 1.0,
+          "desc": "整面书架墙：shelfWood 框架三层书脊剪影（bookSpines 三色各约 1/3 随机排布），顶层积灰亮色描边；建议 Pillow 程序化生成"
+        },
+        {
+          "key": "tile_lib_deco_candle",
+          "kind": "deco",
+          "weight": 0.4,
+          "desc": "点缀 overlay：并蒂双烛，烛焰 2×3px 亮块（candleFlame），静态帧；每格 1/24 概率触发 overlay 后按 2/2/1 抽选"
+        },
+        {
+          "key": "tile_lib_deco_books",
+          "kind": "deco",
+          "weight": 0.4,
+          "desc": "点缀 overlay：倒地书堆 2~3 本，书脊取 bookSpines 随机色"
+        },
+        {
+          "key": "tile_lib_deco_page",
+          "kind": "deco",
+          "weight": 0.2,
+          "desc": "点缀 overlay：散落单页，#d8cfae 污损纸色，微卷边"
+        }
+      ],
+      "waves": [
+        {
+          "start": 0,
+          "end": 30,
+          "interval": 1.4,
+          "hpMul": 1.0,
+          "maxAlive": 30,
+          "weights": {
+            "rat": 0.6,
+            "bat": 0.4
+          },
+          "events": []
+        },
+        {
+          "start": 30,
+          "end": 60,
+          "interval": 1.3,
+          "hpMul": 1.0,
+          "maxAlive": 40,
+          "weights": {
+            "rat": 0.5,
+            "bat": 0.5
+          },
+          "events": []
+        },
+        {
+          "start": 60,
+          "end": 90,
+          "interval": 1.15,
+          "hpMul": 1.1,
+          "maxAlive": 55,
+          "weights": {
+            "rat": 0.4,
+            "bat": 0.35,
+            "spider": 0.25
+          },
+          "events": []
+        },
+        {
+          "start": 90,
+          "end": 120,
+          "interval": 1.05,
+          "hpMul": 1.1,
+          "maxAlive": 65,
+          "weights": {
+            "rat": 0.35,
+            "bat": 0.3,
+            "spider": 0.2,
+            "skeleton": 0.15
+          },
+          "events": [
+            {
+              "time": 90,
+              "type": "elite",
+              "enemy": "bat",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 120,
+          "end": 150,
+          "interval": 0.95,
+          "hpMul": 1.2,
+          "maxAlive": 80,
+          "weights": {
+            "bat": 0.3,
+            "spider": 0.25,
+            "skeleton": 0.25,
+            "rat": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 150,
+          "end": 180,
+          "interval": 0.9,
+          "hpMul": 1.2,
+          "maxAlive": 90,
+          "weights": {
+            "skeleton": 0.25,
+            "ghost": 0.2,
+            "spider": 0.2,
+            "bat": 0.2,
+            "rat": 0.15
+          },
+          "events": []
+        },
+        {
+          "start": 180,
+          "end": 210,
+          "interval": 0.8,
+          "hpMul": 1.35,
+          "maxAlive": 105,
+          "weights": {
+            "ghost": 0.25,
+            "skeleton": 0.25,
+            "spider": 0.2,
+            "bat": 0.15,
+            "rat": 0.15
+          },
+          "events": [
+            {
+              "time": 180,
+              "type": "elite",
+              "enemy": "skeleton",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 210,
+          "end": 240,
+          "interval": 0.75,
+          "hpMul": 1.35,
+          "maxAlive": 115,
+          "weights": {
+            "ghost": 0.3,
+            "skeleton": 0.3,
+            "spider": 0.2,
+            "bat": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 240,
+          "end": 270,
+          "interval": 0.68,
+          "hpMul": 1.5,
+          "maxAlive": 120,
+          "weights": {
+            "ghost": 0.3,
+            "skeleton": 0.25,
+            "spider": 0.15,
+            "bat": 0.15,
+            "cultist": 0.15
+          },
+          "events": []
+        },
+        {
+          "start": 270,
+          "end": 300,
+          "interval": 0.62,
+          "hpMul": 1.5,
+          "maxAlive": 125,
+          "weights": {
+            "ghost": 0.3,
+            "skeleton": 0.25,
+            "cultist": 0.2,
+            "spider": 0.15,
+            "bat": 0.1
+          },
+          "events": [
+            {
+              "time": 270,
+              "type": "elite",
+              "enemy": "ghost",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 300,
+          "end": 330,
+          "interval": 0.55,
+          "hpMul": 1.7,
+          "maxAlive": 140,
+          "weights": {
+            "ghost": 0.25,
+            "gargoyle": 0.2,
+            "cultist": 0.2,
+            "skeleton": 0.2,
+            "spider": 0.15
+          },
+          "events": [
+            {
+              "time": 300,
+              "type": "elite",
+              "enemy": "gargoyle",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 330,
+          "end": 360,
+          "interval": 0.5,
+          "hpMul": 1.7,
+          "maxAlive": 150,
+          "weights": {
+            "ghost": 0.25,
+            "cultist": 0.25,
+            "gargoyle": 0.2,
+            "skeleton": 0.2,
+            "spider": 0.1
+          },
+          "events": []
+        },
+        {
+          "start": 360,
+          "end": 390,
+          "interval": 0.45,
+          "hpMul": 1.9,
+          "maxAlive": 165,
+          "weights": {
+            "cultist": 0.25,
+            "ghost": 0.25,
+            "skeleton": 0.2,
+            "gargoyle": 0.15,
+            "spider": 0.15
+          },
+          "events": [
+            {
+              "time": 360,
+              "type": "elite",
+              "enemy": "cultist",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 390,
+          "end": 420,
+          "interval": 0.42,
+          "hpMul": 1.9,
+          "maxAlive": 175,
+          "weights": {
+            "cultist": 0.3,
+            "ghost": 0.25,
+            "skeleton": 0.2,
+            "gargoyle": 0.15,
+            "spider": 0.1
+          },
+          "events": []
+        },
+        {
+          "start": 420,
+          "end": 450,
+          "interval": 0.38,
+          "hpMul": 2.1,
+          "maxAlive": 190,
+          "weights": {
+            "cultist": 0.3,
+            "ghost": 0.3,
+            "skeleton": 0.2,
+            "gargoyle": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 450,
+          "end": 480,
+          "interval": 0.35,
+          "hpMul": 2.1,
+          "maxAlive": 200,
+          "weights": {
+            "ghost": 0.3,
+            "cultist": 0.3,
+            "skeleton": 0.2,
+            "gargoyle": 0.2
+          },
+          "events": [
+            {
+              "time": 450,
+              "type": "elite",
+              "enemy": "skeleton",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 480,
+          "end": 510,
+          "interval": 0.32,
+          "hpMul": 2.3,
+          "maxAlive": 215,
+          "weights": {
+            "cultist": 0.3,
+            "ghost": 0.3,
+            "skeleton": 0.2,
+            "gargoyle": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 510,
+          "end": 540,
+          "interval": 0.3,
+          "hpMul": 2.3,
+          "maxAlive": 225,
+          "weights": {
+            "cultist": 0.3,
+            "ghost": 0.3,
+            "gargoyle": 0.2,
+            "skeleton": 0.2
+          },
+          "events": [
+            {
+              "time": 510,
+              "type": "elite",
+              "enemy": "gargoyle",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "start": 540,
+          "end": 570,
+          "interval": 0.28,
+          "hpMul": 2.5,
+          "maxAlive": 240,
+          "weights": {
+            "ghost": 0.35,
+            "cultist": 0.3,
+            "gargoyle": 0.2,
+            "skeleton": 0.15
+          },
+          "events": [
+            {
+              "time": 540,
+              "type": "elite",
+              "enemy": "cultist",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 570,
+          "end": 600,
+          "interval": 0.4,
+          "hpMul": 2.5,
+          "maxAlive": 170,
+          "weights": {
+            "skeleton": 0.3,
+            "cultist": 0.3,
+            "ghost": 0.25,
+            "gargoyle": 0.15
+          },
+          "events": [
+            {
+              "time": 570,
+              "type": "elite",
+              "enemy": "ghost",
+              "count": 2
+            },
+            {
+              "time": 585,
+              "type": "banner",
+              "text": "书页无风自翻……"
+            }
+          ]
+        },
+        {
+          "start": 600,
+          "end": 9999,
+          "interval": 0.8,
+          "hpMul": 2.5,
+          "maxAlive": 120,
+          "weights": {
+            "skeleton": 0.5,
+            "cultist": 0.5
+          },
+          "events": [
+            {
+              "time": 600,
+              "type": "boss",
+              "enemy": "lich",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "eliteEvents": [
+        {
+          "id": "elite_haunted_shelf",
+          "time": 270,
+          "enemy": "ghost",
+          "count": 1,
+          "title": "缚灵·藏书鬼",
+          "banner": "书架深处，有什么睁开了眼。",
+          "note": "标志性事件 E1；走 waves[9].events 刷怪（全局 elites 规则不变），banner 走 waveNarration elite 字幕槽；命名仅文案层"
+        },
+        {
+          "id": "elite_silent_patrol",
+          "time": 510,
+          "enemy": "gargoyle",
+          "count": 2,
+          "title": "馆雕双卫",
+          "banner": "缄默百年的卫士，开始巡礼。",
+          "note": "标志性事件 E2；双精英同刷有先例（地牢 570s elite orc×2）；精英不占 maxAlive 名额（spawner.fireEvent 无 countEnemies 检查）"
+        }
+      ],
+      "mechanic": {
+        "id": "forbiddenPages",
+        "name": "禁忌书页",
+        "summary": "周期性在玩家周身环带洇开墨雾区：预警可走位规避，雾内玩家受腐蚀 DoT、图书馆住民提速——纯站位惩罚，无地形碰撞。",
+        "cycle": {
+          "firstTriggerAt": 120,
+          "periodSeconds": 60,
+          "telegraphSeconds": 3.0,
+          "activeSeconds": 8.0,
+          "fadeSeconds": 1.0,
+          "clock": "g.time.elapsed（与 spawner 同一战斗时钟，暂停/升级态自然冻结）",
+          "bossPhase": {
+            "zoneCount": 2,
+            "introSuppression": "计划触发点落在 Boss 出场演出（600~603s）内时顺延至演出结束"
+          }
+        },
+        "zones": {
+          "count": 3,
+          "radius": 140,
+          "ringMin": 260,
+          "ringMax": 420,
+          "placement": "telegraph 开始瞬间以玩家当时位置为圆心锁定，不追踪；基准方位角 a 随机，三区取 a、a+120°、a+240° 各加 ±15° 抖动（两两夹角 ∈[90°,150°]，恒满足最小间隔 90°），半径 [260,420] 均匀随机",
+          "overlapRule": "同轮三区间不检测重叠（夹角约束已保证雾心距 ≥ 2×radius×sin45°≈198px>radius，视觉叠合可接受）；跨轮不重叠（活跃窗口 12s < 周期 60s）"
+        },
+        "playerEffect": {
+          "type": "dot",
+          "tickSeconds": 0.5,
+          "pctMaxHpPerTick": 0.01,
+          "maxFullDwellPct": 0.16,
+          "channel": "dotBypassInvuln",
+          "channelSpec": "新增 damagePlayerDot(amount, source)：不读取/不设置 invuln、不触发 hitStop/震屏/受击音；emit playerDamaged（source='forbiddenPages'，供死因归因与结算复盘）",
+          "inMistFeedback": "玩家在雾内叠加 25% 青黑 tint（palette.fogCore 色），伤害飘字合并为每秒 1 次"
+        },
+        "enemyEffect": {
+          "speedMul": 1.1,
+          "excludes": [
+            "elite",
+            "boss"
+          ],
+          "stacking": "与萨满光环 speedBuffPct 0.2 叠乘（实测上限 1.32），不与自身叠加",
+          "inMistFeedback": "雾内普通敌人叠加 20% 青色 tint（palette.accentGlow 色）"
+        },
+        "visual": {
+          "layer": "世界层，background 之上、enemies 之下（雾贴地，怪踩在雾上对玩家可读）",
+          "telegraph": "3 张书页自屏幕顶缘飘落 2.5s 弧线落向锁定点（fx 粒子）；落点墨圈描边（fogRing，2px）alpha 0→100% 渐显 3s，圈内填充 alpha 0→0.12",
+          "active": "圆形径向渐变填充（fogCore→fogEdge）；每区 8 粒墨点粒子（fx 池复用 trailSpark 型，accentGlow 色，40ms 生命周期错相）缓慢上升；雾缘描边 0.8Hz 呼吸（alpha 50%±20%）",
+          "fade": "1.0s 全要素 alpha→0"
+        },
+        "sfx": {
+          "telegraph": "pageTurn ×3（每区 1 次，delay 0/0.15/0.30s）",
+          "active": "mistRise ×1（激活瞬间）"
+        }
+      },
+      "bossCopy": {
+        "banner": "巫妖·维萨里昂 自禁书库现身！",
+        "introNarration": "他是这里最后的读者，也是唯一的藏书。",
+        "preBanner585": "书页无风自翻……",
+        "victoryLine": "图书馆安静下来，烛火替魂火守夜。",
+        "note": "仅文案替换（boss.onSpawn.banner / 585 横幅 / 胜利结算行），Boss 数值/阶段/召唤池不动"
+      },
+      "audio": {
+        "musicGameLibrary": {
+          "branch": "playMusic('gameLibrary')，局内替换 'game' 态（menu/boss 态沿用现有）",
+          "filterBase": 280,
+          "lfoRate": 0.09,
+          "lfoDepth": 90,
+          "target": 0.045,
+          "layers": [
+            {
+              "type": "sine",
+              "freq": 55,
+              "detune": 0,
+              "gain": 0.32
+            },
+            {
+              "type": "triangle",
+              "freq": 82.5,
+              "detune": 7,
+              "gain": 0.28
+            },
+            {
+              "type": "sine",
+              "freq": 110,
+              "detune": -6,
+              "gain": 0.15
+            },
+            {
+              "type": "sine",
+              "freq": 220,
+              "detune": 12,
+              "gain": 0.05
+            }
+          ],
+          "diffNote": "地牢=sawtooth 粗粝石壁感；图书馆=纯 sine 基底 + 高八度微漂（220Hz detune+12 拍频=空厅烛火），filterBase 320→280 更闷（书海吸声）"
+        },
+        "sfx": [
+          {
+            "name": "pageTurn",
+            "recipe": "noise(bandpass, 2600, 900, 0.12, 0.05, 0, 1.5)",
+            "trigger": "机制 telegraph 开始，每区 1 次共 3 次（delay 0/0.15/0.30s）"
+          },
+          {
+            "name": "mistRise",
+            "recipe": "noise(lowpass, 480, 160, 0.7, 0.08) + tone(sine, 140, 90, 0.5, 0.04)",
+            "trigger": "机制 active 开始，1 次"
+          }
+        ]
+      }
+    }
+  ],
+  "endless": {
+    "meta": {
+      "spec": "design/v13/endless-spec.md",
+      "author": "EndlessDesigner_01",
+      "version": "1.3.0",
+      "schemaVersion": 1,
+      "status": "final",
+      "note": "无尽模式机读数值单一事实源。击杀巫妖后的『继续远征』分支全部数值在此；普通局（凯旋结算）行为零变更。"
+    },
+    "trigger": {
+      "newState": "expedition",
+      "enterOn": "bossKilled（本局首次且 payload.revenant !== true，且玩家未死亡）",
+      "freezeGameplay": true,
+      "countdownSeconds": 10.0,
+      "countdownTimeScale": "realtime（不受 time.scale 影响，与 fx.slowMo 同口径）",
+      "choices": [
+        {
+          "id": "continue",
+          "label": "继续远征",
+          "hotkey": "Digit1",
+          "effect": "setState('playing')；endlessActive=true；计时器 g.time.elapsed 不清零继续递增；不装配结算"
+        },
+        {
+          "id": "triumph",
+          "label": "凯旋结算",
+          "hotkey": "Digit2",
+          "effect": "setState('victory')（won=true，走既有 assembleRunEnd）"
+        }
+      ],
+      "defaultChoice": "triumph",
+      "victoryTimeLatch": "bossKilled 到达时刻锁存 g.time.elapsed 为 victoryTime；两选停留时长不计入结算 mm:ss",
+      "deathRaceRule": "玩家与巫妖同帧双亡：playerDead 锁存优先，直接 gameover，不进两选",
+      "ruleSummaryLines": [
+        "无尽期碎片掉落 ×1.5",
+        "每存活 60s 额外 +10 碎片",
+        "巫妖残影每 180s 归来，愈战愈强"
+      ],
+      "endlessExits": [
+        {
+          "id": "death",
+          "desc": "玩家 HP 归 0 → gameover，结算标题『远征至 mm:ss』"
+        },
+        {
+          "id": "retreat",
+          "desc": "无尽期间暂停菜单新增『班师回朝』→ victory（won=true），结算标题『远征至 mm:ss』"
+        }
+      ]
+    },
+    "scaling": {
+      "baseTime": 600,
+      "cycleSeconds": 60,
+      "cycleFormula": "c = floor((elapsed - 600) / 60) + 1；仅 endlessActive && elapsed >= 600 生效",
+      "replacesWaveRow": "波次表 600s 末行（skeleton/cultist 陪跑行）被无尽导演器完全替换",
+      "interval": {
+        "formula": "max(0.22, 0.50 - 0.02 * c)",
+        "floor": 0.22,
+        "floorReachedAtCycle": 14
+      },
+      "hpMul": {
+        "formula": "min(30.0, 2.5 * 1.15^c)",
+        "base": 2.5,
+        "perCycleMul": 1.15,
+        "cap": 30.0,
+        "capReachedAtCycle": 18
+      },
+      "maxAlive": {
+        "formula": "min(260, 140 + 10 * c)",
+        "cap": 260,
+        "capReachedAtCycle": 12,
+        "whileRevenantAlive": 220
+      },
+      "elite": {
+        "formula": "min(4, 1 + floor(c / 3))",
+        "cap": 4,
+        "capReachedAtCycle": 9,
+        "spawnTiming": "每循环开始时刻（t = 600 + 60*(c-1)）一次刷出",
+        "kindPool": "12 种敌人全池随机（slime/bat/rat/spider/skeleton/ghost/orc/cultist/bomber/gargoyle/shieldGuard/shaman）",
+        "eliteRules": "沿用 balance.json §elites：hpMul×10 与循环 hpMul 叠乘、dmgMul×1.5、必掉宝箱+大宝石+精英碎片"
+      },
+      "weights": {
+        "orc": 0.15,
+        "cultist": 0.15,
+        "ghost": 0.12,
+        "shieldGuard": 0.1,
+        "skeleton": 0.1,
+        "shaman": 0.08,
+        "gargoyle": 0.08,
+        "spider": 0.06,
+        "bomber": 0.06,
+        "bat": 0.04,
+        "rat": 0.03,
+        "slime": 0.03
+      },
+      "ratPack": {
+        "min": 5,
+        "max": 8,
+        "note": "与波次表既有规则一致：rat 按群刷新"
+      },
+      "table": [
+        {
+          "cycle": 1,
+          "tStart": 600,
+          "tEnd": 660,
+          "interval": 0.48,
+          "hpMul": 2.875,
+          "maxAlive": 150,
+          "eliteCount": 1
+        },
+        {
+          "cycle": 2,
+          "tStart": 660,
+          "tEnd": 720,
+          "interval": 0.46,
+          "hpMul": 3.3063,
+          "maxAlive": 160,
+          "eliteCount": 1
+        },
+        {
+          "cycle": 3,
+          "tStart": 720,
+          "tEnd": 780,
+          "interval": 0.44,
+          "hpMul": 3.8022,
+          "maxAlive": 170,
+          "eliteCount": 2
+        },
+        {
+          "cycle": 4,
+          "tStart": 780,
+          "tEnd": 840,
+          "interval": 0.42,
+          "hpMul": 4.3725,
+          "maxAlive": 180,
+          "eliteCount": 2
+        },
+        {
+          "cycle": 5,
+          "tStart": 840,
+          "tEnd": 900,
+          "interval": 0.4,
+          "hpMul": 5.0284,
+          "maxAlive": 190,
+          "eliteCount": 2
+        },
+        {
+          "cycle": 6,
+          "tStart": 900,
+          "tEnd": 960,
+          "interval": 0.38,
+          "hpMul": 5.7827,
+          "maxAlive": 200,
+          "eliteCount": 3
+        },
+        {
+          "cycle": 7,
+          "tStart": 960,
+          "tEnd": 1020,
+          "interval": 0.36,
+          "hpMul": 6.65,
+          "maxAlive": 210,
+          "eliteCount": 3
+        },
+        {
+          "cycle": 8,
+          "tStart": 1020,
+          "tEnd": 1080,
+          "interval": 0.34,
+          "hpMul": 7.6476,
+          "maxAlive": 220,
+          "eliteCount": 3
+        },
+        {
+          "cycle": 9,
+          "tStart": 1080,
+          "tEnd": 1140,
+          "interval": 0.32,
+          "hpMul": 8.7947,
+          "maxAlive": 230,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 10,
+          "tStart": 1140,
+          "tEnd": 1200,
+          "interval": 0.3,
+          "hpMul": 10.1139,
+          "maxAlive": 240,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 11,
+          "tStart": 1200,
+          "tEnd": 1260,
+          "interval": 0.28,
+          "hpMul": 11.631,
+          "maxAlive": 250,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 12,
+          "tStart": 1260,
+          "tEnd": 1320,
+          "interval": 0.26,
+          "hpMul": 13.3756,
+          "maxAlive": 260,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 13,
+          "tStart": 1320,
+          "tEnd": 1380,
+          "interval": 0.24,
+          "hpMul": 15.382,
+          "maxAlive": 260,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 14,
+          "tStart": 1380,
+          "tEnd": 1440,
+          "interval": 0.22,
+          "hpMul": 17.6893,
+          "maxAlive": 260,
+          "eliteCount": 4
+        },
+        {
+          "cycle": 15,
+          "tStart": 1440,
+          "tEnd": 1500,
+          "interval": 0.22,
+          "hpMul": 20.3427,
+          "maxAlive": 260,
+          "eliteCount": 4
+        }
+      ],
+      "beyondTable": "c > 15 时按公式续推（c=18 起 hpMul 恒 30.0；c>=14 interval 恒 0.22；c>=12 maxAlive 恒 260；c>=9 eliteCount 恒 4）",
+      "capsNote": "全部派生量有上界，c>=18 后数值完全稳态，防溢出/防实体上限；maxAlive 触顶时 spawner 既有闸门暂停补刷，不超刷不排队"
+    },
+    "revenant": {
+      "name": "巫妖残影·维萨里昂",
+      "asset": "boss_lich",
+      "tint": "#9fd8ff",
+      "alpha": 0.9,
+      "scheduleFormula": "t = 600 + 180 * r（r = 1,2,3,...）",
+      "scheduleSeconds": [
+        780,
+        960,
+        1140,
+        1320,
+        1500
+      ],
+      "hpFormula": "hp(r) = 30000 * 1.5^(r-1)",
+      "hpBase": 30000,
+      "hpTable": [
+        {
+          "r": 1,
+          "t": 780,
+          "hp": 30000
+        },
+        {
+          "r": 2,
+          "t": 960,
+          "hp": 45000
+        },
+        {
+          "r": 3,
+          "t": 1140,
+          "hp": 67500
+        },
+        {
+          "r": 4,
+          "t": 1320,
+          "hp": 101250
+        },
+        {
+          "r": 5,
+          "t": 1500,
+          "hp": 151875
+        }
+      ],
+      "onlyOneAlive": true,
+      "skipIfPreviousAlive": "上一只残影未击杀时到点跳过本次复活，不排队",
+      "ai": "复用 boss.ts 三阶段状态机（P1 弹幕+召唤 / P2 密弹幕+闪烁+怨灵 / P3 死亡螺旋+冲锋），3s intro + 10px 震屏 + 阶段红心掉落全部沿用",
+      "summonHpMul": "当前循环 scaling.hpMul（不再用本体战固定 2.5）",
+      "banner": "巫妖残影 再度凝聚（第 r 次）",
+      "whileAliveMaxAlive": 220,
+      "drops": {
+        "chest": 1,
+        "gemL": {
+          "count": 5,
+          "xpEach": 20
+        },
+        "shards": {
+          "count": 5,
+          "valueFormula": "10 + 2 * (r-1)",
+          "totalFormula": "50 + 10 * (r-1)",
+          "excludedFromEndlessMul": true
+        }
+      },
+      "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true }；不触发 victory、不触发两选、不中断计时",
+      "hitStopMs": 150
+    },
+    "xpExtension": {
+      "levelCap": {
+        "base": 30,
+        "endless": 99
+      },
+      "activateOn": "endlessActive",
+      "formula": "L >= 31 时 cost(L) = round(430 * 1.10^(L-30))",
+      "anchor": "cost(30) = 430（与 xpCurve 表尾一致，保证 30→31 平滑）",
+      "table": {
+        "31": 473,
+        "32": 520,
+        "33": 572,
+        "34": 630,
+        "35": 693,
+        "36": 762,
+        "37": 838,
+        "38": 922,
+        "39": 1014,
+        "40": 1115,
+        "41": 1227,
+        "42": 1350,
+        "43": 1484,
+        "44": 1633,
+        "45": 1796
+      },
+      "beyondTable": "cost(50) = 2893；45 级后按公式续推",
+      "levelupFallback": "31 级起装备全满时走既有兜底屏（治疗 30 HP / +50 经验 / 献祭跳过），不新增卡牌",
+      "xpMulChain": "经验乘区（学者魂匣×博学者、贤者颅骨）沿用 addXp 入口乘算，不改动",
+      "gemMergeOverride": {
+        "mergeThreshold": 28,
+        "hardCeiling": 48,
+        "ruleS": "保留原规则：场上宝石超 mergeThreshold 时，离玩家最远 2 颗 s 档合并为 1 颗 m 档（经验守恒）",
+        "ruleM": "追加：场上宝石超 hardCeiling 时，离玩家最远 4 颗 m 档合并为 1 颗 l 档（4×5=20 XP，经验守恒）",
+        "baseValues": {
+          "mergeThreshold": 40,
+          "note": "普通局阈值 40 且 m 档不合并，普通局零变更"
+        }
+      }
+    },
+    "rewards": {
+      "shardDropMul": {
+        "factor": 1.5,
+        "appliesTo": [
+          "normalDropChance",
+          "eliteShardValue"
+        ],
+        "resolved": {
+          "normalChance": "0.06 → 0.09（祭坛/信物加成后的最终掉率再 ×1.5）",
+          "eliteShardValue": "10 → 15"
+        },
+        "excludes": [
+          "revenantShards（已含溢价，防双重叠乘）"
+        ]
+      },
+      "normalDropPerRunCap": {
+        "formula": "120 + 30 * 已完成循环数",
+        "base": 120,
+        "perCycleBonus": 30,
+        "note": "替代普通局硬顶 120；挂机风筝收益被循环难度同步处决"
+      },
+      "survivalAllowance": {
+        "amount": 10,
+        "intervalSeconds": 60,
+        "creditTiming": "elapsed 越过 600+60*c 的循环边界且处于 playing 状态、玩家存活时立即入账",
+        "bucket": "reward",
+        "toast": "远征津贴 +10",
+        "perRunCap": 300,
+        "antiFarm": "只在存活跨越边界时发放，死亡即终局无自杀速刷通道；速率 10/min 低于掉落收入占比，不构成畸形最优解"
+      },
+      "creditRule": "immediate（沿用 meta-data §shards：入账即写钱包，死亡不清算不追回；深渊抚慰 pity 规则不变照常生效）"
+    },
+    "settlement": {
+      "titleRules": [
+        {
+          "condition": "两选界面选凯旋 / 10s 超时默认",
+          "title": "凯旋而归",
+          "subtitle": "讨伐巫妖 · 用时 mm:ss"
+        },
+        {
+          "condition": "无尽期班师回朝",
+          "title": "远征至 mm:ss",
+          "subtitle": "第 N 循环 · 凯旋"
+        },
+        {
+          "condition": "无尽期战死",
+          "title": "远征至 mm:ss",
+          "subtitle": "殁于第 N 循环"
+        }
+      ],
+      "timeSource": "mm:ss 用 trigger.victoryTimeLatch 锁存时刻；无尽局用最终 g.time.elapsed",
+      "endlessStatsBlock": {
+        "showWhen": "本局 endlessActive 曾为 true",
+        "rows": [
+          "远征时长（mm:ss，= 总时长 − 巫妖击杀时刻）",
+          "抵达循环数 N / 完成循环数",
+          "无尽期击杀数（endlessActive 后 enemyKilled 计数）",
+          "残影讨伐数与最高残影 HP",
+          "无尽期碎片收入小计（×1.5 掉落 / 精英 / 津贴 / 残影 四行分列）"
+        ],
+        "insertBefore": "下一局建议卡",
+        "nextGoalRule": "无尽战死后建议文案：距上次远征纪录还差 mm:ss"
+      },
+      "records": [
+        {
+          "id": "longestEndlessSeconds",
+          "type": "max",
+          "desc": "最长远征时长（秒）"
+        },
+        {
+          "id": "maxEndlessCycle",
+          "type": "max",
+          "desc": "最高抵达循环数"
+        }
+      ]
+    },
+    "performance": {
+      "globalEntityCap": 300,
+      "worstCaseBudget": {
+        "regularAndElites": 260,
+        "regularWhileRevenant": 220,
+        "revenant": 1,
+        "revenantSummons": 20,
+        "worstFrameTotal": 241,
+        "headroom": 59
+      },
+      "spawnInflowMaxPerSecond": 4.55,
+      "backpressure": "countEnemies() >= maxAlive 时暂停补刷（spawner 既有闸门），多余刷新丢弃不排队",
+      "derivedEntities": {
+        "gems": "无尽期阈值 28 / 硬顶 48，低于普通局水位",
+        "damageNumbers": "0.15s 合并 + 80 条上限；hpMul 封顶 30 保证数字 ≤4 位",
+        "particles": "500 预算既有；残影演出复用本体死亡序列",
+        "hostileBolts": "残影 P3 螺旋 8 弹/s 单源，与本体战同量级已验证"
+      },
+      "conclusion": "稳态实体峰值 241–261 低于普通局 540s 已验证水位 280；全部派生量封顶，60 FPS 红线无新增风险点"
     }
   }
 }
