@@ -57,67 +57,41 @@
         letter-spacing: 3px;
         font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
       }
-      /* 竖屏「请旋转设备」引导层（responsive-spec §6：portrait + coarse 纯 CSS 显隐，
-         先于 JS 可显；JS 自动暂停钩子在 ui.ts init） */
-      #rotate-overlay {
+      /* 竖屏提示条（TouchUX_01：原「请旋转设备」全屏阻挡层降级——非阻挡、
+         pointer-events:none 不拦截触摸、顶部 toast 式、3s 自隐、每会话一次；
+         显隐由 main.ts 按 media query + sessionStorage 驱动） */
+      #portrait-hint {
         position: fixed;
-        inset: 0;
-        z-index: 100;
+        top: max(12px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 95;
         display: none;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        gap: 18px;
-        background: #0b0b12;
-        color: #e8d9b8;
-        font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
-      }
-      @media (orientation: portrait) and (pointer: coarse) {
-        #rotate-overlay {
-          display: flex;
-        }
-      }
-      /* 手机图标 + 旋转向导动画：2s 循环，竖矩形顺时针转 90° 再回弹 */
-      #rotate-overlay .rotate-phone {
-        width: 44px;
-        height: 72px;
-        border: 3px solid #c9a227;
-        border-radius: 8px;
-        animation: rotate-hint 2s ease-in-out infinite;
-      }
-      @keyframes rotate-hint {
-        0%,
-        25% {
-          transform: rotate(0deg);
-        }
-        55%,
-        80% {
-          transform: rotate(90deg);
-        }
-        100% {
-          transform: rotate(0deg);
-        }
-      }
-      #rotate-overlay .rotate-title {
-        font-size: 20px;
-        letter-spacing: 4px;
-      }
-      #rotate-overlay .rotate-sub {
+        gap: 8px;
+        padding: 8px 18px;
+        background: rgba(24, 19, 16, 0.85);
+        border: 1px solid #6b5847;
+        border-radius: 999px;
+        color: #d8cfc0;
         font-size: 13px;
-        color: #9a8b76;
         letter-spacing: 2px;
+        font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+      #portrait-hint.show {
+        display: flex;
+        opacity: 1;
       }
     </style>
-    <script type="module" crossorigin src="./assets/index-CGGi6cmW.js"></script>
+    <script type="module" crossorigin src="./assets/index-ufQAnsaA.js"></script>
   </head>
   <body>
     <canvas id="game"></canvas>
     <div id="ui"></div>
     <div id="boot-mask">深渊开启中……</div>
-    <div id="rotate-overlay">
-      <div class="rotate-phone"></div>
-      <div class="rotate-title">请旋转设备</div>
-      <div class="rotate-sub">横屏进入深渊 · 体验最佳</div>
-    </div>
+    <div id="portrait-hint">横屏体验更佳 · 竖屏也可畅玩</div>
   </body>
 </html>
