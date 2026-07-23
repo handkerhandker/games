@@ -1801,6 +1801,16 @@ body.cb-noscroll { overflow: hidden; }
     0 0 14px color-mix(in srgb, var(--amber) 55%, transparent);
 }
 
+/* 长按放大检视卡（风味文本两全方案：悬停 tooltip / 触屏长按放大） */
+.fx-magnify {
+  position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%);
+  z-index: 9600;
+  --card-w: clamp(168px, 58vw, 220px);
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, .55));
+  animation: fxMagnifyIn .16s ease-out;
+}
+@keyframes fxMagnifyIn { from { opacity: 0; transform: translate(-50%, -46%) scale(.85); } }
+
 /* —— 减弱动态偏好：一律压到近瞬发，尊重系统设置 —— */
 @media (prefers-reduced-motion: reduce) {
   .fx-float,
@@ -5445,6 +5455,68 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       el("span", { class: "sc-pilebtn-count" }, String(count))
     );
   }
+  function attachCardInspect(node, card) {
+    if (!card || !card.flavor) return;
+    attachTooltip(
+      node,
+      `<b>${card.name}</b><br><span style="color:var(--dim)">${card.flavor}</span>`,
+      { fineOnly: true }
+    );
+    node.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "touch") return;
+      const x0 = e.clientX, y0 = e.clientY;
+      let overlay = null;
+      let inspected = false;
+      const close = () => {
+        if (overlay) {
+          overlay.remove();
+          overlay = null;
+        }
+      };
+      const move = (ev) => {
+        if (Math.hypot(ev.clientX - x0, ev.clientY - y0) > 10) cleanup();
+        else if (inspected && ev.cancelable) ev.preventDefault();
+      };
+      const up = (ev) => {
+        if (inspected && ev && typeof ev.stopImmediatePropagation === "function") {
+          ev.stopImmediatePropagation();
+        }
+        close();
+        cleanup();
+      };
+      const cancel = () => {
+        close();
+        cleanup();
+      };
+      function cleanup() {
+        clearTimeout(timer);
+        node.removeEventListener("pointermove", move);
+        document.removeEventListener("pointerup", up, true);
+        node.removeEventListener("pointercancel", cancel);
+      }
+      const timer = setTimeout(() => {
+        inspected = true;
+        overlay = el("div", { class: "fx-magnify" }, cardEl(card));
+        document.body.append(overlay);
+      }, 400);
+      node.addEventListener("pointermove", move);
+      document.addEventListener("pointerup", up, true);
+      node.addEventListener("pointercancel", cancel);
+    });
+  }
+  function guardFlavor(root) {
+    try {
+      for (const card of (root || document).querySelectorAll(".sc-card")) {
+        const fl = card.querySelector(".sc-card-flavor");
+        const inn = card.querySelector(".sc-card-in");
+        if (!fl || !inn || fl.style.display === "none") continue;
+        if (fl.getBoundingClientRect().bottom > inn.getBoundingClientRect().bottom + 1) {
+          fl.style.display = "none";
+        }
+      }
+    } catch {
+    }
+  }
   function hideTip() {
     if (tipEl) tipEl.style.display = "none";
     tipAnchor = null;
@@ -5470,9 +5542,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
     return tipEl;
   }
-  function attachTooltip(node, html) {
+  function attachTooltip(node, html, { fineOnly = false } = {}) {
     ensureTipGuards();
-    node.addEventListener("pointerenter", () => {
+    node.addEventListener("pointerenter", (e) => {
+      if (fineOnly && e.pointerType === "touch") return;
       tipAnchor = node;
       const tip4 = ensureTip();
       tip4.innerHTML = html;
@@ -6931,7 +7004,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const grid = el(
       "div",
       { class: "sc-deck-grid" },
-      items.map((it) => cardEl(it.card, { compact: true, onClick: onPick ? () => onPick(it.index, it.card) : null }))
+      items.map((it) => {
+        const n = cardEl(it.card, { compact: true, onClick: onPick ? () => onPick(it.index, it.card) : null });
+        attachCardInspect(n, it.card);
+        return n;
+      })
     );
     if (!items.length) grid.append(el("div", { class: "app-dim sc-deck-empty" }, "\u6682\u65E0\u7B26\u5408\u6761\u4EF6\u7684\u7A0B\u5E8F"));
     return grid;
@@ -7034,7 +7111,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     let picked = false;
     for (const ref of reward.cards || []) {
       const card = resolveCard(ref);
-      row.append(cardEl(card, {
+      const cardNode = cardEl(card, {
         onClick: () => {
           if (picked) return;
           picked = true;
@@ -7045,7 +7122,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           hint.textContent = `\u300C${card.name}\u300D\u5DF2\u5199\u5165\u5361\u7EC4`;
           setTimeout(() => onDone(), 550);
         }
-      }));
+      });
+      attachCardInspect(cardNode, card);
+      row.append(cardNode);
     }
     const relicBox = reward.relic && RELICS[reward.relic] ? el(
       "div",
@@ -7094,6 +7173,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     };
     requestAnimationFrame(tick);
     tip(root, ctx2, "reward");
+    guardFlavor(root);
   }
   function renderShop(root, run2, ctx2, onDone) {
     const rng = runRng(run2);
@@ -7157,10 +7237,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           const sale = i === discountIdx;
           const price2 = sale ? Math.max(1, Math.round(base * 0.7)) : base;
           const sold = soldCards.has(i);
+          const shopCardNode = cardEl(card, { compact: true, playable: !sold });
+          attachCardInspect(shopCardNode, card);
           const item = el(
             "div",
             { class: "sc-shop-item" + (sold ? " sc-shop-item--sold" : "") },
-            cardEl(card, { compact: true, playable: !sold }),
+            shopCardNode,
             buyButton(sale ? `${price2} \u788E\u7247 \xB7 7\u6298` : `${price2} \u788E\u7247`, price2, sold, sale, () => {
               if (!spendGold(run2, price2)) return;
               addCard(run2, ref);
@@ -7258,6 +7340,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       body
     ));
     tip(root, ctx2, "shop");
+    guardFlavor(root);
   }
   function renderRest(root, run2, ctx2, onDone) {
     const healAmt = Math.ceil(run2.maxHp * 0.3);
@@ -7319,6 +7402,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       body
     ));
     tip(root, ctx2, "rest");
+    guardFlavor(root);
   }
   function renderEvent(root, run2, ctx2, event, onDone) {
     const choiceWrap = el("div", { class: "sc-event-choices" });
@@ -7515,6 +7599,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       const filtered = filter === "all" ? run2.deck : run2.deck.filter((ref) => resolveCard(ref).type === filter);
       const grid = deckGrid({ deck: filtered }, null);
       gridBox.append(grid);
+      guardFlavor(gridBox);
     }
     const FILTERS = [["all", "\u5168\u90E8"], ["attack", "\u653B\u51FB"], ["skill", "\u6280\u80FD"], ["power", "\u80FD\u529B"]];
     const filters = el(
@@ -10110,6 +10195,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         if (selected === i) cls.push("cb-card-slot--sel");
         if (!playable) cls.push("cb-card-slot--off");
         const slot = el("div", { class: cls.join(" ") }, node);
+        attachCardInspect(slot, card);
         slot.style.touchAction = "pan-x";
         slot.addEventListener("pointerdown", (ev) => onCardPointerDown(ev, i, slot));
         slot.addEventListener("pointermove", onDragMove);
@@ -10257,6 +10343,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       root.append(shell);
       const newHand = root.querySelector(".cb-hand");
       if (newHand && prevHandScroll) newHand.scrollLeft = prevHandScroll;
+      guardFlavor(root);
       fitCombat();
     }
     function fitCombat() {
