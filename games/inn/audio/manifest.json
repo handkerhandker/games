@@ -83,7 +83,16 @@
     "manager_c6l11": "audio/voice/manager_c6l11.mp3",
     "manager_c6l12": "audio/voice/manager_c6l12.mp3",
     "manager_c6l13": "audio/voice/manager_c6l13.mp3",
-    "manager_c6l14": "audio/voice/manager_c6l14.mp3"
+    "manager_c6l14": "audio/voice/manager_c6l14.mp3",
+    "e2_jiugui_c3l03": "audio/voice/e2_jiugui_c3l03.mp3",
+    "e2_aurora_c3l07": "audio/voice/e2_aurora_c3l07.mp3",
+    "e2_jiugui_c3l12": "audio/voice/e2_jiugui_c3l12.mp3",
+    "e2_baili_c5l11": "audio/voice/e2_baili_c5l11.mp3",
+    "e2_yangui_c5l12": "audio/voice/e2_yangui_c5l12.mp3",
+    "e2_jiugui_c5l09": "audio/voice/e2_jiugui_c5l09.mp3",
+    "e2_manager_c6l09": "audio/voice/e2_manager_c6l09.mp3",
+    "e2_jiugui_c6l12": "audio/voice/e2_jiugui_c6l12.mp3",
+    "e2_manager_c6l15": "audio/voice/e2_manager_c6l15.mp3"
   },
   "ambience": {
     "lobby_hearth_night": "audio/ambience/lobby_hearth_night.mp3",
@@ -100,6 +109,10 @@
     "wind_chime": "audio/sfx/wind_chime.mp3",
     "page_flip": "audio/sfx/page_flip.mp3",
     "star_diamond_credit": "audio/sfx/star_diamond_credit.mp3",
-    "gacha_gold": "audio/sfx/gacha_gold.mp3"
+    "gacha_gold": "audio/sfx/gacha_gold.mp3",
+    "abacus_single": "audio/sfx/abacus_single.mp3",
+    "abacus_x3": "audio/sfx/abacus_x3.mp3",
+    "abacus_stamp": "audio/sfx/abacus_stamp.mp3",
+    "paper_stone_slip": "audio/sfx/paper_stone_slip.mp3"
   }
 }
