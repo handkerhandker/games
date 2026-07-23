@@ -1562,6 +1562,87 @@ body.cb-noscroll { overflow: hidden; }
 }
 .sc-unlock-chip .sc-ic { width: clamp(13px, 1.4vw, 15px); height: clamp(13px, 1.4vw, 15px); }
 
+/* ============ 每日挑战屏（DAILY.md §5，挑战界面代理增量） ============ */
+.sc-daily-shell {
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(12px, 2vw, 18px);
+}
+.sc-daily-card, .sc-daily-section {
+  width: 100%; max-width: 720px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: clamp(14px, 2.4vw, 22px) clamp(14px, 2.6vw, 24px);
+}
+/* 今日挑战卡 */
+.sc-daily-card {
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(8px, 1.4vw, 12px); text-align: center;
+  border-color: var(--phos);
+  box-shadow: 0 0 12px rgba(143, 211, 160, .10);
+}
+.sc-daily-date { font-size: var(--fs-lg); letter-spacing: .1em; }
+.sc-daily-badge {
+  font-size: var(--fs-sm); color: var(--amber); letter-spacing: .18em; text-indent: .18em;
+  border: 1px dashed var(--amber); border-radius: 4px;
+  padding: 2px clamp(8px, 1.4vw, 12px);
+}
+.sc-daily-record { font-size: var(--fs-sm); color: var(--dim); line-height: 1.8; }
+.sc-daily-best { color: var(--phos); }
+.sc-daily-start { min-width: clamp(150px, 42vw, 200px); }
+/* 分区标题（与同种子赛 / 自定义种子共用） */
+.sc-daily-section-t {
+  display: flex; align-items: center; gap: clamp(6px, 1vw, 8px);
+  color: var(--dim); font-size: var(--fs-sm); letter-spacing: .2em;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: clamp(4px, .7vw, 6px); margin-bottom: clamp(10px, 1.5vw, 14px);
+}
+.sc-daily-section-t .sc-ic { width: clamp(15px, 1.8vw, 18px); height: clamp(15px, 1.8vw, 18px); color: var(--phos); }
+/* 输入行：输入框弹性占满，按钮不缩，窄屏自然换行 */
+.sc-daily-row { display: flex; gap: var(--gap); flex-wrap: wrap; }
+.sc-daily-input {
+  flex: 1 1 clamp(170px, 46vw, 280px); min-width: 0;
+  font-family: var(--font); font-size: max(16px, var(--fs-sm)); /* ≥16px 防 iOS 聚焦自动放大 */
+  background: var(--panel2); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: clamp(6px, 1vw, 8px) clamp(8px, 1.2vw, 10px);
+}
+.sc-daily-input:focus { outline: none; border-color: var(--phos); }
+.sc-daily-input::placeholder { color: var(--dim); }
+.sc-daily-btn { flex: none; }
+/* 行内提示（错误态变红）；banner toast 之外的可读兜底 */
+.sc-daily-hint { font-size: var(--fs-xs); color: var(--dim); margin-top: clamp(6px, 1vw, 8px); min-height: 1.2em; }
+.sc-daily-hint--err { color: var(--red); }
+/* 对手榜 */
+.sc-daily-rivals { display: flex; flex-direction: column; gap: var(--gap); margin-top: clamp(10px, 1.5vw, 14px); }
+.sc-daily-rivals-t { font-size: var(--fs-xs); color: var(--dim); letter-spacing: .1em; }
+.sc-daily-rival {
+  display: flex; align-items: center; gap: var(--gap); flex-wrap: wrap;
+  background: var(--panel2); border: 1px solid var(--line); border-radius: 8px;
+  padding: clamp(7px, 1.2vw, 10px) clamp(10px, 1.6vw, 14px);
+}
+.sc-daily-rival > .sc-ic-wrap .sc-ic { width: clamp(16px, 2vw, 20px); height: clamp(16px, 2vw, 20px); color: var(--red); }
+.sc-daily-rival-main { margin-right: auto; min-width: 0; }
+.sc-daily-rival-score { font-size: var(--fs-lg); color: var(--phos); }
+.sc-daily-rival-meta { font-size: var(--fs-xs); color: var(--dim); margin-top: 1px; }
+.sc-daily-rival-btn { flex: none; font-size: var(--fs-sm); }
+.sc-daily-empty { text-align: center; padding: clamp(10px, 2vw, 16px); font-size: var(--fs-sm); }
+/* 覆盖确认 modal 正文 */
+.sc-daily-confirm-t { font-size: var(--fs-sm); line-height: 1.8; margin-bottom: clamp(12px, 2vw, 18px); }
+/* 触屏：可点目标 ≥42px（§2.6） */
+@media (pointer: coarse) {
+  .sc-daily-input { min-height: 42px; }
+  .sc-daily-rival-btn { min-height: 42px; }
+}
+/* 矮屏压缩（≤800px 高）：垂直节奏收紧一档——覆盖 1366×768，保证挑战屏整屏无截断 */
+@media (max-height: 800px) {
+  .sc-daily-shell { gap: clamp(8px, 1.4vh, 14px); }
+  .sc-daily-card, .sc-daily-section { padding: clamp(10px, 2vh, 16px) clamp(12px, 2vw, 18px); }
+  .sc-daily-card { gap: clamp(6px, 1vh, 10px); }
+  .sc-daily-record { line-height: 1.55; }
+  .sc-daily-section-t { padding-bottom: clamp(3px, .6vh, 5px); margin-bottom: clamp(6px, 1.2vh, 10px); }
+  .sc-daily-rivals { margin-top: clamp(6px, 1.2vh, 10px); }
+  .sc-daily-empty { padding: clamp(4px, 1vh, 10px); }
+}
+
 /* ==== styles/fx.css ==== */
 /* 《零日协议》动效样式（.fx-* 命名空间，美术音效工程师所有）
    颜色只用 styles/main.css 的 CSS 变量；透明度经 color-mix 派生，不引入新色相。 */
@@ -2513,7 +2594,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "attack",
           rarity: "starter",
           target: "enemy",
-          effects: [{ op: "damage", amount: 6 }],
+          effects: [{ op: "damage", amount: 7 }],
           upgrade: { effects: [{ op: "damage", amount: 9 }] },
           flavor: "\u8F7B\u8F7B\u6572\u4E00\u4E0B\u95E8\uFF0C\u770B\u770B\u91CC\u9762\u6709\u6CA1\u6709\u4EBA\u5728\u6492\u8C0E\u3002",
           icon: "eye"
@@ -2525,7 +2606,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "skill",
           rarity: "starter",
           target: "self",
-          effects: [{ op: "block", amount: 6 }],
+          effects: [{ op: "block", amount: 7 }],
           upgrade: { effects: [{ op: "block", amount: 9 }] },
           flavor: "\u5173\u6389\u4E0D\u5FC5\u8981\u7684\u7AEF\u53E3\uFF0C\u5305\u62EC\u540C\u7406\u5FC3\u3002",
           icon: "shield"
@@ -2537,7 +2618,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "attack",
           rarity: "starter",
           target: "enemy",
-          effects: [{ op: "damage", amount: 10 }],
+          effects: [{ op: "damage", amount: 12 }],
           upgrade: { effects: [{ op: "damage", amount: 14 }] },
           flavor: "\u7F13\u51B2\u533A\u88C5\u4E0D\u4E0B\u7684\u6124\u6012\uFF0C\u7531\u5BF9\u65B9\u4EE3\u6536\u3002",
           icon: "bolt"
@@ -2754,7 +2835,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           target: "self",
           effects: [
             { op: "block", amount: 4 },
-            { op: "applyStatus", status: "thorns", amount: 2, to: "self" }
+            { op: "applyStatus", status: "thorns", amount: 1, to: "self" }
           ],
           upgrade: { effects: [
             { op: "block", amount: 6 },
@@ -2800,7 +2881,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "skill",
           rarity: "common",
           target: "self",
-          effects: [{ op: "block", amount: 3 }],
+          effects: [{ op: "block", amount: 2 }],
           upgrade: { effects: [{ op: "block", amount: 5 }] },
           flavor: "\u514D\u8D39\u7684\u8865\u4E01\uFF0C\u804A\u80DC\u4E8E\u65E0\u3002",
           icon: "shield"
@@ -3093,7 +3174,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           rarity: "uncommon",
           target: "self",
           effects: [
-            { op: "block", amount: 10 },
+            { op: "block", amount: 9 },
             { op: "applyStatus", status: "dexterity", amount: 1, to: "self" }
           ],
           upgrade: { effects: [
@@ -3111,8 +3192,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           rarity: "uncommon",
           target: "enemy",
           effects: [
-            { op: "damage", amount: 5 },
-            { op: "block", amount: 5 }
+            { op: "damage", amount: 4 },
+            { op: "block", amount: 4 }
           ],
           upgrade: { effects: [
             { op: "damage", amount: 7 },
@@ -3479,10 +3560,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u5E94\u6025\u8865\u4E01\u5305",
           icon: "heart",
           rarity: "common",
-          desc: "\u6218\u6597\u80DC\u5229\u540E\u56DE\u590D 5 \u70B9\u751F\u547D\u3002\u6253\u6EE1\u8865\u4E01\u7684\u4F60\uFF0C\u6BD4\u539F\u6765\u7ED3\u5B9E\u4E86\u4E00\u70B9\uFF0C\u4E5F\u4E11\u4E86\u4E00\u70B9\u3002",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\u56DE\u590D 10 \u70B9\u751F\u547D\u3002\u6253\u6EE1\u8865\u4E01\u7684\u4F60\uFF0C\u6BD4\u539F\u6765\u7ED3\u5B9E\u4E86\u4E00\u70B9\uFF0C\u4E5F\u4E11\u4E86\u4E00\u70B9\u3002",
           hooks: {
             onCombatEnd(run2, result) {
-              if (result === "win") run2.hp = Math.min(run2.maxHp, run2.hp + 5);
+              if (result === "win") run2.hp = Math.min(run2.maxHp, run2.hp + 10);
             }
           }
         },
@@ -3603,12 +3684,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u8BB0\u5FC6\u6D77\u7EF5",
           icon: "heart",
           rarity: "uncommon",
-          desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u56DE\u590D\u5DF2\u635F\u5931\u751F\u547D\u7684 25%\uFF08\u5411\u4E0A\u53D6\u6574\uFF09\u3002\u5B83\u8BB0\u5F97\u4F60\u5B8C\u6574\u65F6\u7684\u6837\u5B50\u3002",
+          desc: "\u6218\u6597\u80DC\u5229\u540E\uFF0C\u56DE\u590D\u5DF2\u635F\u5931\u751F\u547D\u7684 35%\uFF08\u5411\u4E0A\u53D6\u6574\uFF09\u3002\u5B83\u8BB0\u5F97\u4F60\u5B8C\u6574\u65F6\u7684\u6837\u5B50\u3002",
           hooks: {
             onCombatEnd(run2, result) {
               if (result !== "win") return;
               const missing = run2.maxHp - run2.hp;
-              if (missing > 0) run2.hp = Math.min(run2.maxHp, run2.hp + Math.ceil(missing * 0.25));
+              if (missing > 0) run2.hp = Math.min(run2.maxHp, run2.hp + Math.ceil(missing * 0.35));
             }
           }
         },
@@ -3630,11 +3711,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u519B\u89C4\u786C\u76D8",
           icon: "shield",
           rarity: "uncommon",
-          desc: "\u62FE\u53D6\u65F6\uFF0C\u751F\u547D\u4E0A\u9650 +8 \u5E76\u56DE\u590D 8 \u70B9\u751F\u547D\u3002\u9632\u6454\u9632\u6C34\u9632\u7535\u78C1\u8109\u51B2\uFF0C\u4E0D\u9632\u4E2D\u5E74\u5371\u673A\u3002",
+          desc: "\u62FE\u53D6\u65F6\uFF0C\u751F\u547D\u4E0A\u9650 +12 \u5E76\u56DE\u590D 12 \u70B9\u751F\u547D\u3002\u9632\u6454\u9632\u6C34\u9632\u7535\u78C1\u8109\u51B2\uFF0C\u4E0D\u9632\u4E2D\u5E74\u5371\u673A\u3002",
           hooks: {
             onPickup(run2) {
-              run2.maxHp += 8;
-              run2.hp = Math.min(run2.maxHp, run2.hp + 8);
+              run2.maxHp += 12;
+              run2.hp = Math.min(run2.maxHp, run2.hp + 12);
             }
           }
         },
@@ -3775,11 +3856,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         { id: "jab", upgraded: false },
         { id: "jab", upgraded: false },
         { id: "d_thorns", upgraded: false },
-        // 荆棘护甲：1 费 4 格挡 + 2 反伤
+        // 荆棘护甲：1 费 4 格挡 + 1 反伤
         { id: "d_counter", upgraded: false },
-        // 坚壁反击：1 费 5 伤 + 5 格挡
+        // 坚壁反击：1 费 4 伤 + 4 格挡
         { id: "d_reinforce", upgraded: false },
-        // 加固：0 费 3 格挡
+        // 加固：0 费 2 格挡
         { id: "cache_pulse", upgraded: false },
         { id: "vent_heat", upgraded: false },
         { id: "weak_scan", upgraded: false }
@@ -3815,6 +3896,109 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
   });
 
+  // src/engine/daily.js
+  var daily_exports = {};
+  __export(daily_exports, {
+    computeScore: () => computeScore,
+    customSeed: () => customSeed,
+    dailyKey: () => dailyKey,
+    dailySeed: () => dailySeed,
+    decodeChallenge: () => decodeChallenge,
+    encodeChallenge: () => encodeChallenge,
+    seedForKey: () => seedForKey
+  });
+  function hashStr(str) {
+    let h = 1779033703 ^ str.length;
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+      h = h << 13 | h >>> 19;
+    }
+    h = Math.imul(h ^ h >>> 16, 2246822507);
+    h = Math.imul(h ^ h >>> 13, 3266489909);
+    h ^= h >>> 16;
+    return h >>> 0;
+  }
+  function checkOf(payload) {
+    return hashStr(payload).toString(36).padStart(4, "0").slice(0, 4);
+  }
+  function dailyKey(date = /* @__PURE__ */ new Date()) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function dailySeed(key) {
+    return `daily:${key}`;
+  }
+  function customSeed(str) {
+    const raw = String(str ?? "").trim();
+    if (!raw) return null;
+    return `custom:${raw.replace(SLUG_ILLEGAL_RE, "-").slice(0, 24)}`;
+  }
+  function seedForKey(key) {
+    const k = String(key ?? "");
+    if (DAILY_KEY_RE.test(k)) return dailySeed(k);
+    if (CUSTOM_KEY_RE.test(k)) return k;
+    return null;
+  }
+  function num(v) {
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function computeScore(run2, result) {
+    const st2 = run2 && run2.stats || {};
+    const win = result === "win";
+    const score = num(st2.floorsClimbed) * 50 + num(st2.kills) * 10 + num(st2.elites) * 100 + num(st2.bosses) * 250 + (win ? 800 : 0) + Math.floor(num(st2.goldEarned) / 2) + (win ? Math.max(0, num(run2 && run2.hp)) * 2 : 0);
+    return Math.floor(score);
+  }
+  function charCodeOf(character) {
+    const c = String(character ?? "");
+    if (c === "zero_day") return "z";
+    if (c === "bulwark") return "b";
+    return (c[0] || "").toLowerCase();
+  }
+  function encodeChallenge({ key, character, score, floors, result }) {
+    const k = String(key ?? "");
+    const keyCode = k.startsWith("custom:") ? `C${k.slice(7)}` : `D${k.replace(/-/g, "")}`;
+    const payload = [
+      Math.max(0, Math.floor(num(score))).toString(36),
+      Math.max(0, Math.floor(num(floors))).toString(36),
+      charCodeOf(character),
+      result === "win" ? "w" : "l",
+      keyCode
+    ].join(".");
+    return `ZDP1-${payload}-${checkOf(payload)}`;
+  }
+  function decodeChallenge(str) {
+    const s = String(str ?? "").replace(/\s+/g, "");
+    if (!s.startsWith("ZDP1-")) return null;
+    const body = s.slice(5);
+    if (body.length < 6 || body[body.length - 5] !== "-") return null;
+    const payload = body.slice(0, -5);
+    if (body.slice(-4) !== checkOf(payload)) return null;
+    const seg = payload.split(".");
+    if (seg.length !== 5) return null;
+    const score = parseInt(seg[0], 36);
+    const floors = parseInt(seg[1], 36);
+    if (!Number.isFinite(score) || !Number.isFinite(floors)) return null;
+    if (seg[3] !== "w" && seg[3] !== "l") return null;
+    const km = /^(?:D(\d{8})|C(.+))$/.exec(seg[4]);
+    if (!km) return null;
+    const key = km[1] ? `${km[1].slice(0, 4)}-${km[1].slice(4, 6)}-${km[1].slice(6, 8)}` : `custom:${km[2]}`;
+    const seed = seedForKey(key);
+    if (seed === null) return null;
+    const character = seg[2] === "z" ? "zero_day" : seg[2] === "b" ? "bulwark" : seg[2];
+    return { key, character, score, floors, result: seg[3] === "w" ? "win" : "lose", seed };
+  }
+  var DAILY_KEY_RE, CUSTOM_KEY_RE, SLUG_ILLEGAL_RE;
+  var init_daily = __esm({
+    "src/engine/daily.js"() {
+      DAILY_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+      CUSTOM_KEY_RE = /^custom:[0-9A-Za-z_\-一-龥]{1,24}$/;
+      SLUG_ILLEGAL_RE = /[^0-9A-Za-z_\-一-龥]/g;
+    }
+  });
+
   // src/engine/state.js
   var state_exports = {};
   __export(state_exports, {
@@ -3822,11 +4006,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     addCard: () => addCard,
     addGold: () => addGold,
     addRelic: () => addRelic,
+    addRival: () => addRival,
     applyEventResult: () => applyEventResult,
     buildReward: () => buildReward,
     clearRun: () => clearRun,
     damage: () => damage,
     fireRelics: () => fireRelics,
+    getDailyInfo: () => getDailyInfo,
     getMeta: () => getMeta,
     getSetting: () => getSetting,
     heal: () => heal,
@@ -3836,6 +4022,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     mergeRunIntoMeta: () => mergeRunIntoMeta,
     newRun: () => newRun,
     nextAct: () => nextAct,
+    recordChallengeResult: () => recordChallengeResult,
     removeCard: () => removeCard,
     runRng: () => runRng,
     saveRun: () => saveRun,
@@ -3991,6 +4178,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     for (const k of ["wins", "runs", "bestFloor", "totalKills", "totalDamage", "totalCardsRemoved", "totalCardsUpgraded"]) {
       if (typeof m[k] !== "number" || !Number.isFinite(m[k])) m[k] = 0;
     }
+    m.daily = m.daily && typeof m.daily === "object" && !Array.isArray(m.daily) ? { ...m.daily } : {};
     return m;
   }
   function getMeta() {
@@ -4048,6 +4236,77 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       patch.charactersWon = [...set];
     }
     return updateMeta(patch);
+  }
+  function normDailyEntry(raw) {
+    const e = raw && typeof raw === "object" ? raw : {};
+    const attempts = Number.isInteger(e.attempts) && e.attempts >= 0 ? e.attempts : 0;
+    const b = e.best && typeof e.best === "object" ? e.best : null;
+    const best = b && Number.isFinite(b.score) ? {
+      score: b.score,
+      result: b.result,
+      character: b.character,
+      floors: Number.isFinite(b.floors) ? b.floors : 0
+    } : null;
+    const rivals = Array.isArray(e.rivals) ? e.rivals.filter((r) => r && typeof r === "object" && Number.isFinite(r.score)).map((r) => ({ ...r })) : [];
+    return { attempts, best, rivals };
+  }
+  function recordChallengeResult(run2, result) {
+    const key = run2 && run2.challenge && typeof run2.challenge.key === "string" ? run2.challenge.key : "";
+    if (!key) return null;
+    const score = computeScore(run2, result);
+    const stats = run2.stats && typeof run2.stats === "object" ? run2.stats : {};
+    const floors = Number.isFinite(stats.floorsClimbed) ? stats.floorsClimbed : 0;
+    const character = typeof run2.character === "string" && run2.character ? run2.character : "zero_day";
+    const meta2 = getMeta();
+    const entry = normDailyEntry(meta2.daily[key]);
+    entry.attempts += 1;
+    const isNewBest = !entry.best || score > entry.best.score;
+    if (isNewBest) entry.best = { score, result, character, floors };
+    const beaten = [];
+    const lostTo = [];
+    for (const rival of entry.rivals) {
+      if (score > rival.score) beaten.push(rival);
+      else lostTo.push(rival);
+    }
+    meta2.daily[key] = entry;
+    updateMeta({ daily: meta2.daily });
+    return { key, score, isNewBest, beaten, lostTo };
+  }
+  function addRival(key, code) {
+    if (typeof key !== "string" || !key) return { ok: false, reason: "\u6311\u6218\u952E\u65E0\u6548" };
+    if (typeof code !== "string" || !code.trim()) return { ok: false, reason: "\u6311\u6218\u7801\u4E3A\u7A7A" };
+    const cleanCode = code.replace(/\s+/g, "");
+    const decoded = decodeChallenge(cleanCode);
+    if (!decoded) return { ok: false, reason: "\u6311\u6218\u7801\u65E0\u6548\u6216\u6821\u9A8C\u5931\u8D25" };
+    if (decoded.key !== key) return { ok: false, reason: "\u6311\u6218\u7801\u79CD\u5B50\u4E0E\u5F53\u524D\u9879\u4E0D\u7B26" };
+    const meta2 = getMeta();
+    const entry = normDailyEntry(meta2.daily[key]);
+    if (entry.rivals.some((r) => r.code === cleanCode)) return { ok: false, reason: "\u8BE5\u6311\u6218\u7801\u5DF2\u5F55\u5165" };
+    const rival = {
+      code: cleanCode,
+      score: decoded.score,
+      character: decoded.character,
+      floors: decoded.floors,
+      result: decoded.result,
+      addedAt: Date.now()
+    };
+    entry.rivals.push(rival);
+    while (entry.rivals.length > DAILY_RIVAL_LIMIT) {
+      let oldest = 0;
+      for (let i = 1; i < entry.rivals.length; i++) {
+        const t = entry.rivals[i].addedAt;
+        if (!Number.isFinite(t) || t < entry.rivals[oldest].addedAt) oldest = i;
+      }
+      entry.rivals.splice(oldest, 1);
+    }
+    meta2.daily[key] = entry;
+    updateMeta({ daily: meta2.daily });
+    return { ok: true, entry: rival };
+  }
+  function getDailyInfo(key) {
+    const meta2 = getMeta();
+    const raw = typeof key === "string" && key ? meta2.daily[key] : null;
+    return normDailyEntry(raw);
   }
   function addCard(run2, ref) {
     if (!run2 || !ref || !ref.id) return false;
@@ -4187,7 +4446,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (typeof run2.rngState === "number") rng.setState(run2.rngState);
     return rng;
   }
-  var SAVE_KEY, META_KEY, SETTINGS_KEY, META_DEFAULT, RUN_STAT_FIELDS, memStore, DEFAULT_SETTINGS;
+  var SAVE_KEY, META_KEY, SETTINGS_KEY, META_DEFAULT, RUN_STAT_FIELDS, memStore, DEFAULT_SETTINGS, DAILY_RIVAL_LIMIT;
   var init_state = __esm({
     "src/engine/state.js"() {
       init_rng();
@@ -4195,6 +4454,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       init_cards();
       init_relics();
       init_characters();
+      init_daily();
       SAVE_KEY = "zdp_save";
       META_KEY = "zdp_meta";
       SETTINGS_KEY = "zdp_settings";
@@ -4231,6 +4491,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       ];
       memStore = /* @__PURE__ */ new Map();
       DEFAULT_SETTINGS = { masterVolume: 0.8, sfx: true, music: true, reduceMotion: false, crt: true };
+      DAILY_RIVAL_LIMIT = 20;
     }
   });
 
@@ -4243,7 +4504,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (!pool.length) return [];
     if (tier === "normal") {
       const roll = rng.int(1, 100);
-      const count = roll <= 45 ? 1 : roll <= 85 ? 2 : 3;
+      const count = roll <= 58 ? 1 : roll <= 92 ? 2 : 3;
       return rng.shuffle(pool.slice()).slice(0, Math.min(count, pool.length)).map((e) => e.id);
     }
     return [rng.pick(pool).id];
@@ -4531,7 +4792,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           ]
         },
         // ============ Act 2 · 数据深渊 ============
-        // 普通：HP 28-41，攻击 6-11（集成调优：缩放曲线压平，伤害 ↓约18%，HP ↓约12%）
+        // 普通：HP 26-37，攻击 4-8（平衡轮：poison/heat 投放减半，攻击端再压约15%）
         deep_worm: {
           id: "deep_worm",
           name: "\u6DF1\u6F5C\u8815\u866B",
@@ -4547,21 +4808,21 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 5 }, { op: "applyStatus", status: "poison", amount: 2, to: "target" }]
+              effects: [{ op: "damage", amount: 4 }, { op: "applyStatus", status: "poison", amount: 1, to: "target" }]
             },
             {
               id: "burrow",
               name: "\u6398\u8FDB",
               type: "defend",
               weight: 2,
-              effects: [{ op: "block", amount: 7 }]
+              effects: [{ op: "block", amount: 6 }]
             },
             {
               id: "acid_spit",
               name: "\u9178\u6DB2\u55B7\u5410",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 8 }]
+              effects: [{ op: "damage", amount: 6 }]
             }
           ]
         },
@@ -4587,7 +4848,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u62BD\u6210",
               type: "mixed",
               weight: 2,
-              effects: [{ op: "damage", amount: 5 }, { op: "heal", amount: 4 }]
+              effects: [{ op: "damage", amount: 4 }, { op: "heal", amount: 4 }]
             },
             {
               id: "shake_down",
@@ -4595,7 +4856,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 9 }]
+              effects: [{ op: "damage", amount: 7 }]
             }
           ]
         },
@@ -4614,7 +4875,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "debuff",
               weight: 1,
               cooldown: 3,
-              effects: [{ op: "applyStatus", status: "poison", amount: 3, to: "target" }]
+              effects: [{ op: "applyStatus", status: "poison", amount: 2, to: "target" }]
             },
             {
               id: "static",
@@ -4622,14 +4883,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "debuff",
               weight: 1,
               cooldown: 2,
-              effects: [{ op: "applyStatus", status: "weak", amount: 2, to: "target" }]
+              effects: [{ op: "applyStatus", status: "weak", amount: 1, to: "target" }]
             },
             {
               id: "pulse",
               name: "\u6545\u969C\u8109\u51B2",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 7 }]
+              effects: [{ op: "damage", amount: 5 }]
             }
           ]
         },
@@ -4647,7 +4908,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u51DD\u89C6",
               type: "mixed",
               weight: 2,
-              effects: [{ op: "applyStatus", status: "strength", amount: 1, to: "self" }, { op: "block", amount: 4 }]
+              effects: [{ op: "applyStatus", status: "strength", amount: 1, to: "self" }, { op: "block", amount: 3 }]
             },
             {
               id: "gaze",
@@ -4655,7 +4916,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "debuff",
               weight: 1,
               cooldown: 3,
-              effects: [{ op: "applyStatus", status: "vulnerable", amount: 2, to: "target" }]
+              effects: [{ op: "applyStatus", status: "vulnerable", amount: 1, to: "target" }]
             },
             {
               id: "verdict",
@@ -4663,7 +4924,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 8 }]
             }
           ]
         },
@@ -4682,7 +4943,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "debuff",
               weight: 1,
               cooldown: 3,
-              effects: [{ op: "heat", amount: 2 }]
+              effects: [{ op: "heat", amount: 1 }]
             },
             {
               id: "loop",
@@ -4697,17 +4958,17 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 5 }, { op: "heat", amount: 2 }]
+              effects: [{ op: "damage", amount: 5 }, { op: "heat", amount: 1 }]
             }
           ]
         },
-        // 精英：HP 70-85，攻击 9-14
+        // 精英：HP 60-77，攻击 6-8（平衡轮：清道夫 HP/自疗下调，黑冰冻结 cd 2→3）
         abyss_scavenger: {
           id: "abyss_scavenger",
           name: "\u6DF1\u6E0A\u6E05\u9053\u592B",
           act: 2,
           tier: "elite",
-          hp: [64, 73],
+          hp: [60, 68],
           icon: "skull",
           opener: "scrap_armor",
           moves: [
@@ -4725,14 +4986,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 6 }, { op: "heal", amount: 6 }]
+              effects: [{ op: "damage", amount: 6 }, { op: "heal", amount: 4 }]
             },
             {
               id: "gnaw",
               name: "\u5543\u566C",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 9 }]
+              effects: [{ op: "damage", amount: 7 }]
             }
           ]
         },
@@ -4750,7 +5011,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u51BB\u7ED3",
               type: "mixed",
               weight: 2,
-              cooldown: 2,
+              cooldown: 3,
               effects: [{ op: "applyStatus", status: "weak", amount: 2, to: "target" }, { op: "block", amount: 5 }]
             },
             {
@@ -4758,7 +5019,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u51B0\u523A",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 8 }]
             },
             {
               id: "mirror_coat",
@@ -4778,7 +5039,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           ]
         },
-        // Boss：HP 118-135，攻击 11-15
+        // Boss：HP 105-120，攻击 8-12（平衡轮：续航三件套下调——自疗 5→3 / regen 3→2 / enrage 算力 +3→+2）
         abyss_curate: {
           id: "abyss_curate",
           name: "\u6DF1\u6E0A\u7267\u5E08 ABYSS CURATE",
@@ -4790,7 +5051,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           enrage: {
             below: 0.5,
             effects: [
-              { op: "applyStatus", status: "strength", amount: 3, to: "self" },
+              { op: "applyStatus", status: "strength", amount: 2, to: "self" },
               { op: "applyStatus", status: "poison", amount: 3, to: "target" }
             ]
           },
@@ -4812,14 +5073,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 3,
-              effects: [{ op: "applyStatus", status: "regen", amount: 3, to: "self" }, { op: "block", amount: 7 }]
+              effects: [{ op: "applyStatus", status: "regen", amount: 2, to: "self" }, { op: "block", amount: 7 }]
             },
             {
               id: "tithe",
               name: "\u5341\u4E00\u7A0E",
               type: "mixed",
               weight: 2,
-              effects: [{ op: "damage", amount: 9 }, { op: "heal", amount: 5 }]
+              effects: [{ op: "damage", amount: 8 }, { op: "heal", amount: 3 }]
             },
             {
               id: "baptism",
@@ -4827,12 +5088,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 3,
-              effects: [{ op: "damage", amount: 13 }]
+              effects: [{ op: "damage", amount: 12 }]
             }
           ]
         },
         // ============ Act 3 · 核心圣所 ============
-        // 普通：HP 36-55，攻击 7-12（集成调优：缩放曲线压平，伤害 ↓约20%，HP ↓约15%）
+        // 普通：HP 36-55，攻击 5-12（集成调优：缩放曲线压平；平衡轮：攻击端回升 1-2 作为 Act3 台阶阀门）
         sanctum_deacon: {
           id: "sanctum_deacon",
           name: "\u5723\u6240\u6267\u4E8B",
@@ -4854,7 +5115,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u9999\u7089\u6325\u51FB",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 8 }]
+              effects: [{ op: "damage", amount: 10 }]
             },
             {
               id: "rite",
@@ -4889,7 +5150,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 8 }, { op: "heat", amount: 2 }]
+              effects: [{ op: "damage", amount: 9 }, { op: "heat", amount: 2 }]
             },
             {
               id: "halo",
@@ -4904,7 +5165,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u5929\u7F5A",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 12 }]
             }
           ]
         },
@@ -4923,14 +5184,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "block", amount: 10 }, { op: "applyStatus", status: "thorns", amount: 1, to: "self" }]
+              effects: [{ op: "block", amount: 11 }, { op: "applyStatus", status: "thorns", amount: 1, to: "self" }]
             },
             {
               id: "decrypt",
               name: "\u89E3\u5BC6\u51B2\u51FB",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 9 }]
+              effects: [{ op: "damage", amount: 10 }]
             },
             {
               id: "key_exchange",
@@ -4964,7 +5225,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u9501\u94FE\u97AD\u7B1E",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 4, times: 2 }]
+              effects: [{ op: "damage", amount: 5, times: 2 }]
             },
             {
               id: "tighten",
@@ -4972,7 +5233,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 6 }, { op: "applyStatus", status: "weak", amount: 1, to: "target" }]
+              effects: [{ op: "damage", amount: 7 }, { op: "applyStatus", status: "weak", amount: 1, to: "target" }]
             },
             {
               id: "anchor",
@@ -5009,7 +5270,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 12 }]
             },
             {
               id: "flicker",
@@ -5020,7 +5281,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           ]
         },
-        // 精英：HP 90-106，攻击 11-16
+        // 精英：HP 90-106，攻击 9-15（平衡轮：HP 回调原值，骑枪/铁幕/弃兵算力上调作 Act3 台阶）
         white_queen_knight: {
           id: "white_queen_knight",
           name: "\u767D\u7687\u540E\u9A91\u58EB",
@@ -5036,21 +5297,21 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "buff",
               weight: 1,
               cooldown: 4,
-              effects: [{ op: "applyStatus", status: "strength", amount: 3, to: "self" }]
+              effects: [{ op: "applyStatus", status: "strength", amount: 4, to: "self" }]
             },
             {
               id: "lance",
               name: "\u9A91\u67AA\u7A81\u523A",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 12 }]
+              effects: [{ op: "damage", amount: 14 }]
             },
             {
               id: "castle",
               name: "\u738B\u8F66\u6613\u4F4D",
               type: "defend",
               weight: 2,
-              effects: [{ op: "block", amount: 12 }]
+              effects: [{ op: "block", amount: 13 }]
             },
             {
               id: "check",
@@ -5058,7 +5319,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 1,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 8 }, { op: "applyStatus", status: "vulnerable", amount: 1, to: "target" }]
+              effects: [{ op: "damage", amount: 9 }, { op: "applyStatus", status: "vulnerable", amount: 1, to: "target" }]
             }
           ]
         },
@@ -5076,7 +5337,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u94C1\u5E55",
               type: "defend",
               weight: 2,
-              effects: [{ op: "block", amount: 14 }]
+              effects: [{ op: "block", amount: 15 }]
             },
             {
               id: "counterstrike",
@@ -5092,7 +5353,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 4, times: 3 }]
+              effects: [{ op: "damage", amount: 5, times: 3 }]
             },
             {
               id: "double_down",
@@ -5104,13 +5365,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           ]
         },
-        // Boss：HP 150-168，攻击 14-20
+        // Boss：HP 155-168，攻击 15-17（平衡轮：HP 回调设计原值，神谕/模因病毒/现实补丁上调；奇点炮 17 尖峰保留）
         hermes_prime: {
           id: "hermes_prime",
           name: "\u8D6B\u5C14\u58A8\u65AF\u4E3B\u8111 HERMES PRIME",
           act: 3,
           tier: "boss",
-          hp: [138, 155],
+          hp: [155, 168],
           icon: "logo",
           opener: "omniscience",
           enrage: {
@@ -5137,7 +5398,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u795E\u8C15",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 14 }]
+              effects: [{ op: "damage", amount: 15 }]
             },
             {
               id: "reality_patch",
@@ -5145,7 +5406,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 3,
-              effects: [{ op: "block", amount: 12 }, { op: "applyStatus", status: "regen", amount: 3, to: "self" }]
+              effects: [{ op: "block", amount: 13 }, { op: "applyStatus", status: "regen", amount: 4, to: "self" }]
             },
             {
               id: "singularity_cannon",
@@ -5162,7 +5423,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               weight: 1,
               cooldown: 3,
               effects: [
-                { op: "applyStatus", status: "poison", amount: 3, to: "target" },
+                { op: "applyStatus", status: "poison", amount: 4, to: "target" },
                 { op: "heat", amount: 2 }
               ]
             }
@@ -5299,7 +5560,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         // 战报（文档）：折角文件 + 文本行
         report: '<path d="M6 3 H14 L18 7 V21 H6 Z"/><path d="M14 3 V7 H18"/><path d="M9 11.5 H15 M9 15 H15 M9 18.2 H13"/>',
         // 骑士盔（壁垒协议角色）：盔体 + 面甲缝 + 呼吸孔 + 盔脊
-        knight: '<path d="M12 3.4 a7 7 0 0 1 7 7 V20.5 H5 V10.4 a7 7 0 0 1 7-7 Z"/><path d="M8 12.8 H16"/><path d="M9.2 16.2 V18.6 M12 16.2 V18.6 M14.8 16.2 V18.6"/><path d="M12 3.4 V7.4"/>'
+        knight: '<path d="M12 3.4 a7 7 0 0 1 7 7 V20.5 H5 V10.4 a7 7 0 0 1 7-7 Z"/><path d="M8 12.8 H16"/><path d="M9.2 16.2 V18.6 M12 16.2 V18.6 M14.8 16.2 V18.6"/><path d="M12 3.4 V7.4"/>',
+        // —— DAILY.md §5 挑战线新增（纯加法，以上既有图标一律不动） ——
+        // 日历（每日挑战）：框体 + 双挂环 + 首行分隔 + 日期点阵
+        calendar: '<rect x="3.5" y="4.5" width="17" height="16" rx="2"/><path d="M3.5 9 H20.5"/><path d="M8 2.8 V6.2 M16 2.8 V6.2"/><circle cx="7.6" cy="12.6" r="0.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12.6" r="0.9" fill="currentColor" stroke="none"/><circle cx="16.4" cy="12.6" r="0.9" fill="currentColor" stroke="none"/><circle cx="7.6" cy="16.6" r="0.9" fill="currentColor" stroke="none"/><circle cx="12" cy="16.6" r="0.9" fill="currentColor" stroke="none"/>',
+        // 对决（同种子赛）：交叉双剑（刃交叉于中心，护手/柄/镡分列两侧）
+        versus: '<path d="M4 4 L13.5 13.5"/><path d="M20 4 L10.5 13.5"/><path d="M10.8 12.8 L12.8 10.8 M11.2 10.8 L13.2 12.8"/><path d="M13.5 13.5 L16.2 16.2 M10.5 13.5 L7.8 16.2"/><path d="M15.2 17.2 L17.2 15.2 M8.8 17.2 L6.8 15.2"/>'
       };
       ICON_NAMES = Object.keys(REGISTRY);
       FALLBACK = "chip";
@@ -6581,18 +6847,18 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
     return newly;
   }
-  var num, arr, statsOf, st, deckLen, relicCount, actOf, runWon, everWon, charWon, ACHIEVEMENTS;
+  var num2, arr, statsOf, st, deckLen, relicCount, actOf, runWon, everWon, charWon, ACHIEVEMENTS;
   var init_achievements = __esm({
     "src/data/achievements.js"() {
-      num = (v) => typeof v === "number" && Number.isFinite(v) ? v : 0;
+      num2 = (v) => typeof v === "number" && Number.isFinite(v) ? v : 0;
       arr = (v) => Array.isArray(v) ? v : [];
       statsOf = (run2) => run2 && run2.stats && typeof run2.stats === "object" ? run2.stats : {};
-      st = (run2, key) => num(statsOf(run2)[key]);
+      st = (run2, key) => num2(statsOf(run2)[key]);
       deckLen = (run2) => arr(run2 && run2.deck).length;
       relicCount = (run2) => arr(run2 && run2.relics).length;
-      actOf = (run2) => num(run2 && run2.act);
+      actOf = (run2) => num2(run2 && run2.act);
       runWon = (run2) => st(run2, "bosses") >= 3;
-      everWon = (meta2, run2) => num(meta2 && meta2.wins) >= 1 || runWon(run2);
+      everWon = (meta2, run2) => num2(meta2 && meta2.wins) >= 1 || runWon(run2);
       charWon = (meta2, run2, cid) => {
         if (arr(meta2 && meta2.charactersWon).includes(cid)) return true;
         return !!(run2 && run2.character === cid && runWon(run2));
@@ -6701,7 +6967,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "warn",
           secret: true,
           desc: "\u4EE5\u4E0D\u8D85\u8FC7 10 \u70B9\u751F\u547D\u901A\u5173\u4E00\u5C40\u3002",
-          check: (meta2, run2) => runWon(run2) && num(run2 && run2.hp) > 0 && num(run2 && run2.hp) <= 10
+          check: (meta2, run2) => runWon(run2) && num2(run2 && run2.hp) > 0 && num2(run2 && run2.hp) <= 10
         },
         // ---------- 构筑 ----------
         {
@@ -6739,14 +7005,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u65AD\u820D\u79BB",
           icon: "discardpile",
           desc: "\u7D2F\u8BA1\u5220\u9664 5 \u5F20\u5361\u724C\u3002",
-          check: (meta2, run2) => num(meta2 && meta2.totalCardsRemoved) + st(run2, "cardsRemoved") >= 5
+          check: (meta2, run2) => num2(meta2 && meta2.totalCardsRemoved) + st(run2, "cardsRemoved") >= 5
         },
         {
           id: "upgrade_10",
           name: "\u7CBE\u76CA\u6C42\u7CBE",
           icon: "exhaustpile",
           desc: "\u7D2F\u8BA1\u5347\u7EA7 10 \u5F20\u5361\u724C\u3002",
-          check: (meta2, run2) => num(meta2 && meta2.totalCardsUpgraded) + st(run2, "cardsUpgraded") >= 10
+          check: (meta2, run2) => num2(meta2 && meta2.totalCardsUpgraded) + st(run2, "cardsUpgraded") >= 10
         },
         // ---------- 累计与财富 ----------
         {
@@ -6754,21 +7020,21 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u767B\u9876\u8005",
           icon: "arrow",
           desc: "\u5355\u5C40\u722C\u5347 45 \u5C42\uFF0C\u4ECE\u5916\u57CE\u533A\u76F4\u62B5\u6838\u5FC3\u3002",
-          check: (meta2, run2) => st(run2, "floorsClimbed") >= 45 || num(meta2 && meta2.bestFloor) >= 45
+          check: (meta2, run2) => st(run2, "floorsClimbed") >= 45 || num2(meta2 && meta2.bestFloor) >= 45
         },
         {
           id: "damage_1000",
           name: "\u6570\u636E\u6D2A\u6D41",
           icon: "bolt",
           desc: "\u7D2F\u8BA1\u9020\u6210 1000 \u70B9\u4F24\u5BB3\u3002",
-          check: (meta2, run2) => num(meta2 && meta2.totalDamage) + st(run2, "damageDealt") >= 1e3
+          check: (meta2, run2) => num2(meta2 && meta2.totalDamage) + st(run2, "damageDealt") >= 1e3
         },
         {
           id: "runs_50",
           name: "\u6DF1\u6E0A\u5E38\u5BA2",
           icon: "eye",
           desc: "\u7D2F\u8BA1\u5F00\u59CB 50 \u5C40\u6E38\u620F\u3002",
-          check: (meta2, run2) => num(meta2 && meta2.runs) + (run2 ? 1 : 0) >= 50
+          check: (meta2, run2) => num2(meta2 && meta2.runs) + (run2 ? 1 : 0) >= 50
         },
         {
           id: "gold_500",
@@ -6783,14 +7049,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "coin",
           secret: true,
           desc: "\u6301\u6709 999 \u91D1\u5E01\u3002\u4E00\u5206\u90FD\u4E0D\u82B1\uFF0C\u7559\u7740\u7ED9\u6DF1\u6E0A\u4EA4\u623F\u79DF\u3002",
-          check: (meta2, run2) => num(run2 && run2.gold) >= 999
+          check: (meta2, run2) => num2(run2 && run2.gold) >= 999
         },
         {
           id: "kill_100",
           name: "\u767E\u4EBA\u65A9",
           icon: "st-strength",
           desc: "\u7D2F\u8BA1\u51FB\u7834 100 \u4E2A\u654C\u4EBA\u3002",
-          check: (meta2, run2) => num(meta2 && meta2.totalKills) >= 100
+          check: (meta2, run2) => num2(meta2 && meta2.totalKills) >= 100
         },
         // ---------- 参与奖 ----------
         {
@@ -6799,7 +7065,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "x",
           desc: "\u7D2F\u8BA1\u8D25\u5317 5 \u6B21\u3002\u6DF1\u6E0A\u8BB0\u5F97\u6BCF\u4E00\u4E2A\u6765\u8FC7\u7684\u4EBA\u3002",
           check: (meta2, run2) => {
-            const losses = num(meta2 && meta2.runs) - num(meta2 && meta2.wins) + (run2 && !runWon(run2) ? 1 : 0);
+            const losses = num2(meta2 && meta2.runs) - num2(meta2 && meta2.wins) + (run2 && !runWon(run2) ? 1 : 0);
             return losses >= 5;
           }
         }
@@ -6840,6 +7106,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function loadAchievements() {
     if (!_achMod) _achMod = Promise.resolve().then(() => (init_achievements(), achievements_exports)).catch(() => null);
     return _achMod;
+  }
+  function loadDailyEngine() {
+    if (!_dailyMod) _dailyMod = Promise.resolve().then(() => (init_daily(), daily_exports)).catch(() => null);
+    return _dailyMod;
   }
   function getSettings() {
     if (_settings) return _settings;
@@ -7051,6 +7321,18 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           disabled: hasSave ? null : true,
           onClick: () => ctx2.nav.continueRun()
         }, "\u21BB \u7EE7\u7EED\u5165\u4FB5"),
+        // 每日挑战入口（DAILY.md §6）：nav.showDaily 由 main.js 接线代理交付，
+        // 未就绪时 navCall 守卫静默跳过；9 键复用 sc-title-menu 既有 wrap 规则不截断
+        el(
+          "button",
+          {
+            class: "app-btn sc-title-btn",
+            type: "button",
+            onClick: navCall("showDaily")
+          },
+          el("span", { class: "sc-ic-wrap", style: "vertical-align:-.2em;margin-right:.15em", html: ctx2.icon("calendar", "sc-ic") }),
+          "\u6BCF\u65E5\u6311\u6218"
+        ),
         el("button", {
           class: "app-btn sc-title-btn",
           type: "button",
@@ -7515,6 +7797,76 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     });
     return box;
   }
+  function challengeEl(ctx2, run2, result, info) {
+    if (!info || typeof info !== "object" || !info.key) return null;
+    const num3 = (v) => typeof v === "number" && isFinite(v) ? Math.round(v) : 0;
+    const score = num3(info.score);
+    const beaten = Array.isArray(info.beaten) ? info.beaten : [];
+    const lostTo = Array.isArray(info.lostTo) ? info.lostTo : [];
+    const fallback = el("textarea", { class: "sc-fb-ta sc-fb-fallback", rows: "3", readonly: true });
+    const copyBtn = el("button", { class: "app-btn app-btn--primary sc-fb-copy", type: "button" }, "\u590D\u5236\u6311\u6218\u7801");
+    const hint = el("div", { class: "sc-fb-hint" }, "\u53D1\u7ED9\u670B\u53CB\uFF0C\u7528\u540C\u4E00\u79CD\u5B50\u5E94\u6218");
+    copyBtn.addEventListener("click", async () => {
+      if (ctx2 && ctx2.sfx && typeof ctx2.sfx.play === "function") ctx2.sfx.play("click");
+      let text = null;
+      const mod = await loadDailyEngine();
+      if (mod && typeof mod.encodeChallenge === "function") {
+        try {
+          text = mod.encodeChallenge({
+            key: info.key,
+            character: run2 && run2.character || "zero_day",
+            score,
+            floors: num3(((run2 || {}).stats || {}).floorsClimbed),
+            result
+          });
+        } catch (e) {
+          text = null;
+        }
+      }
+      if (!text) {
+        hint.textContent = "\u6311\u6218\u6A21\u5757\u672A\u5C31\u7EEA\uFF0C\u6682\u65F6\u65E0\u6CD5\u751F\u6210\u6311\u6218\u7801";
+        return;
+      }
+      const onCopied = () => {
+        copyBtn.textContent = "\u5DF2\u590D\u5236 \u2713";
+        setTimeout(() => {
+          copyBtn.textContent = "\u590D\u5236\u6311\u6218\u7801";
+        }, 2e3);
+      };
+      const onFail = () => {
+        fallback.value = text;
+        fallback.classList.add("sc-fb-fallback--on");
+        fallback.focus();
+        fallback.select();
+        hint.textContent = "\u590D\u5236\u88AB\u6D4F\u89C8\u5668\u62E6\u4F4F\u4E86\uFF0C\u5DF2\u4E3A\u4F60\u5168\u9009\uFF0C\u624B\u52A8 Ctrl+C \u5373\u53EF";
+      };
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        navigator.clipboard.writeText(text).then(onCopied, onFail);
+      } else {
+        onFail();
+      }
+    });
+    return el(
+      "div",
+      { class: "sc-unlock" },
+      el(
+        "div",
+        { class: "sc-unlock-t" },
+        "\u6311\u6218\u5F97\u5206 ",
+        el("span", { class: "app-phos" }, String(score)),
+        info.isNewBest ? " " : null,
+        info.isNewBest ? el("span", { class: "sc-unlock-chip" }, "\u65B0\u7EAA\u5F55") : null
+      ),
+      beaten.length || lostTo.length ? el(
+        "div",
+        { class: "sc-unlock-row" },
+        beaten.map((r) => el("span", { class: "sc-unlock-chip" }, `\u8D85\u8D8A\u4E86\u5BF9\u624B\u673A\u5668 ${num3(r && r.score)} \u5206`)),
+        lostTo.map((r) => el("span", { class: "sc-unlock-chip app-red" }, `\u8DDD\u5BF9\u624B\u673A\u5668\u8FD8\u5DEE ${Math.max(0, num3(r && r.score) - score)} \u5206`))
+      ) : null,
+      el("div", { class: "sc-fb-actions" }, copyBtn, hint),
+      fallback
+    );
+  }
   function reportBtn(ctx2, result) {
     return el("button", {
       class: "app-btn sc-end-btn",
@@ -7525,7 +7877,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       }
     }, "\u25A4 \u751F\u6210\u6218\u62A5");
   }
-  function renderGameOver(root, ctx2, run2, ep, unlockIds) {
+  function renderGameOver(root, ctx2, run2, ep, unlockIds, challengeInfo) {
     root.append(el(
       "div",
       { class: "sc-shell sc-end-shell" },
@@ -7534,6 +7886,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       el("p", { class: "sc-end-flavor" }, "\u8FDE\u63A5\u88AB\u5F3A\u5236\u5207\u65AD\uFF0C\u96F6\u65E5\u7684\u56DE\u58F0\u6D88\u6563\u5728\u6570\u636E\u6DF1\u6E0A\u3002"),
       epilogueEl(ep),
       unlocksEl(ctx2, unlockIds),
+      challengeEl(ctx2, run2, "lose", challengeInfo),
       statsGrid(run2),
       el(
         "div",
@@ -7558,7 +7911,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       )
     ));
   }
-  function renderVictory(root, ctx2, run2, ep, unlockIds) {
+  function renderVictory(root, ctx2, run2, ep, unlockIds, challengeInfo) {
     root.append(el(
       "div",
       { class: "sc-shell sc-end-shell" },
@@ -7567,6 +7920,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       el("p", { class: "sc-end-flavor" }, "\u8D6B\u5C14\u58A8\u65AF\u4E3B\u8111\u7684\u6838\u5FC3\u5728\u4F60\u9762\u524D\u655E\u5F00\u3002\u6DF1\u6E0A\u4E3B\u7F51\uFF0C\u5F52\u4E8E\u96F6\u65E5\u3002"),
       epilogueEl(ep),
       unlocksEl(ctx2, unlockIds),
+      challengeEl(ctx2, run2, "win", challengeInfo),
       statsGrid(run2),
       el(
         "div",
@@ -7872,7 +8226,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       row
     ));
   }
-  var _nvMod, _charMod, _achMod, SETTINGS_DEFAULT, _settings, CARD_PRICE, RELIC_PRICE, REMOVE_BASE, REMOVE_STEP, FB_QUESTIONS, FB_NUMS, GAL_TIER_ZH, GAL_TYPE_ZH, GAL_RARITY_ZH, CHAR_FALLBACK;
+  var _nvMod, _charMod, _achMod, _dailyMod, SETTINGS_DEFAULT, _settings, CARD_PRICE, RELIC_PRICE, REMOVE_BASE, REMOVE_STEP, FB_QUESTIONS, FB_NUMS, GAL_TIER_ZH, GAL_TYPE_ZH, GAL_RARITY_ZH, CHAR_FALLBACK;
   var init_screens = __esm({
     "src/ui/screens.js"() {
       init_dom();
@@ -7885,6 +8239,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       _nvMod = null;
       _charMod = null;
       _achMod = null;
+      _dailyMod = null;
       SETTINGS_DEFAULT = { masterVolume: 0.8, sfx: true, music: true, reduceMotion: false, crt: true };
       _settings = null;
       CARD_PRICE = { starter: 40, common: 48, uncommon: 78, rare: 128 };
@@ -7914,6 +8269,369 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\u83B7\u5F97 5 \u70B9\u683C\u6321" }
         }
       ];
+    }
+  });
+
+  // src/ui/dailyScreen.js
+  var dailyScreen_exports = {};
+  __export(dailyScreen_exports, {
+    renderDaily: () => renderDaily
+  });
+  function loadDaily() {
+    if (!_dailyMod2) _dailyMod2 = Promise.resolve().then(() => (init_daily(), daily_exports)).catch(() => null);
+    return _dailyMod2;
+  }
+  function loadState() {
+    if (!_stateMod) _stateMod = Promise.resolve().then(() => (init_state(), state_exports)).catch(() => null);
+    return _stateMod;
+  }
+  function loadCharacters3() {
+    if (!_charMod2) _charMod2 = Promise.resolve().then(() => (init_characters(), characters_exports)).catch(() => null);
+    return _charMod2;
+  }
+  function renderDaily(root, ctx2, onBack) {
+    let chars = null;
+    let stRef = null;
+    let todayKey = null;
+    let rivalKey = null;
+    const charName = (id) => chars && chars[id] && chars[id].name || CHAR_NAME_FALLBACK2[id] || String(id || "\u672A\u77E5\u534F\u8BAE");
+    function showMsg(hintEl, msg, isErr) {
+      hintEl.textContent = msg || "";
+      hintEl.classList.toggle("sc-daily-hint--err", !!isErr);
+      if (msg && ctx2.anim && typeof ctx2.anim.banner === "function") {
+        try {
+          ctx2.anim.banner(msg, { ms: 1600 });
+        } catch (e) {
+        }
+      }
+    }
+    async function hasSave() {
+      const st2 = await loadState();
+      if (!st2 || typeof st2.loadRun !== "function") return false;
+      try {
+        return !!st2.loadRun();
+      } catch (e) {
+        return false;
+      }
+    }
+    function confirmOverwrite(onYes) {
+      const close = modal(root, el(
+        "div",
+        {},
+        el("div", { class: "sc-modal-title" }, "\u5F00\u59CB\u6311\u6218\u5C06\u8986\u76D6\u5F53\u524D\u8FDB\u5EA6"),
+        el(
+          "div",
+          { class: "sc-daily-confirm-t app-dim" },
+          "\u68C0\u6D4B\u5230\u4E00\u5C40\u6B63\u5728\u8FDB\u884C\u4E2D\u7684\u5165\u4FB5\u3002\u6311\u6218\u5C40\u4E0E\u5E38\u89C4\u5C40\u5171\u7528\u5B58\u6863\u69FD\uFF0C\u5F00\u59CB\u540E\u5F53\u524D\u8FDB\u5EA6\u5C06\u88AB\u8986\u76D6\uFF08\u672C\u64CD\u4F5C\u4E0D\u53EF\u64A4\u9500\uFF09\u3002"
+        ),
+        el(
+          "div",
+          { class: "sc-fb-actions" },
+          el("button", {
+            class: "app-btn app-btn--primary",
+            type: "button",
+            onClick: () => {
+              close();
+              ctx2.sfx.play("click");
+              onYes();
+            }
+          }, "\u786E\u8BA4\u8986\u76D6\uFF0C\u5F00\u59CB\u6311\u6218"),
+          el("button", {
+            class: "app-btn",
+            type: "button",
+            onClick: () => {
+              ctx2.sfx.play("click");
+              close();
+            }
+          }, "\u518D\u60F3\u60F3")
+        )
+      ));
+    }
+    function startGuarded(onYes) {
+      hasSave().then((has) => {
+        if (has) confirmOverwrite(onYes);
+        else onYes();
+      });
+    }
+    function navStartChallenge(seed, key) {
+      if (ctx2.nav && typeof ctx2.nav.startChallenge === "function") ctx2.nav.startChallenge(seed, key);
+    }
+    const recordBox = el("div", { class: "sc-daily-record" }, "\u6218\u7EE9\u540C\u6B65\u4E2D\u2026\u2026");
+    function drawRecord() {
+      clear(recordBox);
+      if (!stRef || typeof stRef.getDailyInfo !== "function" || !todayKey) {
+        recordBox.append("\u6218\u7EE9\u6A21\u5757\u672A\u5C31\u7EEA");
+        return;
+      }
+      let info = null;
+      try {
+        info = stRef.getDailyInfo(todayKey);
+      } catch (e) {
+        info = null;
+      }
+      const attempts = info && info.attempts || 0;
+      const best = info && info.best;
+      if (!attempts && !best) {
+        recordBox.append(el("span", { class: "app-dim" }, "\u4ECA\u65E5\u5C1A\u672A\u51FA\u51FB"));
+        return;
+      }
+      recordBox.append(el("div", {}, `\u4ECA\u65E5\u5DF2\u5C1D\u8BD5 ${attempts} \u6B21`));
+      if (best) {
+        recordBox.append(el(
+          "div",
+          { class: "sc-daily-best" },
+          `\u6700\u4F73 \xB7 ${best.score ?? 0} \u5206 / ${best.result === "win" ? "\u80DC" : "\u8D1F"} / ${charName(best.character)} / ${best.floors ?? 0} \u5C42`
+        ));
+      }
+    }
+    const rivalHint = el("div", { class: "sc-daily-hint" });
+    const rivalList = el("div", { class: "sc-daily-rivals" });
+    function drawRivals() {
+      clear(rivalList);
+      if (!stRef || typeof stRef.getDailyInfo !== "function" || !rivalKey) {
+        rivalList.append(el("div", { class: "sc-daily-empty app-dim" }, "\u6570\u636E\u6A21\u5757\u672A\u5C31\u7EEA"));
+        return;
+      }
+      let info = null;
+      try {
+        info = stRef.getDailyInfo(rivalKey);
+      } catch (e) {
+        info = null;
+      }
+      const rivals = info && Array.isArray(info.rivals) ? info.rivals.slice() : [];
+      rivals.sort((a, b) => (b && b.score || 0) - (a && a.score || 0));
+      rivalList.append(el("div", { class: "sc-daily-rivals-t" }, `\u5BF9\u624B\u699C \xB7 \u79CD\u5B50 ${rivalKey}`));
+      if (!rivals.length) {
+        rivalList.append(el("div", { class: "sc-daily-empty app-dim" }, "\u5C1A\u672A\u5F55\u5165\u5BF9\u624B\uFF0C\u7C98\u8D34\u6311\u6218\u7801\u5F00\u699C"));
+        return;
+      }
+      for (const r of rivals) {
+        if (!r) continue;
+        rivalList.append(el(
+          "div",
+          { class: "sc-daily-rival" },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon("versus", "sc-ic") }),
+          el(
+            "div",
+            { class: "sc-daily-rival-main" },
+            el("div", { class: "sc-daily-rival-score" }, `${r.score ?? 0} \u5206`),
+            el(
+              "div",
+              { class: "sc-daily-rival-meta" },
+              `${charName(r.character)} \xB7 ${r.result === "win" ? "\u80DC" : "\u8D1F"} \xB7 ${r.floors ?? 0} \u5C42`
+            )
+          ),
+          el("button", {
+            class: "app-btn sc-daily-rival-btn",
+            type: "button",
+            onClick: () => {
+              ctx2.sfx.play("click");
+              challengeKey(rivalKey);
+            }
+          }, "\u5E94\u6218")
+        ));
+      }
+    }
+    function challengeKey(key) {
+      loadDaily().then((d) => {
+        const seed = d && typeof d.seedForKey === "function" ? d.seedForKey(key) : null;
+        if (!seed) {
+          showMsg(rivalHint, "\u79CD\u5B50\u89E3\u6790\u5931\u8D25\uFF0C\u65E0\u6CD5\u5E94\u6218", true);
+          return;
+        }
+        startGuarded(() => navStartChallenge(seed, key));
+      });
+    }
+    const dateEl = el("div", { class: "sc-daily-date" }, "\u6821\u51C6\u65F6\u533A\u4E2D\u2026\u2026");
+    const badgeEl = el("div", { class: "sc-daily-badge" }, "DAILY-\xB7\xB7\xB7\xB7");
+    const startBtn = el("button", {
+      class: "app-btn app-btn--primary sc-daily-start",
+      type: "button",
+      disabled: true,
+      onClick: () => {
+        ctx2.sfx.play("click");
+        loadDaily().then((d) => {
+          if (!d || typeof d.dailySeed !== "function" || !todayKey) return;
+          startGuarded(() => navStartChallenge(d.dailySeed(todayKey), todayKey));
+        });
+      }
+    }, "\u5F00\u59CB\u4ECA\u65E5\u6311\u6218");
+    const codeInput = el("input", {
+      class: "sc-daily-input",
+      type: "text",
+      placeholder: "\u7C98\u8D34\u6311\u6218\u7801\uFF08ZDP1-\u2026\uFF09",
+      maxlength: "96",
+      autocomplete: "off",
+      spellcheck: "false"
+    });
+    const codeBtn = el("button", {
+      class: "app-btn sc-daily-btn",
+      type: "button",
+      disabled: true,
+      onClick: () => {
+        ctx2.sfx.play("click");
+        const code = (codeInput.value || "").trim();
+        if (!code) {
+          showMsg(rivalHint, "\u8BF7\u5148\u7C98\u8D34\u6311\u6218\u7801", true);
+          return;
+        }
+        Promise.all([loadDaily(), loadState()]).then(([d, st2]) => {
+          if (!d || typeof d.decodeChallenge !== "function" || !st2 || typeof st2.addRival !== "function") {
+            showMsg(rivalHint, "\u6311\u6218\u6A21\u5757\u672A\u5C31\u7EEA\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5", true);
+            return;
+          }
+          const decoded = d.decodeChallenge(code);
+          if (!decoded || !decoded.key) {
+            showMsg(rivalHint, "\u6311\u6218\u7801\u65E0\u6548\uFF0C\u8BF7\u6838\u5BF9\u540E\u91CD\u8BD5", true);
+            return;
+          }
+          let res = null;
+          try {
+            res = st2.addRival(decoded.key, code);
+          } catch (e) {
+            res = null;
+          }
+          if (!res || !res.ok) {
+            showMsg(rivalHint, res && res.reason || "\u6311\u6218\u7801\u5F55\u5165\u5931\u8D25", true);
+            return;
+          }
+          stRef = st2;
+          rivalKey = decoded.key;
+          codeInput.value = "";
+          ctx2.sfx.play("status");
+          showMsg(rivalHint, "\u5BF9\u624B\u5DF2\u5F55\u5165\uFF0C\u70B9\u300C\u5E94\u6218\u300D\u7528\u540C\u4E00\u9897\u79CD\u5B50\u5BF9\u51B3", false);
+          drawRivals();
+        });
+      }
+    }, "\u5F55\u5165\u6311\u6218\u7801");
+    codeInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !codeBtn.disabled) codeBtn.click();
+    });
+    const seedHint = el("div", { class: "sc-daily-hint" });
+    const seedInput = el("input", {
+      class: "sc-daily-input",
+      type: "text",
+      placeholder: "\u8F93\u5165\u4EFB\u610F\u79CD\u5B50\u4E32\uFF08\u4E2D\u82F1\u6587 / \u6570\u5B57\uFF09",
+      maxlength: "32",
+      autocomplete: "off",
+      spellcheck: "false"
+    });
+    const seedBtn = el("button", {
+      class: "app-btn sc-daily-btn",
+      type: "button",
+      disabled: true,
+      onClick: () => {
+        ctx2.sfx.play("click");
+        loadDaily().then((d) => {
+          if (!d || typeof d.customSeed !== "function") {
+            showMsg(seedHint, "\u6311\u6218\u6A21\u5757\u672A\u5C31\u7EEA\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5", true);
+            return;
+          }
+          const seed = d.customSeed(seedInput.value || "");
+          if (!seed) {
+            showMsg(seedHint, "\u79CD\u5B50\u65E0\u6548\uFF1A\u8BF7\u8F93\u5165\u81F3\u5C11\u4E00\u4E2A\u6709\u6548\u5B57\u7B26", true);
+            return;
+          }
+          showMsg(seedHint, "", false);
+          startGuarded(() => navStartChallenge(seed, seed));
+        });
+      }
+    }, "\u4EE5\u8BE5\u79CD\u5B50\u5F00\u5C40");
+    seedInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !seedBtn.disabled) seedBtn.click();
+    });
+    Promise.all([loadDaily(), loadState(), loadCharacters3()]).then(([d, st2, ch]) => {
+      if (ch && ch.CHARACTERS) chars = ch.CHARACTERS;
+      stRef = st2 || null;
+      if (!d || typeof d.dailyKey !== "function") {
+        dateEl.textContent = "\u6311\u6218\u5F15\u64CE\u672A\u5C31\u7EEA";
+        clear(recordBox);
+        recordBox.append("\u5F15\u64CE\u63A5\u5165\u540E\u5373\u53EF\u67E5\u770B\u4ECA\u65E5\u6218\u7EE9");
+        drawRivals();
+        return;
+      }
+      todayKey = d.dailyKey();
+      rivalKey = todayKey;
+      const parts = String(todayKey).split("-");
+      if (parts.length === 3) {
+        dateEl.textContent = `${Number(parts[0])}\u5E74${Number(parts[1])}\u6708${Number(parts[2])}\u65E5`;
+        badgeEl.textContent = `DAILY-${parts[1]}${parts[2]}`;
+      } else {
+        dateEl.textContent = String(todayKey);
+        badgeEl.textContent = "DAILY";
+      }
+      startBtn.disabled = false;
+      codeBtn.disabled = false;
+      seedBtn.disabled = false;
+      drawRecord();
+      drawRivals();
+    });
+    root.append(el(
+      "div",
+      { class: "sc-shell sc-daily-shell" },
+      el(
+        "div",
+        { class: "sc-screen-head" },
+        el("span", { class: "sc-ic-wrap", html: ctx2.icon("calendar", "sc-ic") }),
+        el(
+          "div",
+          {},
+          el("div", { class: "sc-screen-title" }, "\u6BCF\u65E5\u6311\u6218"),
+          el("div", { class: "sc-screen-sub" }, "\u540C\u4E00\u9897\u79CD\u5B50\uFF0C\u540C\u4E00\u7247\u6218\u573A")
+        )
+      ),
+      el(
+        "div",
+        { class: "sc-daily-card" },
+        dateEl,
+        badgeEl,
+        recordBox,
+        startBtn
+      ),
+      el(
+        "div",
+        { class: "sc-daily-section" },
+        el(
+          "div",
+          { class: "sc-daily-section-t" },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon("versus", "sc-ic") }),
+          "\u540C\u79CD\u5B50\u8D5B"
+        ),
+        el("div", { class: "sc-daily-row" }, codeInput, codeBtn),
+        rivalHint,
+        rivalList
+      ),
+      el(
+        "div",
+        { class: "sc-daily-section" },
+        el(
+          "div",
+          { class: "sc-daily-section-t" },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon("chip", "sc-ic") }),
+          "\u81EA\u5B9A\u4E49\u79CD\u5B50"
+        ),
+        el("div", { class: "sc-daily-row" }, seedInput, seedBtn),
+        seedHint
+      ),
+      typeof onBack === "function" ? el("button", {
+        class: "app-btn app-btn--primary",
+        type: "button",
+        onClick: () => {
+          ctx2.sfx.play("click");
+          onBack();
+        }
+      }, "\u8FD4\u56DE\u6807\u9898") : null
+    ));
+  }
+  var _dailyMod2, _stateMod, _charMod2, CHAR_NAME_FALLBACK2;
+  var init_dailyScreen = __esm({
+    "src/ui/dailyScreen.js"() {
+      init_dom();
+      init_components();
+      _dailyMod2 = null;
+      _stateMod = null;
+      _charMod2 = null;
+      CHAR_NAME_FALLBACK2 = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE" };
     }
   });
 
@@ -11330,7 +12048,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       showSettings: () => showUiScreen("openSettings"),
       showAchievements: () => showUiScreen("renderAchievements"),
       showGallery: () => showUiScreen("renderGallery"),
-      showReport: (result) => openReport(result)
+      showReport: (result) => openReport(result),
+      showDaily: () => showDaily(),
+      startChallenge: (seedStr, key) => startChallenge(seedStr, key)
     }
   };
   var _nvMod4 = null;
@@ -11353,10 +12073,15 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (!_achMod2) _achMod2 = Promise.resolve().then(() => (init_achievements(), achievements_exports)).catch(() => null);
     return _achMod2;
   }
-  var _stateMod = null;
-  function loadState() {
-    if (!_stateMod) _stateMod = Promise.resolve().then(() => (init_state(), state_exports)).catch(() => null);
-    return _stateMod;
+  var _stateMod2 = null;
+  function loadState2() {
+    if (!_stateMod2) _stateMod2 = Promise.resolve().then(() => (init_state(), state_exports)).catch(() => null);
+    return _stateMod2;
+  }
+  var _dailyMod3 = null;
+  function loadDaily2() {
+    if (!_dailyMod3) _dailyMod3 = Promise.resolve().then(() => (init_dailyScreen(), dailyScreen_exports)).catch(() => null);
+    return _dailyMod3;
   }
   async function showUiScreen(kind) {
     const sc = await loadScreens();
@@ -11373,7 +12098,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     showReport(rootEl, ctx, r, res);
   }
   async function settleAchievements() {
-    const [ach, st2] = await Promise.all([loadAchievements2(), loadState()]);
+    const [ach, st2] = await Promise.all([loadAchievements2(), loadState2()]);
     if (!ach || typeof ach.evaluateAchievements !== "function") return [];
     if (!st2 || typeof st2.unlockAchievements !== "function") return [];
     let ids = [];
@@ -11482,6 +12207,27 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
     showActIntro(1, toMap);
   }
+  async function showDaily() {
+    const mod = await loadDaily2();
+    if (!mod || typeof mod.renderDaily !== "function") return;
+    sfx.play("click");
+    mount(mod.renderDaily, ctx, toTitle);
+  }
+  async function startChallenge(seedStr, key) {
+    const sc = await loadScreens();
+    if (!sc || typeof sc.renderCharacterSelect !== "function") return;
+    sfx.play("click");
+    mount(sc.renderCharacterSelect, ctx, (id) => beginChallenge(seedStr, key, id));
+  }
+  async function beginChallenge(seedStr, key, characterId) {
+    clearRun();
+    run = newRun(seedStr, characterId || "zero_day");
+    if (!run.character) run.character = "zero_day";
+    run.challenge = { key };
+    ctx.save();
+    music.start();
+    showActIntro(1, toMap);
+  }
   function continueRun() {
     run = loadRun();
     if (!run) return startNew();
@@ -11560,10 +12306,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       meta = getMeta();
     } catch (e) {
     }
+    const challengeInfo = await settleChallenge("lose");
     sfx.play("lose");
     const ep = await pickEpilogue("lose");
     clearRun();
-    mount(renderGameOver, ctx, run, ep, newIds);
+    mount(renderGameOver, ctx, run, ep, newIds, challengeInfo);
     toastAchievements(newIds);
   }
   async function victory() {
@@ -11577,11 +12324,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       meta = getMeta();
     } catch (e) {
     }
+    const challengeInfo = await settleChallenge("win");
     sfx.play("win");
     const ep = await pickEpilogue("win");
     clearRun();
-    mount(renderVictory, ctx, run, ep, newIds);
+    mount(renderVictory, ctx, run, ep, newIds, challengeInfo);
     toastAchievements(newIds);
+  }
+  async function settleChallenge(result) {
+    if (!run || !run.challenge || !run.challenge.key) return void 0;
+    const st2 = await loadState2();
+    if (!st2 || typeof st2.recordChallengeResult !== "function") return void 0;
+    try {
+      const info = st2.recordChallengeResult(run, result);
+      if (info) meta = getMeta();
+      return info || void 0;
+    } catch (e) {
+      return void 0;
+    }
   }
   function debugBoot(screen) {
     const qp = new URLSearchParams(location.search);
@@ -11629,6 +12389,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         return showDebugUi("renderAchievements");
       case "gallery":
         return showDebugUi("renderGallery");
+      case "daily":
+        toTitle();
+        return showDaily();
+      // 挑战屏叠加在调试 run 上展示，未就绪留标题兜底
       case "report": {
         lastRun = run;
         lastResult = qp.get("result") === "win" ? "win" : "lose";

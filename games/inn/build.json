@@ -1,8 +1,5 @@
 {
   "id": "inn",
-  "name": "次元旅店",
-  "syncedAt": "2026-07-23T17:06:52.261Z",
-  "source": "F:/资料/kimi/new game/game/dist",
-  "sourceMtime": "2026-07-23T17:03:05.328Z",
-  "prebuild": "npm run build -- --base=./"
+  "syncedAt": "2026-07-23T18:21:43.666Z",
+  "sourceMtime": "2026-07-23T18:21:31.963Z"
 }

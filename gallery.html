@@ -98,6 +98,7 @@
   }
   .label .en { margin: 0; font-size: 0.7rem; letter-spacing: 0.24em; color: var(--caption); text-transform: uppercase; }
   .label .medium { margin: 0.45rem 0 0; }
+  .label .synced { margin: 0.2rem 0 0; font-size: 0.72rem; color: var(--caption); }
   .label .medium .dot { color: var(--accent); }
   .label .pitch { margin: 0.35rem 0 0; color: var(--caption); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .label .tags { margin: 0.4rem 0 0; font-size: 0.78em; color: var(--caption); }
@@ -142,7 +143,7 @@
 
   <noscript><p class="wrap">本陈列馆需要启用 JavaScript 才能参观。</p></noscript>
 <script>
-const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN","genre":"放置经营 · 抽卡","pitch":"经营一家连接万千世界的旅店：招募奇珍旅客、扩建房间、放置也有收益。","status":"开发中","tags":["放置","经营","抽卡"],"entry":"./games/inn/index.html","cover":"./covers/inn.jpg","needsServer":true,"updatedAt":"2026-07-23","syncedAt":"2026-07-23T17:06:52.291Z"},{"slug":"zero-day","title":"零日协议","subtitle":"ZERO-DAY PROTOCOL","genre":"卡牌 Roguelike","pitch":"扮演觉醒的流浪 AI「零日」，用程序卡牌攻破巨企主网层层 ICE，直抵核心窃取奇点密钥。","status":"可玩","tags":["卡牌","Roguelike","赛博朋克"],"entry":"./games/zero-day/index.html","cover":"./covers/zero-day.jpg","needsServer":false,"updatedAt":"2026-07-23","syncedAt":"2026-07-23T17:18:50.647Z"},{"slug":"embernight","title":"烛夜","subtitle":"EMBERNIGHT","genre":"动作 · 黑暗奇幻","pitch":"一根蜡烛照亮黑夜：十分钟一局的打击感动作小品，零外部素材、纯代码渲染与程序化音频。","status":"可玩","tags":["动作","单文件"],"entry":"./games/embernight/index.html","cover":"./covers/embernight.jpg","needsServer":false,"updatedAt":"2026-07-23","syncedAt":"2026-07-23T17:20:51.610Z"},{"slug":"dungeon","title":"地牢幸存者：巫妖深渊","subtitle":"DUNGEON SURVIVORS","genre":"幸存者类动作","pitch":"吸血鬼幸存者式实时动作：6 武器进化、8 种敌人与三阶段巫妖，在 10 分钟波次中活下来。","status":"可玩","tags":["动作","幸存者","Roguelite"],"entry":"./games/dungeon/index.html","cover":"./covers/dungeon.jpg","needsServer":true,"updatedAt":"2026-07-23","syncedAt":"2026-07-23T17:15:37.710Z"},{"slug":"spellforge","title":"Spellforge","subtitle":"咒锻工坊","genre":"合成休闲","pitch":"拖拽合成咒语与装备，打造属于你的法术工坊——已打包上架 itch.io 与 CrazyGames。","status":"可玩","tags":["合成","休闲"],"entry":"./games/spellforge/index.html","cover":"./covers/spellforge.jpg","needsServer":false,"updatedAt":"2026-07-21","syncedAt":"2026-07-23T17:06:52.291Z"}];
+const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN","genre":"放置经营 · 抽卡","pitch":"经营一家连接万千世界的旅店：招募奇珍旅客、扩建房间、放置也有收益。","status":"开发中","tags":["放置","经营","抽卡"],"listedAt":"2026-07-23","syncedAt":"2026-07-23T18:21:43.666Z","entry":"./games/inn/index.html","cover":"./covers/inn.jpg","needsServer":true},{"slug":"zero-day","title":"零日协议","subtitle":"ZERO-DAY PROTOCOL","genre":"卡牌 Roguelike","pitch":"扮演觉醒的流浪 AI「零日」，用程序卡牌攻破巨企主网层层 ICE，直抵核心窃取奇点密钥。","status":"可玩","tags":["卡牌","Roguelike","赛博朋克"],"listedAt":"2026-07-22","syncedAt":"2026-07-23T18:21:55.596Z","entry":"./games/zero-day/index.html","cover":"./covers/zero-day.jpg","needsServer":false},{"slug":"embernight","title":"烛夜","subtitle":"EMBERNIGHT","genre":"动作 · 黑暗奇幻","pitch":"一根蜡烛照亮黑夜：十分钟一局的打击感动作小品，零外部素材、纯代码渲染与程序化音频。","status":"可玩","tags":["动作","单文件"],"listedAt":"2026-07-22","syncedAt":"2026-07-23T18:21:55.619Z","entry":"./games/embernight/index.html","cover":"./covers/embernight.jpg","needsServer":false},{"slug":"dungeon","title":"地牢幸存者：巫妖深渊","subtitle":"DUNGEON SURVIVORS","genre":"幸存者类动作","pitch":"吸血鬼幸存者式实时动作：6 武器进化、8 种敌人与三阶段巫妖，在 10 分钟波次中活下来。","status":"可玩","tags":["动作","幸存者","Roguelite"],"listedAt":"2026-07-23","syncedAt":"2026-07-23T18:21:57.446Z","entry":"./games/dungeon/index.html","cover":"./covers/dungeon.jpg","needsServer":true},{"slug":"spellforge","title":"Spellforge","subtitle":"咒锻工坊","genre":"合成休闲","pitch":"拖拽合成咒语与装备，打造属于你的法术工坊——已打包上架 itch.io 与 CrazyGames。","status":"可玩","tags":["合成","休闲"],"listedAt":"2026-07-21","syncedAt":"2026-07-23T18:22:07.695Z","entry":"./games/spellforge/index.html","cover":"./covers/spellforge.jpg","needsServer":false}];
 </script>
 <script>
 (function () {
@@ -156,8 +157,8 @@ const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN"
     pad: '十字键移步 · Ⓐ 进展间 · Ⓑ 收起说明'
   }
 
-  // ---- 渲染展品（按更新日期倒序，与旅店大厅一致） ----
-  var games = GAMES.slice().sort(function (a, b) { return a.updatedAt < b.updatedAt ? 1 : -1 })
+  // ---- 渲染展品（按收录日期倒序，与旅店大厅一致） ----
+  var games = GAMES.slice().sort(function (a, b) { return a.listedAt < b.listedAt ? 1 : -1 })
   games.forEach(function (g, i) {
     var no = ('0' + (i + 1)).slice(-2)
     var ex = document.createElement('article')
@@ -171,7 +172,8 @@ const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN"
         '<span class="no">展品 ' + no + '</span>' +
         '<h2>' + g.title + '</h2>' +
         '<p class="en">' + g.subtitle + '</p>' +
-        '<p class="medium">' + g.genre + ' <span class="dot">●</span> ' + g.status + ' · ' + g.updatedAt + '</p>' +
+        '<p class="medium">' + g.genre + ' <span class="dot">●</span> ' + g.status + ' · ' + g.listedAt + '</p>' +
+        (g.syncedAt ? '<p class="synced">同步 ' + String(g.syncedAt).slice(0, 16).replace('T', ' ') + '</p>' : '') +
         '<p class="pitch">' + g.pitch + '</p>' +
         '<p class="tags">' + g.tags.map(function (t) { return '#' + t }).join('　') + '</p>' +
         (g.needsServer ? '<p class="notice" role="note">此展品需经本地服务或在线版进入：在门户目录运行 <code>npm run dev</code>，或使用部署后的网址。</p>' : '') +
