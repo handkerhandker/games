@@ -58,5 +58,15 @@
   "ach_gems_5k": "sprites/ach_gems_5k.png",
   "ach_shards_2k": "sprites/ach_shards_2k.png",
   "ach_runs_20": "sprites/ach_runs_20.png",
-  "ach_time_10k": "sprites/ach_time_10k.png"
+  "ach_time_10k": "sprites/ach_time_10k.png",
+  "proj_boomerang": "sprites/proj_boomerang.png",
+  "proj_vial": "sprites/proj_vial.png",
+  "proj_familiar": "sprites/proj_familiar.png",
+  "enemy_bomber": "sprites/enemy_bomber.png",
+  "enemy_gargoyle": "sprites/enemy_gargoyle.png",
+  "enemy_shieldguard": "sprites/enemy_shieldguard.png",
+  "enemy_shaman": "sprites/enemy_shaman.png",
+  "passive_crit": "sprites/passive_crit.png",
+  "passive_duration": "sprites/passive_duration.png",
+  "passive_wisdom": "sprites/passive_wisdom.png"
 }

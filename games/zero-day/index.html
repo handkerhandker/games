@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0c0f0d" />
   <title>零日协议 ZERO-DAY PROTOCOL</title>
   <style>
@@ -39,8 +39,8 @@
 /* 宽屏档（§3 / §2-7）：≥1600px 时内容宽度与字号同步放大 */
 @media (min-width: 1600px) { :root { --shell-max: 1440px; } }
 
-* { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; overflow-x: clip; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; overflow-x: clip; overscroll-behavior-y: none; }
 body {
   background: var(--bg);
   color: var(--ink);
@@ -48,8 +48,9 @@ body {
   font-size: var(--fs-md);
   line-height: 1.55;
 }
+#app { min-height: 100vh; }
 #app { min-height: 100dvh; }
-.app-shell { width: 100%; max-width: var(--shell-max); margin: 0 auto; padding: var(--shell-pad); }
+.app-shell { width: 100%; max-width: var(--shell-max); margin: 0 auto; padding: var(--shell-pad); padding-bottom: calc(var(--shell-pad) + env(safe-area-inset-bottom, 0px)); }
 
 /* CRT 扫描线覆层 */
 .app-crt {
@@ -66,14 +67,18 @@ body {
   background: var(--panel2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 6px;
   padding: .55em 1.25em; cursor: pointer; letter-spacing: .05em;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s, box-shadow .15s;
 }
 /* 触屏可点目标 ≥ 42px（§2-6） */
 @media (pointer: coarse) { .app-btn { min-height: 42px; } }
-.app-btn:hover:not(:disabled) { border-color: var(--phos); color: var(--phos); box-shadow: 0 0 10px rgba(143, 211, 160, .15); }
+/* hover 仅对精确指针（鼠标/触控板）生效，避免触屏轻点残留 hover 态 */
+@media (hover:hover) and (pointer:fine) {
+  .app-btn:hover:not(:disabled) { border-color: var(--phos); color: var(--phos); box-shadow: 0 0 10px rgba(143, 211, 160, .15); }
+  .app-btn--danger:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+}
 .app-btn:disabled { opacity: .4; cursor: not-allowed; }
 .app-btn--primary { border-color: var(--phos); color: var(--phos); }
-.app-btn--danger:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
 .app-dim { color: var(--dim); }
 .app-phos { color: var(--phos); }
 .app-amber { color: var(--amber); }
@@ -92,6 +97,13 @@ body {
 
 /* §5.2：手牌卡宽唯一来源是 --card-w，这里只在 .cb-shell 作用域覆盖变量，绝不写 .sc-card 尺寸；
    §7.2/§7.3：--avatar（玩家灵像）与 --enemy-w（敌人卡）同为战斗屏局部令牌，媒体查询只改变量 */
+/* 一屏预算：shell 高度 = 视口高 − 外壳上下 padding − 底部安全区（#app.app-shell 已承担这三项），
+   flex 列分配——头/底排/日志 flex:none（内容定高），舞台 flex:1 1 auto 吃剩余空间。
+   窗口越高战场越大；窗口越矮舞台让位，整屏恒不溢出（舞台内容各档已按预算紧凑化） */
+/* 一屏预算：shell 高度 = 视口高 − 外壳上下 padding − 底部安全区（#app.app-shell 已承担这三项），
+   flex 列分配——头/底排/日志 flex:none（内容定高），舞台 flex:1 1 auto 吃剩余空间。
+   height:auto + min-height 双保险：内容紧凑时恰一屏；极端矮窗内容超预算时整页可滚（优雅降级），
+   任何情况下元素本体永不被削（舞台溢出可见性由 overflow:visible 保证） */
 .cb-shell {
   --card-w: clamp(104px, 15vw, 158px);
   --enemy-w: clamp(150px, 16vw, 210px);
@@ -99,10 +111,17 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
+  height: auto;
+  min-height: calc(100vh - 2 * var(--shell-pad) - env(safe-area-inset-bottom, 0px));
+  min-height: calc(100dvh - 2 * var(--shell-pad) - env(safe-area-inset-bottom, 0px));
+  transform-origin: top center; /* 整屏自适应缩放（fitCombat）的缩放原点 */
 }
+/* 自适应缩放激活时锁定整页滚动（布局高 > 视觉高，防幻影滚动条；换屏/终局自动解除） */
+body.cb-noscroll { overflow: hidden; }
 
 /* —— 顶部信息行 —— */
 .cb-head {
+  flex: none;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -115,10 +134,11 @@ body {
 .cb-head-title { color: var(--phos); font-size: var(--fs-md); }
 .cb-head-turn { color: var(--dim); font-size: var(--fs-sm); }
 
-/* —— §7.1 舞台：终端网格 + 中心径向磷光微光；默认纵向两行（≤720 档），≥721 改对垒横排 —— */
+/* —— §7.1 舞台：终端网格 + 中心径向磷光微光；≤1023 堆叠两行（矮屏除外），≥1024/矮屏改对垒横排 —— */
 .cb-stage {
   position: relative;
-  min-height: clamp(260px, 38vh, 420px);
+  flex: 1 1 auto; /* 一屏预算：吃剩余空间；内容各档已紧凑化，不再用固定 min-height 撑高 */
+  min-height: 180px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background:
@@ -277,6 +297,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: clamp(6px, .8vw, 8px);
+  user-select: none; -webkit-user-select: none; /* 点选/长按敌人不选中名称与意图文本 */
   transition: transform .2s, filter .2s, opacity .2s, border-color .15s, box-shadow .15s;
 }
 .cb-enemy--targetable {
@@ -284,7 +305,9 @@ body {
   border-color: var(--amber);
   animation: cb-target-pulse 1.1s ease-in-out infinite;
 }
-.cb-enemy--targetable:hover { box-shadow: 0 0 18px color-mix(in srgb, var(--amber) 28%, transparent); }
+@media (hover:hover) and (pointer:fine) {
+  .cb-enemy--targetable:hover { box-shadow: 0 0 18px color-mix(in srgb, var(--amber) 28%, transparent); }
+}
 .cb-enemy--sel {
   border-color: var(--phos);
   transform: scale(1.03);
@@ -462,7 +485,7 @@ body {
 }
 
 /* —— 底部：牌堆 + 手牌 + 结束回合（允许 wrap，重排媒体查询全部沿用） —— */
-.cb-bottom { display: flex; align-items: flex-end; gap: var(--gap); flex-wrap: wrap; }
+.cb-bottom { flex: none; display: flex; align-items: flex-end; gap: var(--gap); flex-wrap: wrap; }
 .cb-pilebox { display: flex; flex-direction: column; flex: 0 0 auto; gap: clamp(6px, .8vw, 8px); padding-bottom: clamp(6px, 1vh, 8px); }
 .cb-hand {
   flex: 1 1 0; /* basis 0：手牌让出空间，结束回合/牌堆不被挤换行；溢出由自身横滑承担 */
@@ -473,8 +496,12 @@ body {
   justify-content: safe center; /* 溢出时不致首卡被裁（不支持则回退 center） */
   gap: var(--gap);
   overflow-x: auto;
-  padding: clamp(10px, 1.4vh, 12px) var(--gap) clamp(6px, 1vh, 8px);
+  overscroll-behavior-x: contain;
+  /* 顶部 16-22px / 底部 10-12px：hover/选中卡上抬 10px + scale 1.06 + 辉光 + 费用徽标(-10px)
+     会顶到滚动容器的上下裁剪缘，留出余量防截断 */
+  padding: clamp(16px, 2.4vh, 22px) var(--gap) clamp(10px, 1.4vh, 12px);
   min-height: calc(var(--card-h) + 14px);
+  touch-action: pan-x pan-y; /* 牌缝间（非卡槽区域）保留浏览器原生横滑手牌与纵向页面滚动 */
 }
 .cb-hand-empty { align-self: center; color: var(--dim); letter-spacing: .1em; }
 
@@ -485,10 +512,15 @@ body {
   flex: 0 0 auto; /* 手牌横排不许压扁卡牌（§2.3） */
   border-radius: 8px;
   scroll-snap-align: center; /* ≤720px 手牌横滑吸附 */
-  touch-action: none; /* Pointer Events 拖拽接管触屏滚动（与 JS 内联保底一致） */
+  touch-action: pan-x; /* 方向仲裁模型：浏览器只在手势开始瞬间采样本值——恒为 pan-x，
+    卡上横向手势交给浏览器原生横滑手牌（接管后补 pointercancel），垂直手势浏览器不接管、
+    事件持续送达，由 combatScreen.js 在首个 >10px 位移时仲裁（横让位 / 竖拖拽），全程不再动态改写 */
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; /* 拖拽期抑制文本选择/放大镜（行为属性） */
   transition: transform .12s ease, box-shadow .12s ease, opacity .15s, filter .15s;
 }
-.cb-card-slot:hover { transform: translateY(-6px); }
+@media (hover:hover) and (pointer:fine) {
+  .cb-card-slot:hover { transform: translateY(-6px); }
+}
 .cb-card-slot--attack {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--red) 50%, transparent),
     0 0 10px color-mix(in srgb, var(--red) 10%, transparent);
@@ -502,13 +534,17 @@ body {
     0 0 10px color-mix(in srgb, var(--amber) 10%, transparent);
 }
 .cb-card-slot--off { opacity: .45; filter: grayscale(.55); }
-.cb-card-slot--off:hover { transform: none; }
+@media (hover:hover) and (pointer:fine) {
+  .cb-card-slot--off:hover { transform: none; }
+}
 .cb-card-slot--sel {
   transform: translateY(-10px);
   box-shadow: inset 0 0 0 1px var(--amber),
     0 0 20px color-mix(in srgb, var(--amber) 32%, transparent);
 }
-.cb-card-slot--sel:hover { transform: translateY(-10px); }
+@media (hover:hover) and (pointer:fine) {
+  .cb-card-slot--sel:hover { transform: translateY(-10px); }
+}
 /* §7.6 悬停手牌（交互师 pointerenter 挂类）：上移 10px + 放大 1.06 + 辉光 + 层级提升 */
 .cb-card-slot--hover {
   transform: translateY(-10px) scale(1.06);
@@ -547,6 +583,7 @@ body {
   letter-spacing: .18em;
   padding: .72em 1.8em;
   cursor: pointer;
+  touch-action: manipulation;
   color: var(--phos);
   background: var(--panel2);
   border: 1px solid var(--phos);
@@ -554,9 +591,11 @@ body {
   box-shadow: 0 0 16px color-mix(in srgb, var(--phos) 12%, transparent);
   transition: background .15s, box-shadow .15s, transform .1s;
 }
-.cb-endturn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--phos) 12%, var(--panel2));
-  box-shadow: 0 0 24px color-mix(in srgb, var(--phos) 26%, transparent);
+@media (hover:hover) and (pointer:fine) {
+  .cb-endturn:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--phos) 12%, var(--panel2));
+    box-shadow: 0 0 24px color-mix(in srgb, var(--phos) 26%, transparent);
+  }
 }
 .cb-endturn:active:not(:disabled) { transform: translateY(1px); }
 .cb-endturn:disabled { opacity: .4; cursor: not-allowed; }
@@ -567,15 +606,18 @@ body {
   .cb-endturn { min-height: 42px; }
 }
 
-/* 战斗日志：固定流体高度 + 内部滚动 */
+/* 战斗日志：高度随内容自适应（封顶内部滚动）——写死高度曾在预算紧张时把末行削在盒内 */
 .cb-log {
+  flex: none;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: clamp(8px, 1vw, 10px) clamp(10px, 1.4vw, 14px);
   font-size: var(--fs-sm);
-  height: clamp(72px, 14vh, 152px);
+  height: auto;
+  max-height: clamp(72px, 14vh, 152px);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .cb-log-title { color: var(--dim); letter-spacing: .12em; margin-bottom: 4px; }
 .cb-log-line {
@@ -644,32 +686,62 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: var(--gap);
+  max-height: 52vh;
   max-height: 52dvh;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 12px 0 0 12px; /* 费用徽标 -10px 外溢不再被裁 */
 }
 .cb-pile-empty { color: var(--dim); }
 
-/* —— §7.2 ≥721px 对垒布局：玩家左、敌人右、底部对齐，VS 中央竖排 —— */
-@media (min-width: 721px) {
+/* —— §7.2 横排对垒：≥1024 任意高度保持玩家左/敌人右；721~1023 矮屏（≤700h）堆叠放不下时也横排 —— */
+@media (min-width: 1024px), (min-width: 721px) and (max-height: 700px) {
   .cb-stage { flex-direction: row; align-items: flex-end; justify-content: space-between; }
-  .cb-vs { writing-mode: vertical-rl; letter-spacing: .4em; }
   .cb-side--player { align-self: flex-end; }
   .cb-side--enemies { align-self: flex-end; }
 }
+@media (min-width: 1024px) {
+  .cb-vs { writing-mode: vertical-rl; letter-spacing: .4em; }
+}
 
-/* —— §7.9 ≤720px：舞台两行（敌人上排横滑、玩家下排灵像居左 + 血条状态居右）；底排重排沿用 —— */
-@media (max-width: 720px) {
-  .cb-shell { --card-w: min(46vw, clamp(104px, 15vw, 158px)); --avatar: clamp(56px, 18vw, 72px); }
+/* —— §7.9 堆叠档：≤720 全高度 + 721~1023 非矮屏——敌人上排横滑、玩家单行（灵像居左跨行、
+     名称/血条/状态居右）、VS 隐藏省一行、底排手牌独占一行；组件尺寸按 vw 流体紧凑化 —— */
+@media (max-width: 720px), (max-width: 1023px) and (min-height: 701px) {
+  .cb-shell { --avatar: clamp(56px, 10vw, 96px); }
   .cb-stage { gap: clamp(6px, 1.2vh, 10px); padding: clamp(8px, 1.6vh, 12px) clamp(8px, 2vw, 12px); }
+  .cb-vs { display: none; } /* 堆叠两行已自明敌我，省出一行预算 */
+  /* 敌人行：按数量自适应铺满、无需滚动（契约：normal 1-3 只 / elite·boss 1 只）；
+     overflow-x:auto 仅作极端兜底，safe center 防兜底溢出时首卡被裁（不支持回退 center） */
   .cb-side--enemies {
     order: -1;
+    flex: 0 0 auto; /* 不许被舞台压矮：卡片顶对齐，杜绝底对齐+overflow 削顶（2026-07 顶裁修复） */
+    align-items: flex-start;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: center;
+    justify-content: safe center;
     overflow-x: auto;
-    padding-bottom: 2px;
+    overscroll-behavior-x: contain;
+    /* 上下各留 16px：overflow-x:auto 会在两轴形成裁剪，--sel(scale 1.03)/--spot(1.04)
+       放大与辉光会顶到容器上下缘被截断（含血条数字/意图图标出界），留出安全余量 */
+    padding: 16px 2px;
   }
-  .cb-side--enemies .cb-enemy { flex: 0 0 auto; }
+  /* :has() 计数感知宽度：恰 1 敌不被拉成细长条，3 敌窄宽同屏全显；flex-shrink 允许、
+     min-width:0 保证 390px 下 3 敌可再压缩不截断；不支持 :has() 时回退 3 敌档（仍全显、仅偏小） */
+  .cb-side--enemies .cb-enemy {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: min(30vw, 170px);
+    padding: clamp(6px, 1.5vw, 8px);
+    gap: clamp(4px, 1vw, 6px);
+  }
+  .cb-side--enemies:has(> .cb-enemy:only-child) .cb-enemy { width: min(58vw, 220px); }
+  .cb-side--enemies:has(> .cb-enemy:nth-child(2):last-child) .cb-enemy { width: min(42vw, 190px); }
+  /* 敌人卡内部同步紧凑化：图标降档、卡名 --fs-sm、血条更薄、意图徽章 --fs-xs */
+  .cb-side--enemies .cb-enemy-icon svg { width: clamp(30px, 9vw, 44px); height: clamp(30px, 9vw, 44px); }
+  .cb-side--enemies .cb-enemy-name { font-size: var(--fs-sm); }
+  .cb-side--enemies .cb-intent { font-size: var(--fs-xs); min-height: calc(var(--fs-xs) * 2.7); }
+  .cb-side--enemies .cb-intent-icon svg { width: clamp(11px, 3vw, 14px); height: clamp(11px, 3vw, 14px); }
+  .cb-side--enemies .sc-hpbar { min-width: 0; height: clamp(12px, 3vw, 15px); }
   .cb-side--player {
     width: 100%;
     display: grid;
@@ -681,24 +753,38 @@ body {
   .cb-avatar { grid-row: 1 / span 3; }
   .cb-unit-name { text-align: left; }
   .cb-unit-status { justify-content: flex-start; min-height: 0; }
-  /* 底排：手牌独占一行横滑+吸附；两列牌堆与结束回合同占一行 */
-  .cb-hand {
-    order: 1;
-    flex: 1 1 100%;
-    justify-content: flex-start;
-    scroll-snap-type: x mandatory;
-  }
-  .cb-pilebox { order: 2; padding-bottom: 0; }
+  /* 底排：手牌独占一行横滑；两列牌堆与结束回合同占一行 */
+  .cb-hand { order: 1; flex: 1 1 100%; }
+  .cb-pilebox { display: contents; } /* 拍平两列：三个牌堆按钮直接参与底排，与结束回合整齐同行 */
+  .cb-pilebox > * { order: 2; } /* 拍平后保持次序：手牌(1) → 牌堆按钮(2) → 结束区(3) */
   .cb-endwrap { order: 3; margin-left: auto; }
-  /* 行宽紧张：按钮字号/字距/内边距收一档，保证与两列牌堆同排不被裁 */
+}
+
+/* ≤720 追加：卡宽 46vw 上限横滑+吸附、牌堆/结束按钮收一档（行宽紧张不被裁） */
+@media (max-width: 720px) {
+  .cb-shell { --card-w: min(46vw, clamp(104px, 15vw, 158px)); }
+  .cb-hand {
+    justify-content: flex-start;
+    scroll-snap-type: x proximity; /* 触屏轻滑不强制吸卡，降低误触位移 */
+  }
+  .cb-bottom .sc-pilebtn { font-size: var(--fs-xs); padding: .5em .7em; }
   .cb-endturn { font-size: var(--fs-md); padding: .55em 1em; letter-spacing: .08em; }
 }
 
-/* 721~1023 紧凑档（非矮屏）：手牌独占一行，5 张静止全显；矮屏排除（900×500 保持短屏单行横滑） */
-@media (min-width: 721px) and (max-width: 1023px) and (min-height: 701px) {
-  .cb-hand { order: 1; flex: 1 1 100%; }
-  .cb-pilebox { order: 2; padding-bottom: 0; }
-  .cb-endwrap { order: 3; margin-left: auto; }
+/* 堆叠 × 高度紧张档（701~880px 有效视口：浏览器外框/系统缩放吃掉高度后的真实区间）：
+   敌人卡与玩家行再压一档，保证被吃掉外框高度后依然一屏放下、任何元素不被削 */
+@media (max-width: 1023px) and (min-height: 701px) and (max-height: 880px) {
+  .cb-shell { --avatar: clamp(48px, 8vw, 64px); }
+  .cb-side--enemies { padding: 10px 2px; }
+  .cb-side--enemies .cb-enemy { padding: clamp(4px, 1vh, 6px); gap: 3px; }
+  .cb-side--enemies .cb-enemy-icon svg { width: clamp(22px, 6vw, 30px); height: clamp(22px, 6vw, 30px); }
+  .cb-side--enemies .cb-enemy-name { font-size: var(--fs-xs); }
+  .cb-side--enemies .cb-intent { min-height: calc(var(--fs-xs) * 1.5); }
+  .cb-side--enemies .sc-hpbar { height: clamp(10px, 2.4vw, 12px); }
+  .cb-avatar-energy .sc-orb { width: clamp(34px, 7vw, 42px); height: clamp(34px, 7vw, 42px); }
+}
+@media (min-width: 721px) and (max-width: 1023px) and (min-height: 701px) and (max-height: 880px) {
+  .cb-shell { --card-w: clamp(96px, 13vw, 132px); }
 }
 
 /* 1024~1599 单行档：--card-w 上限按实测收紧，全区间 5 张静止全显（≥1600 走宽屏档不受影响） */
@@ -706,12 +792,12 @@ body {
   .cb-shell { --card-w: clamp(96px, calc(20vw - 102px), 132px); }
 }
 
-/* (max-height:700px) 矮屏压缩：舞台压扁、灵像/敌人图标降档、手牌卡再降一档、日志压到 ~56px */
+/* (max-height:700px) 矮屏压缩：舞台下限再降、灵像/敌人图标降档、手牌卡再降一档、日志压到 ~48px */
 @media (max-height: 700px) {
   .cb-shell { --card-w: clamp(80px, 11vw, 118px); --avatar: clamp(64px, 9vw, 104px); gap: clamp(3px, .6vh, 5px); }
   .cb-head { padding-bottom: clamp(2px, .5vh, 4px); }
   .cb-stage {
-    min-height: clamp(150px, 30vh, 260px);
+    min-height: 140px;
     gap: clamp(4px, 1vh, 8px);
     padding: clamp(6px, 1.2vh, 10px) clamp(10px, 1.4vw, 14px);
   }
@@ -721,6 +807,10 @@ body {
   .cb-intent { min-height: calc(var(--fs-sm) * 2.4); font-size: var(--fs-sm); }
   .cb-unit-status,
   .cb-enemy-meta { min-height: 0; }
+  /* 矮屏玩家列瘦身：能量球移到灵像右侧（免纵向叠加），容器宽度随行内容自适应，
+     热量环圆心钉在灵像本体中心（左起第一个子件） */
+  .cb-avatar { flex-direction: row; align-items: center; width: auto; }
+  .cb-avatar-heat { left: calc(var(--avatar) / 2); }
   .cb-hand {
     min-height: calc(var(--card-h) + 6px);
     padding-top: clamp(4px, .8vh, 6px);
@@ -729,10 +819,17 @@ body {
   .cb-pilebox { padding-bottom: 0; }
   .cb-hint { min-height: 0; }
   .cb-log {
-    height: clamp(56px, 11vh, 152px);
+    max-height: clamp(48px, 12vh, 120px);
     padding: clamp(6px, .8vw, 8px) clamp(10px, 1.4vw, 14px);
   }
   .cb-log-title { display: none; }
+}
+
+/* —— 非指向卡拖放至打出区：玩家灵像磷光脉冲提示「松手打出」 —— */
+.cb-avatar--dropok .cb-avatar-core { border-color: var(--phos); animation: cb-dropok-pulse .8s ease-in-out infinite; }
+@keyframes cb-dropok-pulse {
+  0%, 100% { box-shadow: 0 0 10px color-mix(in srgb, var(--phos) 18%, transparent); }
+  50% { box-shadow: 0 0 22px color-mix(in srgb, var(--phos) 42%, transparent); }
 }
 
 /* —— 减弱动态偏好：脉冲/流动/呼吸一律压到近瞬发 —— */
@@ -818,14 +915,17 @@ body {
   background: var(--panel2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 6px;
   padding: clamp(4px, .8vw, 6px) clamp(8px, 1.4vw, 12px); cursor: pointer;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s;
 }
-.sc-topbar-btn:hover { border-color: var(--phos); color: var(--phos); }
+@media (hover:hover) and (pointer:fine) {
+  .sc-topbar-btn:hover { border-color: var(--phos); color: var(--phos); }
+}
 .sc-topbar-relics { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 
 /* ============ 地图 ============ */
 .sc-map-wrap {
-  max-height: min(68vh, 980px); overflow: auto;
+  max-height: min(68vh, 980px); overflow: auto; overscroll-behavior: contain;
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
 }
 .sc-map-svg { display: block; margin: 0 auto; width: min(100%, 560px); height: auto; }
@@ -834,10 +934,13 @@ body {
 .sc-map-node-ring { fill: var(--panel2); stroke: var(--line); stroke-width: 2; }
 .sc-map-node-ic { color: var(--dim); }
 .sc-map-node .sc-ic { width: 24px; height: 24px; }
+.sc-map-node { touch-action: manipulation; }
 .sc-map-node--avail { cursor: pointer; animation: sc-breathe 1.6s ease-in-out infinite; }
 .sc-map-node--avail .sc-map-node-ring { stroke: var(--phos); fill: var(--panel); }
 .sc-map-node--avail .sc-map-node-ic { color: var(--phos); }
-.sc-map-node--avail:hover .sc-map-node-ring { fill: var(--bg); stroke-width: 3; }
+@media (hover:hover) and (pointer:fine) {
+  .sc-map-node--avail:hover .sc-map-node-ring { fill: var(--bg); stroke-width: 3; }
+}
 .sc-map-node--done { opacity: .7; }
 .sc-map-node--done .sc-map-node-ring { stroke: var(--dim); }
 .sc-map-node--dim { opacity: .32; }
@@ -857,20 +960,30 @@ body {
 
 /* ============ 卡牌构件（尺寸唯一来源，契约 §5.2） ============ */
 .sc-card {
-  position: relative; width: var(--card-w); min-height: var(--card-h);
+  position: relative; width: var(--card-w); height: var(--card-h);
+  /* 固定高度：卡名折行曾把卡撑高（手牌"三矮两高"），统一尺寸；内容裁剪由内层 .sc-card-in
+     负责——本卡不 overflow，费用徽标才能正常凸出卡面 */
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
   padding: clamp(10px, 1.4vw, 14px) clamp(8px, 1.2vw, 12px) clamp(6px, 1vw, 10px);
   display: flex; flex-direction: column; gap: clamp(4px, .7vw, 6px);
+  user-select: none; -webkit-user-select: none; /* 触屏长按不选中卡面文字（阅读/输入区不在此类上） */
   transition: transform .12s, box-shadow .12s, border-color .12s, opacity .12s;
 }
-.sc-card--click { cursor: pointer; }
-.sc-card--click:hover {
-  border-color: var(--phos);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .4), 0 0 10px rgba(143, 211, 160, .18);
+/* 内层裁剪盒：定高卡的内容在此统一裁剪（费用徽标在盒外，不受影响）；
+   风味文本为弹性受害者（先收缩自裁），卡名/类型/描述/标记永不挤压 */
+.sc-card-in { height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: clamp(4px, .7vw, 6px); }
+.sc-card-in .sc-card-name, .sc-card-in .sc-card-type, .sc-card-in .sc-card-desc, .sc-card-in .sc-card-flags { flex: none; }
+.sc-card-in .sc-card-flavor { flex: 0 1 auto; min-height: 0; }
+.sc-card--click { cursor: pointer; touch-action: manipulation; }
+@media (hover:hover) and (pointer:fine) {
+  .sc-card--click:hover {
+    border-color: var(--phos);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .4), 0 0 10px rgba(143, 211, 160, .18);
+  }
 }
 .sc-card--off { opacity: .45; filter: saturate(.55); }
 .sc-card--compact {
-  width: var(--card-cw); min-height: calc(var(--card-cw) * 1.325);
+  width: var(--card-cw); height: calc(var(--card-cw) * 1.325);
   padding: clamp(9px, 1.2vw, 12px) clamp(7px, 1vw, 10px) clamp(6px, .9vw, 8px);
 }
 .sc-card--compact .sc-card-name { font-size: var(--fs-sm); }
@@ -884,7 +997,10 @@ body {
   font-weight: 700; font-size: var(--fs-md);
   box-shadow: 0 0 8px rgba(127, 196, 189, .18);
 }
-.sc-card-name { font-size: var(--fs-lg); letter-spacing: .04em; padding-left: clamp(10px, 1.2vw, 12px); }
+.sc-card-name {
+  font-size: var(--fs-lg); letter-spacing: .04em; padding-left: clamp(10px, 1.2vw, 12px);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
 .sc-card-plus { color: var(--amber); margin-left: 2px; }
 .sc-card-type { display: flex; justify-content: space-between; font-size: var(--fs-xs); color: var(--dim); }
 .sc-card--attack .sc-card-type { color: var(--red); }
@@ -893,12 +1009,13 @@ body {
 .sc-card-rarity { color: var(--dim); }
 .sc-card-desc {
   font-size: var(--fs-sm); line-height: 1.55; overflow: hidden;
-  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; line-clamp: 5;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4;
 }
 .sc-card-flavor {
   margin-top: auto; padding-top: clamp(4px, .7vw, 6px);
   border-top: 1px dashed var(--line);
   font-size: var(--fs-xs); color: var(--dim); line-height: 1.5;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
 }
 .sc-card-flags { display: flex; gap: 4px; flex-wrap: wrap; }
 .sc-card-flag {
@@ -960,9 +1077,9 @@ body {
   background: var(--panel2); border: 2px solid var(--cyan);
   box-shadow: 0 0 12px rgba(127, 196, 189, .15);
 }
-.sc-orb .sc-ic { width: clamp(11px, 1.2vw, 13px); height: clamp(11px, 1.2vw, 13px); color: var(--cyan); }
-.sc-orb-n { font-size: var(--fs-lg); font-weight: 700; line-height: 1.1; }
-.sc-orb-max { font-size: var(--fs-xs); color: var(--dim); }
+.sc-orb .sc-ic { width: clamp(10px, 1.1vw, 12px); height: clamp(10px, 1.1vw, 12px); color: var(--cyan); margin-bottom: 1px; }
+.sc-orb-n { font-size: var(--fs-lg); font-weight: 700; line-height: 1.05; }
+.sc-orb-max { font-size: var(--fs-xs); color: var(--dim); font-weight: 400; margin-left: 1px; }
 
 /* ============ 遗物 / 牌堆按钮 / 提示 / 模态 ============ */
 .sc-relic {
@@ -981,9 +1098,12 @@ body {
   background: var(--panel2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 6px;
   padding: clamp(4px, .8vw, 6px) clamp(7px, 1.2vw, 10px); cursor: pointer;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s;
 }
-.sc-pilebtn:hover { border-color: var(--phos); color: var(--phos); }
+@media (hover:hover) and (pointer:fine) {
+  .sc-pilebtn:hover { border-color: var(--phos); color: var(--phos); }
+}
 .sc-pilebtn-count {
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
   padding: 0 clamp(4px, .7vw, 6px); font-size: var(--fs-xs); color: var(--dim);
@@ -1002,6 +1122,7 @@ body {
   padding: clamp(8px, 2vw, 24px);
 }
 .sc-modal {
+  position: relative; width: min(900px, calc(100vw - 24px)); max-height: min(85vh, 920px);
   position: relative; width: min(900px, calc(100vw - 24px)); max-height: min(85dvh, 920px);
   background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   display: flex; flex-direction: column;
@@ -1010,9 +1131,12 @@ body {
   position: absolute; top: clamp(6px, 1vw, 8px); right: clamp(8px, 1.4vw, 12px); z-index: 1;
   background: none; border: none; color: var(--dim);
   font-size: var(--fs-lg); font-family: var(--font); cursor: pointer;
+  touch-action: manipulation;
 }
-.sc-modal-x:hover { color: var(--red); }
-.sc-modal-body { padding: clamp(12px, 2vw, 20px); overflow-y: auto; }
+@media (hover:hover) and (pointer:fine) {
+  .sc-modal-x:hover { color: var(--red); }
+}
+.sc-modal-body { padding: clamp(12px, 2vw, 20px); overflow-y: auto; overscroll-behavior: contain; }
 .sc-modal-title { font-size: var(--fs-lg); color: var(--phos); letter-spacing: .1em; margin-bottom: clamp(10px, 1.5vw, 14px); }
 
 /* ============ 屏通用 ============ */
@@ -1037,6 +1161,7 @@ body {
 
 /* ============ 标题屏 ============ */
 .sc-title-shell {
+  min-height: calc(100vh - 2 * var(--shell-pad));
   min-height: calc(100dvh - 2 * var(--shell-pad));
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; text-align: center; gap: var(--gap);
@@ -1125,6 +1250,7 @@ body {
 .sc-shop-buy {
   min-width: clamp(96px, 22vw, 124px); font-size: var(--fs-sm);
   padding: clamp(4px, .8vw, 6px) clamp(8px, 1.2vw, 10px);
+  touch-action: manipulation;
 }
 .sc-shop-buy--sale { border-color: var(--amber); color: var(--amber); }
 .sc-shop-relics { display: flex; gap: clamp(10px, 1.8vw, 18px); flex-wrap: wrap; justify-content: center; max-width: 100%; }
@@ -1132,6 +1258,7 @@ body {
   display: flex; flex-direction: column; align-items: center; gap: var(--gap);
   background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
   padding: clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 18px);
+  user-select: none; -webkit-user-select: none;
 }
 .sc-shop-relic .sc-relic { width: clamp(32px, 4vw, 40px); height: clamp(32px, 4vw, 40px); }
 .sc-shop-relic .sc-relic .sc-ic { width: clamp(20px, 3vw, 24px); height: clamp(20px, 3vw, 24px); }
@@ -1151,11 +1278,14 @@ body {
   width: clamp(220px, 60vw, 320px); text-align: center; cursor: pointer;
   background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
   padding: clamp(16px, 3vw, 26px) clamp(14px, 2.4vw, 20px);
+  touch-action: manipulation;
   transition: transform .15s, border-color .15s, box-shadow .15s;
 }
-.sc-rest-opt:hover {
-  border-color: var(--phos); transform: translateY(-3px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .35), 0 0 10px rgba(143, 211, 160, .15);
+@media (hover:hover) and (pointer:fine) {
+  .sc-rest-opt:hover {
+    border-color: var(--phos); transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .35), 0 0 10px rgba(143, 211, 160, .15);
+  }
 }
 .sc-rest-opt .sc-ic { width: clamp(26px, 4vw, 34px); height: clamp(26px, 4vw, 34px); color: var(--phos); }
 .sc-rest-opt-t { font-size: var(--fs-lg); margin: clamp(8px, 1.4vw, 12px) 0 clamp(4px, .7vw, 6px); letter-spacing: .06em; }
@@ -1183,9 +1313,12 @@ body {
   background: var(--panel2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 8px;
   padding: clamp(8px, 1.4vw, 12px) clamp(10px, 1.8vw, 16px); cursor: pointer;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s;
 }
-.sc-event-choice:hover:not(:disabled) { border-color: var(--phos); color: var(--phos); }
+@media (hover:hover) and (pointer:fine) {
+  .sc-event-choice:hover:not(:disabled) { border-color: var(--phos); color: var(--phos); }
+}
 .sc-event-choice:disabled { opacity: .45; cursor: not-allowed; }
 .sc-event-choice-req { font-size: var(--fs-xs); color: var(--red); }
 .sc-event-result {
@@ -1207,6 +1340,7 @@ body {
 
 /* ============ 失败 / 胜利屏 ============ */
 .sc-end-shell {
+  min-height: calc(100vh - 2 * var(--shell-pad));
   min-height: calc(100dvh - 2 * var(--shell-pad));
   display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: var(--gap); text-align: center;
@@ -1223,9 +1357,12 @@ body {
   background: var(--panel2); color: var(--dim);
   border: 1px solid var(--line); border-radius: 5px;
   padding: clamp(3px, .6vw, 4px) clamp(10px, 1.5vw, 14px); cursor: pointer;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s;
 }
-.sc-deck-filter:hover { border-color: var(--phos); color: var(--phos); }
+@media (hover:hover) and (pointer:fine) {
+  .sc-deck-filter:hover { border-color: var(--phos); color: var(--phos); }
+}
 .sc-deck-filter--on { border-color: var(--phos); color: var(--phos); }
 .sc-deck-grid {
   display: flex; gap: var(--gap); row-gap: calc(var(--gap) + 6px);
@@ -1269,7 +1406,7 @@ body {
 /* 手机 ≤720px：遗物栏整行横滑、图例横滑 */
 @media (max-width: 720px) {
   .sc-topbar-relics {
-    flex-basis: 100%; flex-wrap: nowrap; overflow-x: auto;
+    flex-basis: 100%; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain;
     padding-bottom: 2px; scrollbar-width: thin;
   }
   .sc-legend {
@@ -1301,7 +1438,7 @@ body {
 .sc-fb-label { font-size: var(--fs-sm); color: var(--dim); margin-bottom: clamp(4px, .7vw, 6px); }
 .sc-fb-ta {
   width: 100%; box-sizing: border-box; resize: vertical;
-  font-family: var(--font); font-size: var(--fs-sm); line-height: 1.6;
+  font-family: var(--font); font-size: max(16px, var(--fs-sm)); line-height: 1.6; /* ≥16px 防 iOS 聚焦自动放大 */
   background: var(--panel2); color: var(--ink);
   border: 1px solid var(--line); border-radius: 6px;
   padding: clamp(6px, 1vw, 8px) clamp(8px, 1.2vw, 10px);
@@ -1582,6 +1719,7 @@ body {
 /* ==================== 序幕：全屏终端窗口 ==================== */
 .nv-term {
   display: flex; flex-direction: column;
+  height: calc(100vh - 2 * var(--shell-pad)); /* 定高外壳：底栏恒可见，正文内部滚动 */
   height: calc(100dvh - 2 * var(--shell-pad)); /* 定高外壳：底栏恒可见，正文内部滚动 */
   background: var(--panel);
   border: 1px solid var(--phos);
@@ -1607,7 +1745,7 @@ body {
 }
 .nv-skip { flex: none; }
 .nv-term-body {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   padding: clamp(14px, 3.5vw, 36px);
   font-size: var(--fs-lg);
 }
@@ -1636,6 +1774,7 @@ body {
 /* ==================== 章节引入：单屏章节卡 ==================== */
 .nv-act {
   position: relative;
+  min-height: calc(100vh - 2 * var(--shell-pad));
   min-height: calc(100dvh - 2 * var(--shell-pad));
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
@@ -1672,6 +1811,7 @@ body {
 /* ==================== Boss 威胁档案 ==================== */
 .nv-brief {
   display: flex; flex-direction: column;
+  height: calc(100vh - 2 * var(--shell-pad)); /* 定高外壳：底栏恒可见，正文内部滚动 */
   height: calc(100dvh - 2 * var(--shell-pad)); /* 定高外壳：底栏恒可见，正文内部滚动 */
   background: var(--panel);
   border: 1px solid var(--line);
@@ -1697,7 +1837,7 @@ body {
   white-space: nowrap;
   box-shadow: 0 0 12px rgba(212, 117, 106, .25);
 }
-.nv-brief-body { flex: 1; min-height: 0; overflow-y: auto; padding: clamp(14px, 3.5vw, 34px); }
+.nv-brief-body { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: clamp(14px, 3.5vw, 34px); }
 .nv-brief-head {
   display: flex; align-items: flex-start; gap: var(--gap); flex-wrap: wrap;
   margin-bottom: .4em;
@@ -1757,6 +1897,7 @@ body {
 /* ==================== 档案库：数据库终端 ==================== */
 .nv-codex {
   display: flex; flex-direction: column; gap: var(--gap);
+  min-height: calc(100vh - 2 * var(--shell-pad));
   min-height: calc(100dvh - 2 * var(--shell-pad));
 }
 .nv-codex-head {
@@ -1772,9 +1913,12 @@ body {
   color: var(--dim); background: var(--panel);
   border: 1px solid var(--line); border-radius: 6px;
   padding: .4em 1.1em; letter-spacing: .1em;
+  touch-action: manipulation;
   transition: border-color .15s, color .15s, box-shadow .15s;
 }
-.nv-codex-tab:hover { border-color: var(--phos); color: var(--phos); }
+@media (hover:hover) and (pointer:fine) {
+  .nv-codex-tab:hover { border-color: var(--phos); color: var(--phos); }
+}
 .nv-codex-tab--on {
   color: var(--phos); border-color: var(--phos);
   box-shadow: 0 0 10px rgba(143, 211, 160, .12);
@@ -1782,11 +1926,12 @@ body {
 .nv-codex-main {
   flex: 1; min-height: 0;
   display: flex; gap: var(--gap);
+  height: min(66vh, 700px);
   height: min(66dvh, 700px);
 }
 .nv-codex-list {
   flex: none; width: clamp(190px, 24vw, 270px);
-  overflow-y: auto;
+  overflow-y: auto; overscroll-behavior: contain;
   display: flex; flex-direction: column; gap: .2em;
   padding: .4em;
   background: var(--panel);
@@ -1798,13 +1943,16 @@ body {
   padding: .5em .7em;
   color: var(--ink); background: transparent;
   border: none; border-left: 2px solid transparent; border-radius: 4px;
+  touch-action: manipulation;
 }
-.nv-codex-item:hover { background: var(--panel2); }
+@media (hover:hover) and (pointer:fine) {
+  .nv-codex-item:hover { background: var(--panel2); }
+}
 .nv-codex-item--on { background: var(--panel2); border-left-color: var(--phos); }
 .nv-codex-item-t { font-size: var(--fs-md); }
 .nv-codex-item-c { color: var(--dim); font-size: var(--fs-xs); }
 .nv-codex-read {
-  flex: 1; min-width: 0; overflow-y: auto;
+  flex: 1; min-width: 0; overflow-y: auto; overscroll-behavior: contain;
   padding: clamp(14px, 3vw, 30px);
   background: var(--panel);
   border: 1px solid var(--line); border-radius: 8px;
@@ -1817,6 +1965,7 @@ body {
 /* ==================== 玩法指南：分页手册 ==================== */
 .nv-guide {
   display: flex; flex-direction: column; gap: var(--gap);
+  height: calc(100vh - 2 * var(--shell-pad)); /* 定高外壳：翻页栏恒可见，正文内部滚动 */
   height: calc(100dvh - 2 * var(--shell-pad)); /* 定高外壳：翻页栏恒可见，正文内部滚动 */
 }
 .nv-guide-head {
@@ -1826,7 +1975,7 @@ body {
 .nv-guide-head-t { color: var(--phos); font-size: var(--fs-xl); letter-spacing: .08em; }
 .nv-guide-sub { color: var(--dim); font-size: var(--fs-sm); margin-top: .2em; }
 .nv-guide-panel {
-  flex: 1; min-height: 0; overflow-y: auto;
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
   padding: clamp(16px, 4vw, 40px);
   background: var(--panel);
   border: 1px solid var(--line); border-radius: 8px;
@@ -1847,6 +1996,7 @@ body {
   display: grid; place-items: center;
   padding: .4em;
   background: transparent; border: none; cursor: pointer;
+  touch-action: manipulation;
 }
 .nv-guide-dot i { width: .62em; height: .62em; border-radius: 50%; background: var(--line); }
 .nv-guide-dot--on i { background: var(--phos); box-shadow: 0 0 8px rgba(143, 211, 160, .4); }
@@ -1885,21 +2035,25 @@ body {
 /* ≤720px：全纵排单栏 */
 @media (max-width: 720px) {
   .nv-codex-main { flex-direction: column; height: auto; }
+  .nv-codex-list { width: 100%; max-height: 30vh; }
   .nv-codex-list { width: 100%; max-height: 30dvh; }
+  .nv-codex-read { min-height: 40vh; }
   .nv-codex-read { min-height: 40dvh; }
   .nv-guide-nav { justify-content: center; }
   .nv-brief-foot { flex-direction: column; align-items: stretch; text-align: center; }
   .nv-brief-go { width: 100%; }
-  /* 首遇提示：底部居中全宽条，限高不遮核心操作 */
+  /* 首遇提示：底部居中全宽条，限高不遮核心操作；bottom 抬高 56px 避开战斗底排按钮/地图图例 */
   .nv-tip {
-    right: var(--shell-pad); left: var(--shell-pad); bottom: var(--shell-pad);
-    width: auto; max-height: 42dvh; overflow-y: auto;
+    right: var(--shell-pad); left: var(--shell-pad); bottom: calc(var(--shell-pad) + 56px);
+    width: auto; max-height: 42vh; overflow-y: auto; overscroll-behavior: contain;
+    width: auto; max-height: 42dvh; overflow-y: auto; overscroll-behavior: contain;
   }
 }
 /* 矮横屏（≤700px 高）：收紧垂直节奏 */
 @media (max-height: 700px) {
   .nv-term-body { padding: clamp(10px, 2.5vh, 20px) clamp(14px, 3.5vw, 36px); }
   .nv-act-next { margin-top: 1em; }
+  .nv-codex-main { height: min(60vh, 700px); }
   .nv-codex-main { height: min(60dvh, 700px); }
 }
 /* 触屏：可点目标 ≥ 42px（RESPONSIVE §2-6） */
@@ -3837,10 +3991,10 @@ body {
   });
 
   // src/fx/icons.js
-  function icon(name, cls) {
+  function icon(name, cls, size = 24) {
     const body = REGISTRY[name] || REGISTRY[FALLBACK];
     const c = "fx-icon" + (cls ? " " + cls : "");
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="' + c + '" aria-hidden="true" focusable="false">' + body + "</svg>";
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="' + c + '" aria-hidden="true" focusable="false">' + body + "</svg>";
   }
   var REGISTRY, ICON_NAMES, FALLBACK;
   var init_icons = __esm({
@@ -4003,19 +4157,23 @@ body {
       el("div", { class: "sc-card-cost" }, String(card.cost ?? 0)),
       el(
         "div",
-        { class: "sc-card-name" },
-        card.name || "\u672A\u77E5\u7A0B\u5E8F",
-        card.upgraded ? el("span", { class: "sc-card-plus" }, "+") : null
-      ),
-      el(
-        "div",
-        { class: "sc-card-type" },
-        el("span", {}, TYPE_NAMES[type] || type),
-        el("span", { class: "sc-card-rarity" }, RARITY_NAMES[rarity] || "")
-      ),
-      el("div", { class: "sc-card-desc" }, describeCard(card)),
-      compact ? null : el("div", { class: "sc-card-flavor" }, card.flavor || ""),
-      flags.length ? el("div", { class: "sc-card-flags" }, flags.map((f) => el("span", { class: "sc-card-flag" }, f))) : null
+        { class: "sc-card-in" },
+        el(
+          "div",
+          { class: "sc-card-name" },
+          card.name || "\u672A\u77E5\u7A0B\u5E8F",
+          card.upgraded ? el("span", { class: "sc-card-plus" }, "+") : null
+        ),
+        el(
+          "div",
+          { class: "sc-card-type" },
+          el("span", {}, TYPE_NAMES[type] || type),
+          el("span", { class: "sc-card-rarity" }, RARITY_NAMES[rarity] || "")
+        ),
+        el("div", { class: "sc-card-desc" }, describeCard(card)),
+        compact ? null : el("div", { class: "sc-card-flavor" }, card.flavor || ""),
+        flags.length ? el("div", { class: "sc-card-flags" }, flags.map((f) => el("span", { class: "sc-card-flag" }, f))) : null
+      )
     );
     if (onClick) node.addEventListener("click", () => onClick());
     return node;
@@ -4062,8 +4220,7 @@ body {
       "div",
       { class: "sc-orb" },
       el("span", { class: "sc-orb-ic", html: icon("bolt", "sc-ic") }),
-      el("span", { class: "sc-orb-n" }, String(cur)),
-      el("span", { class: "sc-orb-max" }, `/ ${max}`)
+      el("span", { class: "sc-orb-n" }, String(cur), el("span", { class: "sc-orb-max" }, `/${max}`))
     );
   }
   function pileButton(label, count, onClick) {
@@ -4088,6 +4245,7 @@ body {
     document.addEventListener("pointermove", () => {
       if (tipAnchor && !tipAnchor.isConnected) hideTip();
     }, { passive: true });
+    document.addEventListener("scroll", hideTip, { capture: true, passive: true });
   }
   function ensureTip() {
     if (!tipEl) {
@@ -4100,7 +4258,7 @@ body {
   }
   function attachTooltip(node, html) {
     ensureTipGuards();
-    node.addEventListener("mouseenter", () => {
+    node.addEventListener("pointerenter", () => {
       tipAnchor = node;
       const tip4 = ensureTip();
       tip4.innerHTML = html;
@@ -4119,26 +4277,45 @@ body {
       tip4.style.left = `${x}px`;
       tip4.style.top = `${y}px`;
     });
-    node.addEventListener("mouseleave", () => {
+    node.addEventListener("pointerleave", () => {
       if (tipAnchor === node) hideTip();
     });
   }
   function modal(root, contentEl) {
     root.querySelectorAll(".sc-modal-back").forEach((n) => n.remove());
+    document.body.style.overflow = "hidden";
+    let closed = false;
+    let downOnBack = false;
     const onKey = (e) => {
       if (e.key === "Escape") close();
     };
+    const mo = new MutationObserver(() => {
+      if (!back.isConnected) close();
+    });
     function close() {
+      if (closed) return;
+      closed = true;
+      mo.disconnect();
       hideTip();
       back.remove();
       document.removeEventListener("keydown", onKey);
+      if (!root.querySelector(".sc-modal-back")) document.body.style.overflow = "";
     }
     const back = el(
       "div",
       {
         class: "sc-modal-back",
-        onClick: (e) => {
-          if (e.target === back) close();
+        // 防误触：pointerdown 与 pointerup 都落在 back 本体才关闭
+        // （modal 内按下、拖动滚动/选中后松手落在遮罩上不再误关；触屏滑出同理）
+        onPointerdown: (e) => {
+          downOnBack = e.target === back;
+        },
+        onPointerup: (e) => {
+          if (downOnBack && e.target === back) close();
+          downOnBack = false;
+        },
+        onPointercancel: () => {
+          downOnBack = false;
         }
       },
       el(
@@ -4149,6 +4326,7 @@ body {
       )
     );
     document.addEventListener("keydown", onKey);
+    mo.observe(root, { childList: true });
     root.append(back);
     return close;
   }
@@ -6970,9 +7148,10 @@ body {
         boss ? `\u76EE\u6807\uFF1A\u62B5\u8FBE\u7B2C ${floors.length} \u5C42\uFF0C\u51FB\u8D25 ${boss.name}` : `\u76EE\u6807\uFF1A\u62B5\u8FBE\u7B2C ${floors.length} \u5C42\uFF0C\u51FB\u8D25\u533A\u57DF\u5934\u76EE`
       )
     );
+    const narrow = typeof matchMedia === "function" && matchMedia("(max-width: 720px)").matches;
     const W = 720;
-    const ROW = 62;
-    const PAD = 28;
+    const ROW = narrow ? 84 : 62;
+    const PAD = narrow ? 32 : 28;
     const H = floors.length * ROW + PAD * 2;
     const pos = {};
     floors.forEach((ids, f) => {
@@ -7003,8 +7182,10 @@ body {
       else if (n.visited) cls.push("sc-map-node--done");
       else cls.push("sc-map-node--dim");
       if (run2.nodeId === id) cls.push("sc-map-node--cur");
-      const r = n.type === "boss" ? 24 : 17;
-      nodes += `<g class="${cls.join(" ")}" data-node="${id}" transform="translate(${p.x},${p.y})"><circle class="sc-map-node-ring" r="${r}"/><g class="sc-map-node-ic" transform="translate(-12,-12)">${ctx2.icon(NODE_ICON[n.type] || "node-event", "sc-ic")}</g>` + (n.visited ? `<g class="sc-map-node-check" transform="translate(7,5) scale(.55)">${ctx2.icon("check", "sc-ic")}</g>` : "") + "</g>";
+      const r = n.type === "boss" ? narrow ? 28 : 24 : narrow ? 20 : 17;
+      const hitR = narrow ? 42 : 30;
+      const icSize = narrow ? 28 : 24;
+      nodes += `<g class="${cls.join(" ")}" data-node="${id}" transform="translate(${p.x},${p.y})"><circle r="${hitR}" fill="transparent"/><circle class="sc-map-node-ring" r="${r}"/><g class="sc-map-node-ic" transform="translate(${-icSize / 2},${-icSize / 2})">${ctx2.icon(NODE_ICON[n.type] || "node-event", "sc-ic", icSize)}</g>` + (n.visited ? `<g class="sc-map-node-check" transform="translate(7,5) scale(.55)">${ctx2.icon("check", "sc-ic")}</g>` : "") + "</g>";
     }
     const mapWrap = el("div", { class: "sc-map-wrap" });
     mapWrap.innerHTML = `<svg class="sc-map-svg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${edges}${nodes}</svg>`;
@@ -7013,7 +7194,10 @@ body {
         ctx2.sfx.play("click");
         ctx2.nav.enterNode(g.dataset.node);
       });
-      g.addEventListener("mouseenter", () => ctx2.sfx.play("hover"));
+      g.addEventListener("pointerenter", (ev) => {
+        if (ev.pointerType === "touch") return;
+        ctx2.sfx.play("hover");
+      });
     });
     const legend = el(
       "div",
@@ -7737,6 +7921,8 @@ body {
   var LOG_MAX = 6;
   var DONE_DELAY = 600;
   var DRAG_CLICK_PX = 6;
+  var TOUCH_SLOP_PX = 10;
+  var TOUCH_DIR_RATIO = 1.2;
   var ENEMY_ACT_MS = 440;
   var VQ_MAX_MS = 1200;
   function renderCombat(root, run2, ctx2, enemyIds, onDone) {
@@ -7756,6 +7942,7 @@ body {
     let dealInPending = false;
     let renderScheduled = false;
     let drag = null;
+    let pending = null;
     let predictedUids = [];
     let vqAt = 0;
     let enemyPhase = false;
@@ -8089,6 +8276,8 @@ body {
       setTimeout(() => {
         if (doneFired) return;
         doneFired = true;
+        window.removeEventListener("resize", fitCombat);
+        document.body.classList.remove("cb-noscroll");
         onDone(finalResult);
       }, DONE_DELAY);
     });
@@ -8233,7 +8422,7 @@ body {
         card = null;
       }
       if (!card) return;
-      drag = {
+      const d = {
         i,
         card,
         slot,
@@ -8243,6 +8432,7 @@ body {
         x: ev.clientX,
         y: ev.clientY,
         moved: false,
+        visual: false,
         dead: (card.cost ?? 0) > p.energy,
         // 费用不足：拖了也白拖，仅保留点击提示路径
         ghost: null,
@@ -8250,13 +8440,47 @@ body {
         aimOn: false,
         slotRect: null
       };
+      if (ev.pointerType === "touch") {
+        cancelPending();
+        pending = d;
+        return;
+      }
+      drag = d;
       try {
         slot.setPointerCapture(ev.pointerId);
       } catch {
       }
       if (typeof ev.preventDefault === "function") ev.preventDefault();
     }
+    function cancelPending() {
+      pending = null;
+    }
+    function ensureDragVisual() {
+      if (!drag || drag.visual) return;
+      drag.visual = true;
+      if (!drag.dead) startDragVisual();
+    }
     function onDragMove(ev) {
+      if (pending && ev.pointerId === pending.pointerId) {
+        pending.x = ev.clientX;
+        pending.y = ev.clientY;
+        const pdx = ev.clientX - pending.startX;
+        const pdy = ev.clientY - pending.startY;
+        if (Math.hypot(pdx, pdy) <= TOUCH_SLOP_PX) return;
+        if (Math.abs(pdx) >= Math.abs(pdy) * TOUCH_DIR_RATIO) {
+          cancelPending();
+          return;
+        }
+        const d = pending;
+        pending = null;
+        d.moved = true;
+        drag = d;
+        try {
+          d.slot.setPointerCapture(d.pointerId);
+        } catch {
+        }
+        ensureDragVisual();
+      }
       if (!drag || ev.pointerId !== drag.pointerId) return;
       drag.x = ev.clientX;
       drag.y = ev.clientY;
@@ -8265,10 +8489,19 @@ body {
         const dy = ev.clientY - drag.startY;
         if (Math.hypot(dx, dy) < DRAG_CLICK_PX) return;
         drag.moved = true;
-        if (!drag.dead) startDragVisual();
+        ensureDragVisual();
       }
       if (drag.dead) return;
       moveGhost(ev.clientX, ev.clientY);
+      if (drag.card.target !== "enemy" && drag.handTop != null) {
+        const ok = ev.clientY < drag.handTop - 8;
+        if (ok !== drag.dropOk) {
+          drag.dropOk = ok;
+          const av = document.querySelector(".cb-avatar");
+          if (av) av.classList.toggle("cb-avatar--dropok", ok);
+          if (drag.hintEl) drag.hintEl.textContent = ok ? `\u677E\u624B\u6253\u51FA\u300C${drag.card.name}\u300D` : `\u4E0A\u6ED1\u6253\u51FA\u300C${drag.card.name}\u300D \xB7 \u653E\u56DE\u624B\u724C\u533A\u53D6\u6D88`;
+        }
+      }
       if (drag.aimOn) updateAim(ev.clientX, ev.clientY);
       const uid = hitEnemyUid(ev);
       if (uid !== drag.selUid) {
@@ -8287,6 +8520,12 @@ body {
       }
     }
     function onDragUp(ev) {
+      if (pending && ev.pointerId === pending.pointerId) {
+        const d2 = pending;
+        cancelPending();
+        onCardClick(d2.i);
+        return;
+      }
       if (!drag || ev.pointerId !== drag.pointerId) return;
       const d = drag;
       drag = null;
@@ -8331,11 +8570,21 @@ body {
         if (launched) setTimeout(settle, 700);
         else settle();
       } else {
-        cleanupDrag(d);
-        if (ref) doPlay(d.i);
+        if (d.dropOk) {
+          cleanupDrag(d);
+          if (ref) doPlay(d.i);
+        } else {
+          cleanupDrag(d, { keepGhost: true });
+          ghostBack(d);
+          if (selected >= 0) {
+            selected = -1;
+            scheduleRender();
+          }
+        }
       }
     }
     function onDragCancel(ev) {
+      if (pending && (ev.pointerId == null || ev.pointerId === pending.pointerId)) cancelPending();
       if (!drag || ev.pointerId != null && ev.pointerId !== drag.pointerId) return;
       const d = drag;
       drag = null;
@@ -8345,6 +8594,11 @@ body {
     function startDragVisual() {
       const { slot, card } = drag;
       drag.slotRect = slot.getBoundingClientRect();
+      if (card.target !== "enemy") {
+        drag.handTop = document.querySelector(".cb-hand")?.getBoundingClientRect().top ?? Infinity;
+        drag.hintEl = document.querySelector(".cb-hint");
+        if (drag.hintEl) drag.hintEl.textContent = `\u4E0A\u6ED1\u6253\u51FA\u300C${card.name}\u300D \xB7 \u653E\u56DE\u624B\u724C\u533A\u53D6\u6D88`;
+      }
       if (card.target === "enemy") {
         for (const e of S().enemies) {
           if (!e.alive) continue;
@@ -8441,6 +8695,9 @@ body {
       }
       clearPrediction();
       hideAim();
+      const av = document.querySelector(".cb-avatar");
+      if (av) av.classList.remove("cb-avatar--dropok");
+      if (d.hintEl) d.hintEl.textContent = "";
       try {
         d.slot.classList.remove("cb-card-slot--dragging");
       } catch {
@@ -8576,7 +8833,8 @@ body {
         el("div", { class: "cb-status" }, statusPips(e, { showBlock: false }))
       ));
       wrap.append(el("div", { class: "cb-predict", style: "display:none" }));
-      wrap.addEventListener("pointerenter", () => {
+      wrap.addEventListener("pointerenter", (ev) => {
+        if (ev.pointerType === "touch") return;
         if (drag || ended || !e.alive) return;
         wrap.classList.add("cb-enemy--sel");
         if (selected >= 0) renderPrediction(selected, e.uid);
@@ -8585,7 +8843,7 @@ body {
         wrap.classList.remove("cb-enemy--sel");
         if (!drag) clearPrediction();
       });
-      if (e.alive) attachTooltip(wrap, intentTip(e));
+      if (e.alive && selected < 0) attachTooltip(wrap, intentTip(e));
       return wrap;
     }
     function heatRing(p) {
@@ -8662,12 +8920,16 @@ body {
         if (selected === i) cls.push("cb-card-slot--sel");
         if (!playable) cls.push("cb-card-slot--off");
         const slot = el("div", { class: cls.join(" ") }, node);
-        slot.style.touchAction = "none";
+        slot.style.touchAction = "pan-x";
         slot.addEventListener("pointerdown", (ev) => onCardPointerDown(ev, i, slot));
         slot.addEventListener("pointermove", onDragMove);
         slot.addEventListener("pointerup", onDragUp);
         slot.addEventListener("pointercancel", onDragCancel);
-        slot.addEventListener("pointerenter", () => {
+        slot.addEventListener("contextmenu", (ev) => {
+          if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
+        });
+        slot.addEventListener("pointerenter", (ev) => {
+          if (ev.pointerType === "touch") return;
           if (drag || !playable) return;
           slot.classList.add("cb-card-slot--hover");
           sfxPlay("hover");
@@ -8705,6 +8967,7 @@ body {
       );
     }
     function render() {
+      cancelPending();
       if (drag) {
         const d = drag;
         drag = null;
@@ -8801,10 +9064,32 @@ body {
       shell.append(renderLog());
       if (ended) shell.append(renderBanner());
       root.append(shell);
+      fitCombat();
+    }
+    function fitCombat() {
+      const shell = root.querySelector(".cb-shell");
+      if (!shell) return;
+      shell.style.transform = "";
+      shell.style.height = "";
+      const top = shell.getBoundingClientRect().top;
+      const availH = window.innerHeight - top - 6;
+      const availW = shell.parentElement ? shell.parentElement.clientWidth : window.innerWidth;
+      const naturalH = shell.scrollHeight;
+      const naturalW = shell.scrollWidth;
+      const f = Math.min(1, availW / Math.max(1, naturalW), availH / Math.max(1, naturalH));
+      if (f < 0.995) {
+        const ff = Math.max(0.55, f);
+        shell.style.height = `${naturalH}px`;
+        shell.style.transform = `scale(${ff})`;
+        document.body.classList.add("cb-noscroll");
+      } else {
+        document.body.classList.remove("cb-noscroll");
+      }
     }
     markStart();
     render();
     flushFx();
+    window.addEventListener("resize", fitCombat);
     tip3(root, ctx2, "combat");
   }
 
@@ -9622,6 +9907,7 @@ body {
   }
   function mount(fn, ...args) {
     clear(rootEl);
+    document.body.classList.remove("cb-noscroll");
     window.scrollTo(0, 0);
     fn(rootEl, ...args);
   }
@@ -9665,7 +9951,6 @@ body {
     enterNode(run, id);
     const node = run.map.nodes[id];
     run.stats.floorsClimbed++;
-    ctx.save();
     switch (node.type) {
       case "combat":
         return startCombat("normal");
