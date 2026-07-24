@@ -572,6 +572,7 @@ body.cb-noscroll { overflow: hidden; }
 .cb-hint { min-height: calc(var(--fs-sm) * 1.6); font-size: var(--fs-sm); color: var(--amber); letter-spacing: .03em; }
 .cb-combo {
   min-height: calc(var(--fs-md) * 1.5);
+  line-height: 1.5; /* D-010：文本行高与 min-height 严格同高，空/有文本占位零差 */
   color: var(--amber);
   font-size: var(--fs-md);
   font-weight: 700;
@@ -10394,7 +10395,6 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       logPush(tn ? `\u6253\u51FA\u300C${name}\u300D\u2192 ${tn}` : `\u6253\u51FA\u300C${name}\u300D`);
       combo += 1;
       if (comboEl) {
-        comboEl.style.display = "block";
         if (fxNew("comboPop", comboEl, combo) === void 0) {
           comboEl.textContent = `\u8FDE\u51FB \xD7${combo}`;
         }
@@ -10496,7 +10496,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         turn = n ?? turn + 1;
         logPush(`\u2014\u2014 \u7B2C ${turn} \u56DE\u5408 \u2014\u2014`);
         combo = 0;
-        if (comboEl) comboEl.style.display = "none";
+        if (comboEl) comboEl.textContent = "";
         fxNew("banner", "// \u4F60\u7684\u56DE\u5408 //");
         sfxPlay("turn");
       }
@@ -11299,8 +11299,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       stage.append(enemiesRowEl);
       shell.append(stage);
       const comboSpan = el("span", {
-        class: "cb-combo",
-        style: combo > 0 ? null : "display:none"
+        class: "cb-combo"
       }, combo > 0 ? `\u8FDE\u51FB \xD7${combo}` : "");
       comboEl = comboSpan;
       const endWrap = el(
