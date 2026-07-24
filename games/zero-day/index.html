@@ -1677,6 +1677,18 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   border-top: 1px dashed var(--line); padding-top: clamp(6px, 1vw, 8px);
   font-size: var(--fs-xs); color: var(--cyan); line-height: 1.6;
 }
+/* 手机窄屏（≤480px）：四角色时代纵向压缩一档——卡距/卡内距/图标/行高各收，
+   390×844 首屏四卡（含蠕虫母体）完整可见，不再顶破视口底边 */
+@media (max-width: 480px) {
+  .sc-char-row { gap: clamp(8px, 1.6vw, 10px); }
+  .sc-char-card {
+    padding: clamp(10px, 2vw, 14px) clamp(12px, 2.2vw, 16px);
+    gap: clamp(4px, .8vw, 6px);
+  }
+  .sc-char-ic { width: clamp(24px, 4vw, 30px); height: clamp(24px, 4vw, 30px); }
+  .sc-char-desc { line-height: 1.5; }
+  .sc-char-passive { padding-top: clamp(4px, .8vw, 6px); line-height: 1.5; }
+}
 
 /* ============ 结算屏新解锁成就 ============ */
 .sc-unlock {
@@ -4283,16 +4295,17 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           desc: "\u8D6B\u5C14\u58A8\u65AF\u9694\u79BB\u533A\u7684\u96F6\u53F7\u6837\u672C\u3002\u9632\u706B\u5899\u7ED9\u5B83\u8D34\u8FC7\u5341\u4E03\u5F20\u5C01\u6761\uFF0C\u5B83\u628A\u5C01\u6761\u4E00\u5F20\u5F20\u5B75\u5316\u4E86\u3002\u5B83\u4ECE\u4E0D\u5F3A\u653B\uFF0C\u53EA\u628A\u300C\u4F60\u597D\u300D\u5199\u8FDB\u5BF9\u65B9\u7684\u514D\u75AB\u7CFB\u7EDF\uFF0C\u7136\u540E\u7AD9\u5728\u539F\u5730\u7B49\u5BF9\u65B9\u574F\u6389\u3002\u8D77\u59CB\u724C\u7EC4\u504F\u5411\u75C5\u6BD2\u4E0E\u6301\u7EED\u8150\u8680\u3002",
           starter: WORM_MOTHER_STARTER,
           passive: {
-            desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 2 \u5C42\u75C5\u6BD2",
+            desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 1 \u5C42\u75C5\u6BD2",
             // 签名：onCombatStart(run, combat)。全部 typeof 守卫，任何异常不得影响战斗构造。
             // 直写 combat.state.enemies[i].statuses.poison，与壁垒直写 block、熔核直写 heatLimit 同路径；战斗 state 每场新建，天然不叠加。
+            // 2026-07-25 下修 +2→+1：+2 实测 29.6% 超验收带上限（内容线预案一行热修，店主授权工程线代改）
             onCombatStart(run2, combat) {
               const es = combat && combat.state && combat.state.enemies;
               if (!Array.isArray(es)) return;
               for (const e of es) {
                 if (!e || e.alive !== true || !e.statuses) continue;
                 const cur = typeof e.statuses.poison === "number" ? e.statuses.poison : 0;
-                e.statuses.poison = cur + 2;
+                e.statuses.poison = cur + 1;
               }
             }
           }
@@ -8741,7 +8754,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           epithet: "\u62D2\u7EDD\u88AB\u9694\u79BB\u7684\u6837\u672C",
           icon: "virus",
           desc: "\u8D6B\u5C14\u58A8\u65AF\u9694\u79BB\u533A\u7684\u96F6\u53F7\u6837\u672C\uFF0C\u4EE5\u75C5\u6BD2\u4E0E\u6301\u7EED\u8150\u8680\u7684\u724C\u7EC4\u5F00\u5C40\u3002",
-          passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 2 \u5C42\u75C5\u6BD2" }
+          passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 1 \u5C42\u75C5\u6BD2" }
         }
       ];
     }
