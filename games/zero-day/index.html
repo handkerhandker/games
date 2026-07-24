@@ -2606,8 +2606,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "skill",
           rarity: "starter",
           target: "self",
-          effects: [{ op: "block", amount: 7 }],
-          upgrade: { effects: [{ op: "block", amount: 9 }] },
+          effects: [{ op: "block", amount: 8 }],
+          upgrade: { effects: [{ op: "block", amount: 10 }] },
           flavor: "\u5173\u6389\u4E0D\u5FC5\u8981\u7684\u7AEF\u53E3\uFF0C\u5305\u62EC\u540C\u7406\u5FC3\u3002",
           icon: "shield"
         },
@@ -2825,6 +2825,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           flavor: "\u628A\u79EF\u6512\u7684\u7126\u8E81\u5439\u6210\u4E00\u9762\u4E34\u65F6\u7684\u5899\u3002",
           icon: "shield"
         },
+        o_scald: {
+          id: "o_scald",
+          name: "\u84B8\u6C7D\u55B7\u53D1",
+          cost: 1,
+          type: "attack",
+          rarity: "common",
+          target: "enemy",
+          effects: [
+            { op: "damage", amount: 4 },
+            { op: "dumpHeat", damagePerPoint: 1 }
+          ],
+          upgrade: { effects: [
+            { op: "damage", amount: 7 },
+            { op: "dumpHeat", damagePerPoint: 1 }
+          ] },
+          flavor: "\u4E94\u5341\u5E74\u6CA1\u62E7\u8FC7\u7684\u9600\u95E8\uFF0C\u4E00\u62E7\u5C31\u671D\u7740\u5BF9\u65B9\u3002",
+          icon: "flame"
+        },
         // 防反系
         d_thorns: {
           id: "d_thorns",
@@ -2852,11 +2870,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           rarity: "common",
           target: "self",
           effects: [
-            { op: "block", amount: 5 },
+            { op: "block", amount: 6 },
             { op: "draw", amount: 1 }
           ],
           upgrade: { effects: [
-            { op: "block", amount: 8 },
+            { op: "block", amount: 9 },
             { op: "draw", amount: 1 }
           ] },
           flavor: "\u6309\u6D41\u7A0B\u529E\u4E8B\uFF0C\u5305\u62EC\u6328\u6253\u3002",
@@ -3164,6 +3182,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           upgrade: { effects: [{ op: "dumpHeat", damagePerPoint: 1, blockPerPoint: 2 }] },
           flavor: "\u70ED\u91CF\u4E0D\u6D6A\u8D39\uFF0C\u4E00\u534A\u6253\u56DE\u53BB\uFF0C\u4E00\u534A\u57AB\u811A\u5E95\u4E0B\u3002",
           icon: "flame"
+        },
+        o_heatwave: {
+          id: "o_heatwave",
+          name: "\u70ED\u6D6A\u6392\u653E",
+          cost: 2,
+          type: "attack",
+          rarity: "uncommon",
+          target: "allEnemies",
+          effects: [
+            { op: "dumpHeat", damagePerPoint: 2 },
+            { op: "heat", amount: 2 }
+          ],
+          upgrade: { effects: [
+            { op: "dumpHeat", damagePerPoint: 2 },
+            { op: "heat", amount: 3 }
+          ] },
+          flavor: "\u5E9F\u6C14\u6392\u653E\u7B26\u5408\u6807\u51C6\u2014\u2014\u6807\u51C6\u662F\u5B83\u81EA\u5DF1\u5199\u7684\u3002",
+          icon: "warn"
         },
         // 防反系
         d_absolute: {
@@ -7111,8 +7147,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           id: "runs_50",
           name: "\u6DF1\u6E0A\u5E38\u5BA2",
           icon: "eye",
-          desc: "\u7D2F\u8BA1\u5F00\u59CB 50 \u5C40\u6E38\u620F\u3002",
-          check: (meta2, run2) => num2(meta2 && meta2.runs) + (run2 ? 1 : 0) >= 50
+          desc: "\u7D2F\u8BA1\u5B8C\u6210 50 \u5C40\u6E38\u620F\u3002",
+          // 口径依赖 main.js 顺序：gameOver/victory 先 updateMeta(runs+1) 再 settleAchievements，
+          // 故 meta.runs 已含本局，不得再加本局（旧写法双计导致早 1 局解锁；中途弃局不计入）。
+          check: (meta2, run2) => num2(meta2 && meta2.runs) >= 50
         },
         {
           id: "gold_500",
@@ -7134,6 +7172,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u767E\u4EBA\u65A9",
           icon: "st-strength",
           desc: "\u7D2F\u8BA1\u51FB\u7834 100 \u4E2A\u654C\u4EBA\u3002",
+          // 口径脆弱点：此处假设 meta.totalKills 已含本局（main.js 先 updateMeta 再结算成就），
+          // 与 B 组（remove_5 / upgrade_10 / damage_1000 等「meta.total* + 本局 stats」写法）假设相反。
           check: (meta2, run2) => num2(meta2 && meta2.totalKills) >= 100
         },
         // ---------- 参与奖 ----------
@@ -7142,8 +7182,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u8D25\u8005\u98DF\u5C18",
           icon: "x",
           desc: "\u7D2F\u8BA1\u8D25\u5317 5 \u6B21\u3002\u6DF1\u6E0A\u8BB0\u5F97\u6BCF\u4E00\u4E2A\u6765\u8FC7\u7684\u4EBA\u3002",
+          // 口径依赖 main.js 顺序：结算先 updateMeta（败局 runs+1/wins 不动，胜局 wins/runs 同+1 相消）
+          // 再 settleAchievements，故 losses 已含本局结果，不得再加本局（旧写法双计导致早 1 局解锁）。
           check: (meta2, run2) => {
-            const losses = num2(meta2 && meta2.runs) - num2(meta2 && meta2.wins) + (run2 && !runWon(run2) ? 1 : 0);
+            const losses = num2(meta2 && meta2.runs) - num2(meta2 && meta2.wins);
             return losses >= 5;
           }
         }
