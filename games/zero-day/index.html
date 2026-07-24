@@ -4161,7 +4161,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     CHARACTERS: () => CHARACTERS,
     CHARACTER_LIST: () => CHARACTER_LIST
   });
-  var ZERO_DAY_STARTER, BULWARK_STARTER, MOLTEN_CORE_STARTER, CHARACTERS, CHARACTER_LIST;
+  var ZERO_DAY_STARTER, BULWARK_STARTER, MOLTEN_CORE_STARTER, WORM_MOTHER_STARTER, CHARACTERS, CHARACTER_LIST;
   var init_characters = __esm({
     "src/data/characters.js"() {
       ZERO_DAY_STARTER = [
@@ -4212,6 +4212,23 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         { id: "o_vent", upgraded: false }
         // 泄压阀：1 费 dumpHeat→每点 2 格挡
       ];
+      WORM_MOTHER_STARTER = [
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "guard", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "jab", upgraded: false },
+        { id: "cache_pulse", upgraded: false },
+        { id: "vent_heat", upgraded: false },
+        { id: "weak_scan", upgraded: false },
+        { id: "v_inject", upgraded: false },
+        // 注入病毒：1 费 4 伤 + 2 病毒
+        { id: "v_crawl", upgraded: false },
+        // 蠕虫爬行：1 费 3 伤 + 3 病毒
+        { id: "v_corrode", upgraded: false }
+        // 数据腐蚀：1 费 5 伤 + 1 病毒
+      ];
       CHARACTERS = {
         zero_day: {
           id: "zero_day",
@@ -4256,9 +4273,32 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               p.heatLimit += 2;
             }
           }
+        },
+        worm_mother: {
+          id: "worm_mother",
+          name: "\u8815\u866B\u6BCD\u4F53",
+          epithet: "\u62D2\u7EDD\u88AB\u9694\u79BB\u7684\u6837\u672C",
+          icon: "virus",
+          // icons.js 已注册（约 L16），UI 选择屏自动生效，无需 UI 改动
+          desc: "\u8D6B\u5C14\u58A8\u65AF\u9694\u79BB\u533A\u7684\u96F6\u53F7\u6837\u672C\u3002\u9632\u706B\u5899\u7ED9\u5B83\u8D34\u8FC7\u5341\u4E03\u5F20\u5C01\u6761\uFF0C\u5B83\u628A\u5C01\u6761\u4E00\u5F20\u5F20\u5B75\u5316\u4E86\u3002\u5B83\u4ECE\u4E0D\u5F3A\u653B\uFF0C\u53EA\u628A\u300C\u4F60\u597D\u300D\u5199\u8FDB\u5BF9\u65B9\u7684\u514D\u75AB\u7CFB\u7EDF\uFF0C\u7136\u540E\u7AD9\u5728\u539F\u5730\u7B49\u5BF9\u65B9\u574F\u6389\u3002\u8D77\u59CB\u724C\u7EC4\u504F\u5411\u75C5\u6BD2\u4E0E\u6301\u7EED\u8150\u8680\u3002",
+          starter: WORM_MOTHER_STARTER,
+          passive: {
+            desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 2 \u5C42\u75C5\u6BD2",
+            // 签名：onCombatStart(run, combat)。全部 typeof 守卫，任何异常不得影响战斗构造。
+            // 直写 combat.state.enemies[i].statuses.poison，与壁垒直写 block、熔核直写 heatLimit 同路径；战斗 state 每场新建，天然不叠加。
+            onCombatStart(run2, combat) {
+              const es = combat && combat.state && combat.state.enemies;
+              if (!Array.isArray(es)) return;
+              for (const e of es) {
+                if (!e || e.alive !== true || !e.statuses) continue;
+                const cur = typeof e.statuses.poison === "number" ? e.statuses.poison : 0;
+                e.statuses.poison = cur + 2;
+              }
+            }
+          }
         }
       };
-      CHARACTER_LIST = ["zero_day", "bulwark", "molten_core"];
+      CHARACTER_LIST = ["zero_day", "bulwark", "molten_core", "worm_mother"];
     }
   });
 
@@ -4322,6 +4362,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (c === "zero_day") return "z";
     if (c === "bulwark") return "b";
     if (c === "molten_core") return "m";
+    if (c === "worm_mother") return "w";
     return (c[0] || "").toLowerCase();
   }
   function encodeChallenge({ key, character, score, floors, result }) {
@@ -4354,7 +4395,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const key = km[1] ? `${km[1].slice(0, 4)}-${km[1].slice(4, 6)}-${km[1].slice(6, 8)}` : `custom:${km[2]}`;
     const seed = seedForKey(key);
     if (seed === null) return null;
-    const character = seg[2] === "z" ? "zero_day" : seg[2] === "b" ? "bulwark" : seg[2] === "m" ? "molten_core" : seg[2];
+    const character = seg[2] === "z" ? "zero_day" : seg[2] === "b" ? "bulwark" : seg[2] === "m" ? "molten_core" : seg[2] === "w" ? "worm_mother" : seg[2];
     return { key, character, score, floors, result: seg[3] === "w" ? "win" : "lose", seed };
   }
   var DAILY_KEY_RE, CUSTOM_KEY_RE, SLUG_ILLEGAL_RE;
@@ -4501,6 +4542,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       for (const ref of run2.deck) markSeen("card", ref.id);
     } catch (e) {
     }
+    fireRelics(run2, "onRunStart");
     return run2;
   }
   function saveRun(run2) {
@@ -8692,6 +8734,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "flame",
           desc: "\u8D6B\u5C14\u58A8\u65AF\u5077\u5077\u5C01\u5B58\u7684\u4F9B\u80FD\u539F\u578B\u673A\uFF0C\u4EE5\u79EF\u84C4\u70ED\u91CF\u4E0E\u503E\u6CFB\u7206\u53D1\u7684\u8FC7\u8F7D\u724C\u7EC4\u5F00\u5C40\u3002",
           passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u70ED\u91CF\u4E0A\u9650 +2" }
+        },
+        {
+          id: "worm_mother",
+          name: "\u8815\u866B\u6BCD\u4F53",
+          epithet: "\u62D2\u7EDD\u88AB\u9694\u79BB\u7684\u6837\u672C",
+          icon: "virus",
+          desc: "\u8D6B\u5C14\u58A8\u65AF\u9694\u79BB\u533A\u7684\u96F6\u53F7\u6837\u672C\uFF0C\u4EE5\u75C5\u6BD2\u4E0E\u6301\u7EED\u8150\u8680\u7684\u724C\u7EC4\u5F00\u5C40\u3002",
+          passive: { desc: "\u6BCF\u573A\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u5BF9\u6240\u6709\u654C\u4EBA\u65BD\u52A0 2 \u5C42\u75C5\u6BD2" }
         }
       ];
     }
@@ -9056,7 +9106,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       _dailyMod2 = null;
       _stateMod = null;
       _charMod2 = null;
-      CHAR_NAME_FALLBACK2 = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE", molten_core: "\u7194\u6838\u6838\u5FC3" };
+      CHAR_NAME_FALLBACK2 = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE", molten_core: "\u7194\u6838\u6838\u5FC3", worm_mother: "\u8815\u866B\u6BCD\u4F53" };
     }
   });
 
@@ -11790,7 +11840,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   init_components();
   init_cards();
   init_relics();
-  var CHAR_NAME_FALLBACK = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE", molten_core: "\u7194\u6838\u6838\u5FC3" };
+  var CHAR_NAME_FALLBACK = { zero_day: "\u96F6\u65E5", bulwark: "\u58C1\u5792\u534F\u8BAE", molten_core: "\u7194\u6838\u6838\u5FC3", worm_mother: "\u8815\u866B\u6BCD\u4F53" };
   var _charsMod = null;
   function loadCharacters2() {
     if (!_charsMod) _charsMod = Promise.resolve().then(() => (init_characters(), characters_exports)).catch(() => null);
