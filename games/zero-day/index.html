@@ -609,16 +609,23 @@ body.cb-noscroll { overflow: hidden; }
   .cb-endturn { min-height: 42px; }
 }
 
-/* 战斗日志：高度随内容自适应（封顶内部滚动）——写死高度曾在预算紧张时把末行削在盒内 */
+/* 战斗日志：高度按比例钉死（出牌不再带着画面走位）——历史上写死高度曾在预算紧张时把末行削在盒内，
+   本次仍按 cap 公式 clamp(72px,14vh,152px) 钉死，再用 round(down,…,行高) 把内容区收整到恰好整数行
+   （行高=--fs-sm×1.55 全局行高），任何视口都不削末行；不支持 round() 的旧浏览器回退纯 clamp
+   （依然钉死，仅不收整）。多视口削行/零位移验收矩阵见本次修复记录。 */
 .cb-log {
   flex: none;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: clamp(8px, 1vw, 10px) clamp(10px, 1.4vw, 14px);
+  --cb-log-pad-y: clamp(8px, 1vw, 10px);
+  --cb-log-lh: calc(var(--fs-sm) * 1.55);
+  /* 钉高收整扣减项：上下边框 2px + 纵向内边距 + 标题行(1 行) + 标题下边距 4px（矮屏档标题隐藏时另算） */
+  --cb-log-extra: calc(2px + 2 * var(--cb-log-pad-y) + var(--cb-log-lh) + 4px);
+  padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px);
   font-size: var(--fs-sm);
-  height: auto;
-  max-height: clamp(72px, 14vh, 152px);
+  height: clamp(72px, 14vh, 152px);
+  height: calc(round(down, clamp(72px, 14vh, 152px) - var(--cb-log-extra), var(--cb-log-lh)) + var(--cb-log-extra));
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -826,9 +833,14 @@ body.cb-noscroll { overflow: hidden; }
   }
   .cb-pilebox { padding-bottom: 0; }
   .cb-hint { min-height: 0; }
+  /* 矮屏档同步钉死：标题隐藏，扣减项仅剩边框+纵向内边距；下限从 48px 抬到 58px，
+     保证最大行高组合下也收整出 ≥2 整行（extra≤18px 时 2×19.375px+18px=56.75px≤58px），避免收整塌成单行 */
   .cb-log {
-    max-height: clamp(48px, 12vh, 120px);
-    padding: clamp(6px, .8vw, 8px) clamp(10px, 1.4vw, 14px);
+    --cb-log-pad-y: clamp(6px, .8vw, 8px);
+    --cb-log-extra: calc(2px + 2 * var(--cb-log-pad-y));
+    height: clamp(58px, 12vh, 120px);
+    height: calc(round(down, clamp(58px, 12vh, 120px) - var(--cb-log-extra), var(--cb-log-lh)) + var(--cb-log-extra));
+    padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px);
   }
   .cb-log-title { display: none; }
 }
