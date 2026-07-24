@@ -518,6 +518,18 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
     align-items: center; width: 100%; }
   #ui .char-card, #ui .map-card, #ui .exp-card { width: min(92vw, 420px); min-height: 0; }
   #ui .char-card { padding-bottom: clamp(28px, 4vh, 36px); }
+  /* 竖屏选人卡美观重构（2026-07-24 用户反馈「巨大又空荡」）：居中竖排大面板 → 横排紧凑卡。
+     左列 64px 圆形立绘纵跨四行；右列名字/称号/武器行/属性行依次排开（左对齐）；
+     定位与基准行整行下沉；「已选择」标签移右上。卡高由 ~47% 屏高降到 ~120px，信息密度对齐手游惯例。 */
+  #ui .char-card { display: grid; grid-template-columns: auto 1fr; column-gap: 14px;
+    align-items: center; padding: 12px 14px; }
+  #ui .cc-portrait-wrap { grid-row: 1 / span 4; grid-column: 1; width: 64px; height: 64px; margin: 0; }
+  #ui .cc-name, #ui .cc-title, #ui .cc-role, #ui .cc-resolved { grid-column: 2; text-align: left; }
+  #ui .cc-weapon-row { grid-column: 2; justify-content: flex-start; margin-top: 6px; }
+  #ui .cc-stats { grid-column: 2; flex-direction: row; gap: 10px; align-items: flex-start; margin-top: 4px; }
+  #ui .cc-role { grid-column: 1 / -1; margin-top: 8px; }
+  #ui .cc-resolved { grid-column: 1 / -1; margin-top: 2px; text-align: left; }
+  #ui .cc-seltag { top: 8px; right: 10px; left: auto; bottom: auto; transform: none; }
   #ui .cc-flavor { display: none; } /* 竖排紧凑卡藏风味防超高（同三选一 §4.3 断点补充） */
   #ui .sel-bottom { flex-direction: column; gap: 8px; }
 }

@@ -4024,13 +4024,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u75C5\u6BD2\u57F9\u517B\u8231",
           icon: "st-poison",
           rarity: "rare",
-          desc: "\u4F60\u7684\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u573A\u4E0A\u75C5\u6BD2\u5C42\u6570\u6700\u9AD8\u7684\u654C\u4EBA\u83B7\u5F97 1 \u5C42\u75C5\u6BD2\u3002\u8231\u5185\u6052\u6E29 37 \u5EA6\uFF0C\u91CC\u9762\u7684\u4E1C\u897F\u957F\u5F97\u6BD4\u4F60\u5FEB\u3002",
+          desc: "\u4F60\u7684\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u573A\u4E0A\u75C5\u6BD2\u5C42\u6570\u6700\u9AD8\u7684\u654C\u4EBA\u83B7\u5F97 1 \u5C42\u75C5\u6BD2\uFF1B\u82E5\u65E0\u4EBA\u643A\u5E26\u75C5\u6BD2\uFF0C\u6539\u4E3A\u4F7F\u751F\u547D\u6700\u9AD8\u7684\u654C\u4EBA\u83B7\u5F97 2 \u5C42\u75C5\u6BD2\u3002\u8231\u5185\u6052\u6E29 37 \u5EA6\uFF0C\u603B\u4F1A\u5B75\u51FA\u70B9\u4EC0\u4E48\u3002",
           hooks: {
             onTurnStart(run2, combat) {
               const list = combat && combat.state && combat.state.enemies;
               if (!Array.isArray(list)) return;
               let target = null;
               let max = 0;
+              let healthiest = null;
               for (const e of list) {
                 if (!e || e.alive === false || !(e.hp > 0)) continue;
                 const n = e.statuses && e.statuses.poison || 0;
@@ -4038,8 +4039,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
                   max = n;
                   target = e;
                 }
+                if (!healthiest || (e.hp || 0) > (healthiest.hp || 0)) healthiest = e;
               }
               if (target) addStatus(target, "poison", 1);
+              else if (healthiest) addStatus(healthiest, "poison", 2);
             }
           }
         },
@@ -4090,8 +4093,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u75C5\u6BD2\u4F20\u64AD\u5668",
           icon: "virus",
           rarity: "boss",
-          desc: "\u654C\u4EBA\u6B7B\u4EA1\u65F6\uFF0C\u82E5\u5B83\u643A\u5E26\u75C5\u6BD2\uFF0C\u5C06\u5176\u5269\u4F59\u75C5\u6BD2\u5C42\u6570 +2 \u8F6C\u79FB\u7ED9\u75C5\u6BD2\u6700\u5C11\u7684\u5B58\u6D3B\u654C\u4EBA\u3002\u5C38\u4F53\u4E0D\u662F\u7EC8\u70B9\uFF0C\u662F\u4E2D\u8F6C\u7AD9\u3002",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 4 \u5C42\u75C5\u6BD2\uFF1B\u654C\u4EBA\u6B7B\u4EA1\u65F6\uFF0C\u5C06\u5176\u5269\u4F59\u75C5\u6BD2\u5C42\u6570 +2 \u8F6C\u79FB\u7ED9\u75C5\u6BD2\u6700\u5C11\u7684\u5B58\u6D3B\u654C\u4EBA\u3002\u5C38\u4F53\u4E0D\u662F\u7EC8\u70B9\uFF0C\u662F\u4E2D\u8F6C\u7AD9\u3002",
           hooks: {
+            onCombatStart(run2, combat) {
+              eachAliveEnemy(combat, (e) => addStatus(e, "poison", 4));
+            },
             onEnemyKilled(run2, combat, uid) {
               const list = combat && combat.state && combat.state.enemies;
               if (!Array.isArray(list)) return;
