@@ -120,10 +120,15 @@ body.no-crt .app-crt { display: none; }
 }
 /* 战斗存续期无条件锁整页滚动/橡皮筋（2026-07-25 起与 fitCombat 缩放系数解耦：进战斗即加，
    换屏/终局由既有路径解除；ff≥1 时微信橡皮筋曾把整页拖上黑区）。
-   html 一并钉：html 的 overflow-x:clip 会阻断 body 溢出向视口传播，单靠 body 锁不住 window 级滚动；
-   overscroll-behavior:none 双轴关橡皮筋链式回弹（手牌 pan-x / 日志纵滚 / 弹层滚动由各自容器放行） */
+   三层叠加各管一段：
+   ① html+body overflow hidden→clip 双写：手势滚动/橡皮筋全锁（旧内核回退 hidden 仍挡手势）；
+   ② overscroll-behavior:none 双轴：关链式回弹（手牌 pan-x / 日志纵滚 / 弹层滚动由各自容器放行）；
+   ③ body position:fixed+inset:0：桌面内核下根元素 clip 不阻断 window.scrollTo 等程序化滚动
+      （ff<1 钉高产生的幻影区间实测可 scrollTo 45~88px），body 固顶后文档滚动区间恒为 0，
+      程序化滚动一并锁死；body 盒与视口重合，fixed/absolute 后代包含块不受影响（非 transform） */
 html:has(> body.cb-noscroll),
-body.cb-noscroll { overflow: hidden; overscroll-behavior: none; }
+body.cb-noscroll { overflow: hidden; overflow: clip; overscroll-behavior: none; }
+body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 
 /* —— 顶部信息行 —— */
 .cb-head {
@@ -647,6 +652,12 @@ body.cb-noscroll { overflow: hidden; overscroll-behavior: none; }
   z-index: 10;
 }
 .cb-combo:empty { visibility: hidden; }
+/* ≥1024 宽屏单行档：右侧 pilebox 双按钮竖堆高出 endwrap 顶 ~25px，+12 的药丸会压弃牌堆顶
+   （1366×768 实测相交区 x928-1002×y569-583）；抬 34~44px 脱开按钮顶——药丸左缘 928 仍右于
+   最右卡牌右缘 925，不上卡面（721~1023 矮屏横排实测 +12 无碰撞，维持基础值） */
+@media (min-width: 1024px) {
+  .cb-hint { bottom: calc(100% + clamp(34px, 5vh, 44px)); }
+}
 .cb-endturn {
   font-family: var(--font);
   font-size: var(--fs-lg);
