@@ -3453,7 +3453,7 @@
     {
       "id": "event_wandering_peddler",
       "name": "游荡商人",
-      "asset": "event_wandering_peddler",
+      "asset": "event_peddler",
       "triggerRadius": 56,
       "interaction": "dwell_modal",
       "modal": {
