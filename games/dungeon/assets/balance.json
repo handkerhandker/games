@@ -3631,6 +3631,155 @@
   },
   "bosses": [
     {
+      "id": "lich",
+      "name": "巫妖·维萨里昂",
+      "asset": "boss_lich",
+      "hp": 15000,
+      "speed": 45,
+      "dmg": 25,
+      "xp": 100,
+      "radius": 36,
+      "mass": 0.0,
+      "spawnTime": 600,
+      "introSeconds": 3.0,
+      "maps": [
+        "dungeon"
+      ],
+      "drops": [
+        "pickup_chest",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l"
+      ],
+      "phaseDrops": [
+        {
+          "phase": 2,
+          "drop": "pickup_heart"
+        },
+        {
+          "phase": 3,
+          "drop": "pickup_heart"
+        }
+      ],
+      "onSpawn": {
+        "regularSpawnIntervalMul": 2.0,
+        "maxAlive": 120,
+        "weights": {
+          "skeleton": 0.5,
+          "cultist": 0.5
+        },
+        "banner": "巫妖·维萨里昂 苏醒了！",
+        "shakeAmp": 10,
+        "shakeTauMs": 120
+      },
+      "phases": [
+        {
+          "phase": 1,
+          "hpRange": [
+            1.0,
+            0.7
+          ],
+          "speed": 45,
+          "attacks": [
+            {
+              "id": "radialBurst",
+              "name": "暗影弹幕",
+              "interval": 4.0,
+              "boltCount": 12,
+              "boltDmg": 12,
+              "boltSpeed": 220,
+              "note": "以自身为中心 360° 均布弹幕"
+            },
+            {
+              "id": "summon",
+              "name": "亡者苏生",
+              "interval": 8.0,
+              "enemy": "skeleton",
+              "count": 4,
+              "addsCap": 12,
+              "note": "在周围 150px 环上召唤"
+            }
+          ],
+          "movement": "chase"
+        },
+        {
+          "phase": 2,
+          "hpRange": [
+            0.7,
+            0.35
+          ],
+          "speed": 55,
+          "attacks": [
+            {
+              "id": "radialBurst",
+              "name": "暗影弹幕·密",
+              "interval": 4.0,
+              "boltCount": 16,
+              "boltDmg": 12,
+              "boltSpeed": 240
+            },
+            {
+              "id": "teleport",
+              "name": "虚空闪烁",
+              "interval": 6.0,
+              "telegraphSeconds": 0.6,
+              "telegraphRadius": 80,
+              "reappearDistance": 250,
+              "note": "在玩家 250px 处画 0.6s 预警圈后现身，现身即放一圈弹幕"
+            },
+            {
+              "id": "summon",
+              "name": "怨灵召唤",
+              "interval": 10.0,
+              "enemy": "ghost",
+              "count": 2,
+              "addsCap": 8
+            }
+          ],
+          "movement": "chase"
+        },
+        {
+          "phase": 3,
+          "hpRange": [
+            0.35,
+            0.0
+          ],
+          "speed": 70,
+          "attacks": [
+            {
+              "id": "spiralBarrage",
+              "name": "死亡螺旋",
+              "boltsPerSecond": 8,
+              "boltDmg": 12,
+              "boltSpeed": 240,
+              "rotationDegPerSecond": 140,
+              "note": "持续旋转喷吐螺旋弹幕"
+            },
+            {
+              "id": "charge",
+              "name": "巫妖冲锋",
+              "interval": 7.0,
+              "windupSeconds": 0.8,
+              "chargeSpeed": 400,
+              "chargeDuration": 0.6,
+              "chargeDmg": 30,
+              "note": "前摇 0.8s（全身泛红+地面路径指示线）后直线冲锋"
+            }
+          ],
+          "movement": "chase"
+        }
+      ],
+      "deathSequence": {
+        "duration": 1.5,
+        "explosions": 3,
+        "slowmoScale": 0.3,
+        "slowmoSeconds": 1.2,
+        "whiteFlashMs": 200
+      }
+    },
+    {
       "id": "curator",
       "name": "大馆长·塞维鲁",
       "title": "最后的读者",

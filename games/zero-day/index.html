@@ -10134,6 +10134,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const fxQueue = [];
     let dealInPending = false;
     let renderScheduled = false;
+    let heatShown = null;
+    const heatPending = [];
+    let heatAnimRun = null;
     let drag = null;
     let pending = null;
     let predictedUids = [];
@@ -10262,6 +10265,90 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         const els = handEls.filter(Boolean);
         if (els.length) ctx2.anim.dealIn(els);
       }
+      syncHeatRing();
+    }
+    function syncHeatRing() {
+      const fg = root.querySelector(".cb-avatar-heat-fg");
+      if (!fg) {
+        heatShown = null;
+        heatPending.length = 0;
+        return;
+      }
+      const cur = Math.max(0, P().heat || 0);
+      if (heatShown == null) {
+        heatShown = cur;
+        heatPending.length = 0;
+        return;
+      }
+      if (!heatPending.length) return;
+      const seq = heatPending.splice(0);
+      const limit = P().heatLimit ?? 10;
+      const C = 2 * Math.PI * 45;
+      const dash = (v) => `${(C * Math.max(0, Math.min(1, v / limit))).toFixed(1)} ${C.toFixed(1)}`;
+      const finish = () => {
+        heatAnimRun = null;
+        try {
+          if (fg.getAnimations) for (const a of fg.getAnimations()) {
+            try {
+              a.cancel();
+            } catch {
+            }
+          }
+          fg.style.strokeDasharray = "";
+          fg.style.transition = "";
+          fg.setAttribute("stroke-dasharray", dash(cur));
+        } catch {
+        }
+      };
+      const from = heatShown;
+      heatShown = cur;
+      const legs = [from, ...seq].filter((v, i2, a) => i2 === 0 || a[i2 - 1] !== v);
+      if (heatAnimRun) {
+        heatAnimRun.cancel();
+        heatAnimRun = null;
+      }
+      if (legs.length < 2) {
+        finish();
+        return;
+      }
+      const noMotion = document.body.classList.contains("rm") || typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (noMotion) {
+        finish();
+        return;
+      }
+      fg.style.transition = "none";
+      fg.style.strokeDasharray = dash(legs[0]);
+      void fg.offsetWidth;
+      let i = 0;
+      const step = () => {
+        if (i >= legs.length - 1) {
+          finish();
+          return;
+        }
+        const a = dash(legs[i]);
+        const b = dash(legs[i + 1]);
+        i += 1;
+        const dur = legs.length > 2 ? 230 : 280;
+        const anim = fg.animate(
+          [{ strokeDasharray: a }, { strokeDasharray: b }],
+          { duration: dur, easing: "ease-out", fill: "forwards" }
+        );
+        let timer = 0;
+        const runRef = {
+          cancel() {
+            try {
+              anim.cancel();
+            } catch {
+            }
+            clearTimeout(timer);
+          }
+        };
+        heatAnimRun = runRef;
+        timer = setTimeout(() => {
+          if (heatAnimRun === runRef) step();
+        }, dur);
+      };
+      step();
     }
     function spotOn(uid) {
       for (const [id, node] of enemyEls) {
@@ -10372,7 +10459,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     combat.on("energyChange", () => {
       scheduleRender();
     });
-    combat.on("heatChange", () => {
+    combat.on("heatChange", (p) => {
+      const v = pickNum(p, "heat");
+      if (v != null) heatPending.push(v);
       scheduleRender();
     });
     combat.on("overheat", (p) => {
