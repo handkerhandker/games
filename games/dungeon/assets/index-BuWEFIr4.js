@@ -149,9 +149,10 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
   /* 美观定稿（2026-07-24 用户拍板）：经验条直接触底、满宽通栏——品类标准样式。
      曾因 iPhone 手势条做 safe-area 垫高，两版修正（涂满/透明露地板）均被否：
      「太粗」/「空中悬浮黑条条」。手势线盖住条的下沿几像素属可接受代价（用户明示要触底）。 */
-  background: #1c2422; border-top: 1px solid #3d4a44;
+  background: rgba(28, 36, 34, 0.42); /* 半透（2026-07-25 用户：太显眼）——地板隐约透出 */
+  border-top: 1px solid rgba(61, 74, 68, 0.5);
   display: flex; align-items: center; justify-content: center; }
-#ui .xp-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #5f9e97; }
+#ui .xp-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: rgba(95, 158, 151, 0.6); }
 #ui .xp-text { position: relative; z-index: 1; font-size: clamp(10px, 0.9vw + 4px, 12px);
   color: #dfeeea; text-shadow: 0 1px 2px #000; white-space: nowrap; }
 #ui .slot-dock { position: static; order: 1; margin-left: var(--sal); margin-bottom: 4px;
@@ -171,8 +172,8 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
 /* 触屏 playing 暂停键（input-spec §4.3：44×44、safe-area 内收、不占摇杆热区） */
 #ui .touch-pause { position: absolute; right: var(--sar); top: calc(var(--sat) + clamp(42px, 6.4vh, 54px));
   width: 44px; height: 44px; display: none; align-items: center; justify-content: center; gap: 5px;
-  pointer-events: auto; cursor: pointer; background: rgba(24, 19, 16, 0.85);
-  border: 1px solid #6b5847; border-radius: 10px; box-sizing: border-box; }
+  pointer-events: auto; cursor: pointer; background: rgba(24, 19, 16, 0.42); /* 半透（2026-07-25 用户：太显眼） */
+  border: 1px solid rgba(107, 88, 71, 0.5); border-radius: 10px; box-sizing: border-box; }
 #ui .touch-pause .tp-bar { width: 5px; height: 18px; background: #e8e0d4; border-radius: 2px; }
 /* §3.2 Toast：中上 */
 #ui .toast { position: absolute; left: 50%; top: 27%; transform: translateX(-50%);
