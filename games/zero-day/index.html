@@ -612,7 +612,9 @@ body.cb-noscroll { overflow: hidden; }
 /* 战斗日志：高度按比例钉死（出牌不再带着画面走位）——历史上写死高度曾在预算紧张时把末行削在盒内，
    本次仍按 cap 公式 clamp(72px,14vh,152px) 钉死，再用 round(down,…,行高) 把内容区收整到恰好整数行
    （行高=--fs-sm×1.55 全局行高），任何视口都不削末行；不支持 round() 的旧浏览器回退纯 clamp
-   （依然钉死，仅不收整）。多视口削行/零位移验收矩阵见本次修复记录。 */
+   （依然钉死，仅不收整）。下内边距必须为 0：滚动盒裁剪在 padding box 外缘，padB>0 时溢出内容的
+   下一行会洇进下内边距露出半行（844×390 实测实锤）；底部视觉留白由末行行高自带的下 leading 提供。
+   多视口削行/零位移验收矩阵见本次修复记录。 */
 .cb-log {
   flex: none;
   background: var(--panel);
@@ -620,9 +622,9 @@ body.cb-noscroll { overflow: hidden; }
   border-radius: 8px;
   --cb-log-pad-y: clamp(8px, 1vw, 10px);
   --cb-log-lh: calc(var(--fs-sm) * 1.55);
-  /* 钉高收整扣减项：上下边框 2px + 纵向内边距 + 标题行(1 行) + 标题下边距 4px（矮屏档标题隐藏时另算） */
-  --cb-log-extra: calc(2px + 2 * var(--cb-log-pad-y) + var(--cb-log-lh) + 4px);
-  padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px);
+  /* 钉高收整扣减项：上下边框 2px + 上内边距 + 标题行(1 行) + 标题下边距 4px（矮屏档标题隐藏时另算） */
+  --cb-log-extra: calc(2px + var(--cb-log-pad-y) + var(--cb-log-lh) + 4px);
+  padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px) 0;
   font-size: var(--fs-sm);
   height: clamp(72px, 14vh, 152px);
   height: calc(round(down, clamp(72px, 14vh, 152px) - var(--cb-log-extra), var(--cb-log-lh)) + var(--cb-log-extra));
@@ -833,14 +835,15 @@ body.cb-noscroll { overflow: hidden; }
   }
   .cb-pilebox { padding-bottom: 0; }
   .cb-hint { min-height: 0; }
-  /* 矮屏档同步钉死：标题隐藏，扣减项仅剩边框+纵向内边距；下限从 48px 抬到 58px，
-     保证最大行高组合下也收整出 ≥2 整行（extra≤18px 时 2×19.375px+18px=56.75px≤58px），避免收整塌成单行 */
+  /* 矮屏档同步钉死：标题隐藏，扣减项仅剩边框+上内边距；下限从 48px 抬到 58px，
+     保证最大行高组合下也收整出 ≥2 整行（extra≤10px 时 2×19.375px+10px=48.75px≤58px），避免收整塌成单行；
+     下内边距同基础规则必须为 0（防溢出内容下一行洇进 padding 露半行） */
   .cb-log {
     --cb-log-pad-y: clamp(6px, .8vw, 8px);
-    --cb-log-extra: calc(2px + 2 * var(--cb-log-pad-y));
+    --cb-log-extra: calc(2px + var(--cb-log-pad-y));
     height: clamp(58px, 12vh, 120px);
     height: calc(round(down, clamp(58px, 12vh, 120px) - var(--cb-log-extra), var(--cb-log-lh)) + var(--cb-log-extra));
-    padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px);
+    padding: var(--cb-log-pad-y) clamp(10px, 1.4vw, 14px) 0;
   }
   .cb-log-title { display: none; }
 }
@@ -2929,6 +2932,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           flavor: "\u7ED9\u7075\u9B42\u9540\u4E00\u5C42\u94EC\uFF0C\u9632\u9508\u9632\u7AA5\u63A2\u3002",
           icon: "st-dexterity"
         },
+        d_audit: {
+          id: "d_audit",
+          name: "\u654C\u610F\u5BA1\u8BA1",
+          cost: 1,
+          type: "attack",
+          rarity: "common",
+          target: "enemy",
+          effects: [
+            { op: "damage", amount: 3 },
+            { op: "applyStatus", status: "weak", amount: 1, to: "target" }
+          ],
+          upgrade: { effects: [
+            { op: "damage", amount: 5 },
+            { op: "applyStatus", status: "weak", amount: 2, to: "target" }
+          ] },
+          flavor: "\u9010\u6761\u6838\u5BF9\u5BF9\u65B9\u7684\u653B\u51FB\u610F\u56FE\uFF0C\u76F4\u5230\u5B83\u5F00\u59CB\u81EA\u6211\u6000\u7591\u3002",
+          icon: "st-weak"
+        },
         // 通用系
         g_read: {
           id: "g_read",
@@ -3277,6 +3298,25 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           upgrade: { effects: [{ op: "applyStatus", status: "thorns", amount: 5, to: "self" }] },
           flavor: "\u4EFB\u4F55\u4F38\u8FC7\u6765\u7684\u624B\uFF0C\u90FD\u4F1A\u6536\u5230\u4E00\u4EFD\u5E26\u523A\u7684\u56DE\u6267\u3002",
           icon: "st-thorns"
+        },
+        d_retort: {
+          id: "d_retort",
+          name: "\u56DE\u656C\u534F\u8BAE",
+          cost: 2,
+          type: "skill",
+          rarity: "uncommon",
+          target: "self",
+          exhaust: true,
+          effects: [
+            { op: "block", amount: 2 },
+            { op: "addTemp", cardId: "d_counter", amount: 1 }
+          ],
+          upgrade: { effects: [
+            { op: "block", amount: 4 },
+            { op: "addTemp", cardId: "d_counter", amount: 1 }
+          ] },
+          flavor: "\u6321\u4E0B\u8FD9\u4E00\u51FB\u7684\u62A4\u76FE\uFF0C\u987A\u4FBF\u8BB0\u4E0B\u4E86\u5BF9\u65B9\u7684\u5730\u5740\u3002\u7A0B\u5E8F\u8DD1\u4E00\u6B21\u5C31\u81EA\u6BC1\uFF0C\u4F53\u9762\u3002",
+          icon: "sword"
         },
         // 通用系
         g_cache_array: {
@@ -7048,6 +7088,20 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "deck",
           desc: "\u4F7F\u7528\u300C\u96F6\u65E5\u300D\u4E0E\u300C\u58C1\u5792\u534F\u8BAE\u300D\u5404\u901A\u5173\u4E00\u6B21\u3002",
           check: (meta2, run2) => charWon(meta2, run2, "zero_day") && charWon(meta2, run2, "bulwark")
+        },
+        {
+          id: "molten_core_win",
+          name: "\u62D2\u7EDD\u505C\u673A",
+          icon: "flame",
+          desc: "\u4F7F\u7528\u300C\u7194\u6838\u6838\u5FC3\u300D\u901A\u5173\u4E00\u5C40\u3002\u4E8B\u540E\u68C0\u4FEE\u62A5\u544A\u53EA\u5199\u4E86\u4E00\u884C\uFF1A\u6E29\u5EA6\u6B63\u5E38\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "molten_core")
+        },
+        {
+          id: "tri_wielder",
+          name: "\u4E09\u4F4D\u4E00\u4F53",
+          icon: "logo",
+          desc: "\u4F7F\u7528\u300C\u96F6\u65E5\u300D\u300C\u58C1\u5792\u534F\u8BAE\u300D\u300C\u7194\u6838\u6838\u5FC3\u300D\u5404\u901A\u5173\u4E00\u6B21\u3002\u6F5C\u5165\u3001\u786C\u6297\u3001\u70E7\u7A7F\u2014\u2014\u6DF1\u6E0A\u7684\u4E09\u79CD\u6253\u5F00\u65B9\u5F0F\uFF0C\u4F60\u5168\u90E8\u7B7E\u6536\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "zero_day") && charWon(meta2, run2, "bulwark") && charWon(meta2, run2, "molten_core")
         },
         // ---------- 战斗技艺 ----------
         {
