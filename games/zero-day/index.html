@@ -1787,6 +1787,47 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   .sc-daily-empty { padding: clamp(4px, 1vh, 10px); }
 }
 
+/* ============ 全局游戏菜单（gameMenuButton/openGameMenu，组件代理交付） ============ */
+/* 齿轮小按钮：磷绿描边低调风（常态半透、hover/聚焦提亮），固定小尺寸 inline-flex 不占布局 */
+.sc-gmenu-btn {
+  display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: clamp(30px, 3.4vw, 34px); height: clamp(30px, 3.4vw, 34px);
+  background: var(--panel2); color: var(--dim);
+  border: 1px solid var(--phos); border-radius: 6px; opacity: .75;
+  cursor: pointer; touch-action: manipulation;
+  transition: color .15s, opacity .15s, box-shadow .15s;
+}
+.sc-gmenu-btn .sc-ic { width: clamp(15px, 1.8vw, 17px); height: clamp(15px, 1.8vw, 17px); }
+@media (hover:hover) and (pointer:fine) {
+  .sc-gmenu-btn:hover { color: var(--phos); opacity: 1; box-shadow: 0 0 8px rgba(143, 211, 160, .18); }
+}
+.sc-gmenu-btn:focus-visible { outline: 1px solid var(--phos); outline-offset: 2px; opacity: 1; }
+/* 菜单本体：竖排按钮列，宽度钳制不顶满 modal */
+.sc-gmenu-list {
+  display: flex; flex-direction: column; gap: var(--gap);
+  min-width: min(280px, 72vw);
+}
+.sc-gmenu-item {
+  font-family: var(--font); font-size: var(--fs-md); letter-spacing: .08em; text-align: center;
+  background: var(--panel2); color: var(--ink);
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: clamp(8px, 1.2vw, 10px) clamp(12px, 2vw, 18px);
+  cursor: pointer; touch-action: manipulation;
+  transition: border-color .15s, color .15s, box-shadow .15s;
+}
+@media (hover:hover) and (pointer:fine) {
+  .sc-gmenu-item:hover { border-color: var(--phos); color: var(--phos); box-shadow: 0 0 10px rgba(143, 211, 160, .15); }
+  .sc-gmenu-item--danger:hover { border-color: var(--red); color: var(--red); box-shadow: none; }
+}
+/* 返回标题二次确认 */
+.sc-gmenu-confirm-t { font-size: var(--fs-sm); line-height: 1.8; margin-bottom: clamp(12px, 2vw, 18px); }
+.sc-gmenu-actions { display: flex; gap: var(--gap); flex-wrap: wrap; justify-content: center; }
+/* 触屏：可点目标 ≥42px（§2-6） */
+@media (pointer: coarse) {
+  .sc-gmenu-btn { min-width: 42px; min-height: 42px; }
+  .sc-gmenu-item { min-height: 42px; }
+}
+
 /* ==== styles/fx.css ==== */
 /* 《零日协议》动效样式（.fx-* 命名空间，美术音效工程师所有）
    颜色只用 styles/main.css 的 CSS 变量；透明度经 color-mix 派生，不引入新色相。 */
@@ -6305,7 +6346,107 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     root.append(back);
     return close;
   }
-  var STATUS_NAMES, TYPE_NAMES, RARITY_NAMES, tipEl, tipAnchor, tipGuardsOn;
+  function gameMenuButton(ctx2, cls) {
+    gmenuKeyCtx = ctx2;
+    ensureGmenuKeys();
+    return el("button", {
+      class: `sc-gmenu-btn${cls ? ` ${cls}` : ""}`,
+      type: "button",
+      title: "\u83DC\u5355",
+      onClick: () => openGameMenu(ctx2)
+    }, el("span", { class: "sc-ic-wrap", html: icon("gear", "sc-ic") }));
+  }
+  function ensureGmenuKeys() {
+    if (gmenuKeyBound) return;
+    gmenuKeyBound = true;
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || !gmenuKeyCtx) return;
+      if (typeof matchMedia === "function" && !matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+      const back = document.querySelector(".sc-modal-back");
+      if (back && !back.querySelector(".sc-gmenu")) return;
+      openGameMenu(gmenuKeyCtx);
+    });
+  }
+  function openGameMenu(ctx2) {
+    if (document.querySelector(".sc-modal-back .sc-gmenu")) {
+      if (gmenuClose) gmenuClose();
+      return;
+    }
+    const sfx2 = () => {
+      if (ctx2 && ctx2.sfx && typeof ctx2.sfx.play === "function") ctx2.sfx.play("click");
+    };
+    const navTo = (fn) => () => {
+      sfx2();
+      closeMenu();
+      if (ctx2 && ctx2.nav && typeof ctx2.nav[fn] === "function") ctx2.nav[fn]();
+    };
+    const body = el("div", { class: "sc-gmenu" });
+    const item = (label, onClick, cls) => el("button", {
+      class: `sc-gmenu-item${cls ? ` ${cls}` : ""}`,
+      type: "button",
+      onClick
+    }, label);
+    function renderList() {
+      body.textContent = "";
+      body.append(
+        el("div", { class: "sc-modal-title" }, "\u6E38\u620F\u83DC\u5355"),
+        el(
+          "div",
+          { class: "sc-gmenu-list" },
+          item("\u7EE7\u7EED\u6E38\u620F", () => {
+            sfx2();
+            closeMenu();
+          }),
+          item("\u8BBE\u7F6E", navTo("showSettings")),
+          item("\u73A9\u6CD5\u6307\u5357", navTo("showGuide")),
+          item("\u8BCD\u6C47\u8868", navTo("showGlossary")),
+          item("\u8FD4\u56DE\u6807\u9898", () => {
+            sfx2();
+            renderConfirm();
+          }, "sc-gmenu-item--danger")
+        )
+      );
+    }
+    function renderConfirm() {
+      body.textContent = "";
+      body.append(
+        el("div", { class: "sc-modal-title" }, "\u8FD4\u56DE\u6807\u9898"),
+        el(
+          "div",
+          { class: "sc-gmenu-confirm-t app-dim" },
+          "\u6574\u5C40\u8FDB\u5EA6\u5DF2\u81EA\u52A8\u4FDD\u5B58\uFF0C\u5F53\u524D\u6218\u6597\u5C06\u91CD\u65B0\u6311\u6218\u3002\u786E\u5B9A\u8FD4\u56DE\u6807\u9898\u753B\u9762\u5417\uFF1F"
+        ),
+        el(
+          "div",
+          { class: "sc-gmenu-actions" },
+          el("button", {
+            class: "app-btn app-btn--danger",
+            type: "button",
+            onClick: () => {
+              sfx2();
+              closeMenu();
+              if (ctx2 && ctx2.nav && typeof ctx2.nav.toTitle === "function") ctx2.nav.toTitle();
+            }
+          }, "\u786E\u8BA4\u8FD4\u56DE\u6807\u9898"),
+          el("button", {
+            class: "app-btn",
+            type: "button",
+            onClick: () => {
+              sfx2();
+              renderList();
+            }
+          }, "\u7EE7\u7EED\u6E38\u620F")
+        )
+      );
+    }
+    function closeMenu() {
+      closeModal();
+    }
+    renderList();
+    const closeModal = modal(document.body, body);
+    gmenuClose = closeMenu;
+  }
+  var STATUS_NAMES, TYPE_NAMES, RARITY_NAMES, tipEl, tipAnchor, tipGuardsOn, gmenuKeyCtx, gmenuKeyBound, gmenuClose;
   var init_components = __esm({
     "src/ui/components.js"() {
       init_dom();
@@ -6328,6 +6469,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       tipEl = null;
       tipAnchor = null;
       tipGuardsOn = false;
+      gmenuKeyCtx = null;
+      gmenuKeyBound = false;
+      gmenuClose = null;
     }
   });
 
@@ -9687,6 +9831,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           ctx2.nav.showGlossary();
         }
       }, "?"),
+      gameMenuButton(ctx2),
       el(
         "div",
         { class: "sc-topbar-relics" },

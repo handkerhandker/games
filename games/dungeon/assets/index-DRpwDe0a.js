@@ -85,6 +85,9 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
 /* responsive-spec §3.1 设计令牌：safe-area 四边内边距 max(12px, env(...))——
    无刘海设备保底 12px，有刘海/圆角/Home 指示条自动让位 */
 #ui {
+  /* 2026-07-25 真机修复：安卓微信浏览器（X5 内核）默认点按高亮是蓝色块，
+     按钮跳转后残影带到下一页约 1 秒（用户截图实锤）——全局关闭点按高亮。 */
+  -webkit-tap-highlight-color: transparent;
   --sat: max(12px, env(safe-area-inset-top));
   --sab: max(12px, env(safe-area-inset-bottom));
   --sal: max(12px, env(safe-area-inset-left));
