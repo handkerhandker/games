@@ -3802,6 +3802,20 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           }
         },
+        firmware_kit: {
+          id: "firmware_kit",
+          name: "\u56FA\u4EF6\u5347\u7EA7\u5305",
+          icon: "deck",
+          rarity: "common",
+          desc: "\u62FE\u53D6\u65F6\uFF0C\u5347\u7EA7\u724C\u7EC4\u4E2D\u7B2C\u4E00\u5F20\u672A\u5347\u7EA7\u7684\u5361\u3002\u5305\u88C5\u5B8C\u597D\uFF0C\u5C01\u6761\u662F\u624B\u7ED8\u7684\uFF0C\u4F46\u5347\u7EA7\u662F\u771F\u7684\u3002",
+          hooks: {
+            onPickup(run2) {
+              if (!run2 || !Array.isArray(run2.deck)) return;
+              const ref = run2.deck.find((c) => c && !c.upgraded);
+              if (ref) ref.upgraded = true;
+            }
+          }
+        },
         // ============ uncommon ============
         overclock_chip: {
           id: "overclock_chip",
@@ -3917,6 +3931,19 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           }
         },
+        heat_recycler: {
+          id: "heat_recycler",
+          name: "\u4F59\u70ED\u56DE\u6536\u5668",
+          icon: "st-heat",
+          rarity: "uncommon",
+          desc: "\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u82E5\u4F60\u7684\u70ED\u91CF \u2265 6\uFF0C\u83B7\u5F97 1 \u5C42\u5145\u80FD\uFF08\u4E0B\u56DE\u5408\u80FD\u91CF +1\uFF09\u3002\u5E9F\u70ED\u4E5F\u662F\u70ED\uFF0C\u6512\u4E00\u6512\uFF0C\u660E\u5929\u8FD8\u80FD\u70E7\u3002",
+          hooks: {
+            onTurnEnd(run2, combat) {
+              const p = player(combat);
+              if (p && (p.heat || 0) >= 6) addStatus(p, "charge", 1);
+            }
+          }
+        },
         // ============ rare ============
         recursion_mirror: {
           id: "recursion_mirror",
@@ -3992,6 +4019,30 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           }
         },
+        petri_dish: {
+          id: "petri_dish",
+          name: "\u75C5\u6BD2\u57F9\u517B\u8231",
+          icon: "st-poison",
+          rarity: "rare",
+          desc: "\u4F60\u7684\u56DE\u5408\u5F00\u59CB\u65F6\uFF0C\u573A\u4E0A\u75C5\u6BD2\u5C42\u6570\u6700\u9AD8\u7684\u654C\u4EBA\u83B7\u5F97 1 \u5C42\u75C5\u6BD2\u3002\u8231\u5185\u6052\u6E29 37 \u5EA6\uFF0C\u91CC\u9762\u7684\u4E1C\u897F\u957F\u5F97\u6BD4\u4F60\u5FEB\u3002",
+          hooks: {
+            onTurnStart(run2, combat) {
+              const list = combat && combat.state && combat.state.enemies;
+              if (!Array.isArray(list)) return;
+              let target = null;
+              let max = 0;
+              for (const e of list) {
+                if (!e || e.alive === false || !(e.hp > 0)) continue;
+                const n = e.statuses && e.statuses.poison || 0;
+                if (n > max) {
+                  max = n;
+                  target = e;
+                }
+              }
+              if (target) addStatus(target, "poison", 1);
+            }
+          }
+        },
         // ============ boss（仅 boss 奖励产出） ============
         brain_core: {
           id: "brain_core",
@@ -4031,6 +4082,33 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               const p = player(combat);
               if (p) p.hp = Math.min(p.maxHp, p.hp + 4);
               run2.gold += 4;
+            }
+          }
+        },
+        virus_spreader: {
+          id: "virus_spreader",
+          name: "\u75C5\u6BD2\u4F20\u64AD\u5668",
+          icon: "virus",
+          rarity: "boss",
+          desc: "\u654C\u4EBA\u6B7B\u4EA1\u65F6\uFF0C\u82E5\u5B83\u643A\u5E26\u75C5\u6BD2\uFF0C\u5C06\u5176\u5269\u4F59\u75C5\u6BD2\u5C42\u6570 +2 \u8F6C\u79FB\u7ED9\u75C5\u6BD2\u6700\u5C11\u7684\u5B58\u6D3B\u654C\u4EBA\u3002\u5C38\u4F53\u4E0D\u662F\u7EC8\u70B9\uFF0C\u662F\u4E2D\u8F6C\u7AD9\u3002",
+          hooks: {
+            onEnemyKilled(run2, combat, uid) {
+              const list = combat && combat.state && combat.state.enemies;
+              if (!Array.isArray(list)) return;
+              const dead = list.find((e) => e && e.uid === uid);
+              const stacks = dead && dead.statuses && dead.statuses.poison;
+              if (typeof stacks !== "number" || stacks <= 0) return;
+              let target = null;
+              let min = Infinity;
+              for (const e of list) {
+                if (!e || e.alive === false || !(e.hp > 0)) continue;
+                const n = e.statuses && e.statuses.poison || 0;
+                if (n < min) {
+                  min = n;
+                  target = e;
+                }
+              }
+              if (target) addStatus(target, "poison", stacks + 2);
             }
           }
         }
@@ -9316,6 +9394,100 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           text: "\u770B\u4E00\u773C\u5C31\u8D70",
           result: {},
           resultText: "\u4F60\u628A\u901A\u7F09\u4EE4\u4E0A\u7684\u8138\u9ED8\u8BB0\u5728\u5FC3\u3002\u4E07\u4E00\u5728\u6DF1\u6E0A\u91CC\u9047\u89C1\uFF0C\u597D\u6B79\u7B97\u534A\u4E2A\u719F\u4EBA\u3002"
+        }
+      ]
+    },
+    {
+      id: "virus_incubator",
+      title: "\u75C5\u6BD2\u57F9\u517B\u76BF",
+      icon: "virus",
+      text: "\u57F9\u517B\u8231\u7684\u6307\u793A\u706F\u8FD8\u7EFF\u7740\uFF0C\u73BB\u7483\u5185\u58C1\u722C\u6EE1\u8367\u5149\u83CC\u843D\u3002\u6807\u7B7E\u5199\u7740\uFF1A\u300C\u8D6B\u5C14\u58A8\u65AF\u751F\u7269\u90E8\xB7\u7B2C 7 \u4EE3\u6D3B\u4F53\u75C5\u6BD2\uFF0C\u8BF7\u52FF\u6295\u5582\u3002\u300D",
+      choices: [
+        {
+          text: "\u62BD\u4E00\u7BA1\u6D3B\u6027\u57F9\u517B\u6DB2\uFF08\u5931\u53BB 9 \u751F\u547D\uFF0C\u83B7\u5F97\u300C\u6DEC\u6BD2\u534F\u8BAE\u300D\uFF09",
+          result: { hp: -9, addCard: { id: "v_envenom", upgraded: false } },
+          resultText: "\u9488\u5934\u62D4\u51FA\u6765\u65F6\uFF0C\u83CC\u843D\u96C6\u4F53\u671D\u4F60\u7684\u65B9\u5411\u626D\u4E86\u626D\u2014\u2014\u5B83\u4EEC\u8BA4\u51FA\u4E86\u540C\u7C7B\u3002"
+        },
+        {
+          text: "\u628A\u624B\u4F38\u8FDB\u57F9\u517B\u69FD\uFF08\u5931\u53BB 6 \u751F\u547D\uFF0C\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF09",
+          result: { hp: -6, upgradeRandom: 1 },
+          resultText: "\u83CC\u4E1D\u987A\u7740\u6307\u5C16\u722C\u8FDB\u795E\u7ECF\u63A5\u53E3\uFF0C\u4F60\u6709\u4E00\u6BB5\u4EE3\u7801\u5F53\u573A\u5B66\u4F1A\u4E86\u5206\u6CCC\u6BD2\u7D20\u3002"
+        },
+        {
+          text: "\u5077\u4E00\u7BA1\u6837\u672C\u5356\u7ED9\u63AE\u5BA2\uFF08\u5F97 30 \u91D1\u5E01\uFF0C\u60CA\u52A8\u539F\u4F4F\u6C11\uFF09",
+          result: { gold: 30, fight: ["data_leech"] },
+          resultText: "\u6837\u672C\u521A\u79BB\u8231\uFF0C\u4E00\u6761\u6570\u636E\u6C34\u86ED\u5C31\u4ECE\u57F9\u517B\u6DB2\u91CC\u7ACB\u4E86\u8D77\u6765\u2014\u2014\u4EA4\u6613\u53D6\u6D88\uFF0C\u52A0\u9910\u5F00\u59CB\u3002"
+        }
+      ]
+    },
+    {
+      id: "overload_forge",
+      title: "\u8FC7\u8F7D\u7194\u7089",
+      icon: "flame",
+      text: "\u4E00\u53F0\u5DE5\u4E1A\u7194\u7089\u5728\u8D70\u5ECA\u5C3D\u5934\u4F4E\u9E23\uFF0C\u7089\u819B\u91CC\u70E7\u7684\u4E0D\u662F\u7164\uFF0C\u662F\u6210\u5806\u7684\u9000\u5F79 CPU\u3002\u4EEA\u8868\u76D8\u4E0A\u8D34\u7740\u4E00\u884C\u5B57\uFF1A\u300C\u62BC\u4EC0\u4E48\u90FD\u53EF\u4EE5\uFF0C\u6982\u4E0D\u9000\u8D27\u3002\u300D",
+      choices: [
+        {
+          text: "\u6295 80 \u91D1\u5E01\u8D4C\u4E00\u7089\uFF08\u83B7\u5F97\u300C\u91CF\u5B50\u7535\u5BB9\u300D\uFF09",
+          requires: (run2) => run2.gold >= 80 ? run2.relics.includes("quantum_capacitor") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 80\uFF09",
+          result: { gold: -80, relic: "quantum_capacitor" },
+          resultText: "\u7194\u7089\u541E\u4E0B\u91D1\u5E01\u6253\u4E86\u4E2A\u9971\u55DD\uFF0C\u5410\u51FA\u4E00\u679A\u8FD8\u5728\u98A4\u6296\u7684\u7535\u5BB9\u2014\u2014\u8D4C\u8D62\u4E86\uFF0C\u5B83\u6CA1\u70B8\u3002"
+        },
+        {
+          text: "\u5173\u6389\u5B89\u5168\u9600\u786C\u538B\u4E00\u7089\uFF08\u751F\u547D\u4E0A\u9650 -5\uFF0C\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF09",
+          result: { maxHp: -5, upgradeRandom: 1 },
+          resultText: "\u4F60\u628A\u81EA\u5DF1\u7684\u6563\u70ED\u4F59\u91CF\u4E5F\u62BC\u4E86\u8FDB\u53BB\u3002\u7089\u706B\u5F88\u65FA\uFF0C\u4F60\u7626\u4E86\u4E00\u5708\uFF0C\u4EE3\u7801\u58EE\u4E86\u4E00\u5708\u3002"
+        },
+        {
+          text: "\u64AC\u5F00\u7089\u5E95\u7684\u79EF\u7070\u5C42\uFF08\u5F97 30 \u91D1\u5E01\uFF0C\u5C0F\u5FC3\u70EB\uFF09",
+          result: { gold: 30, fight: ["honeypot"] },
+          resultText: "\u79EF\u7070\u5C42\u91CC\u8EBA\u7740\u7684\u4E0D\u662F\u5E9F\u4EF6\uFF0C\u662F\u4E00\u53EA\u5047\u5BD0\u7684\u871C\u7F50\u9677\u9631\u2014\u2014\u4F60\u64AC\u5F00\u7684\u662F\u5B83\u7684\u88AB\u7A9D\u3002"
+        }
+      ]
+    },
+    {
+      id: "ghost_cache",
+      title: "\u79BB\u804C\u5458\u5DE5\u7684\u9B3C\u9B42\u7F13\u5B58",
+      icon: "st-cache",
+      text: "\u4E00\u53F0\u8D34\u7740\u300C\u5DF2\u79BB\u804C\xB7\u8D44\u4EA7\u5F85\u56DE\u6536\u300D\u7684\u7F13\u5B58\u8282\u70B9\u8FD8\u4EAE\u7740\uFF0C\u5C4F\u5E55\u6EDA\u52A8\u7740\u67D0\u4EBA\u6CA1\u5199\u5B8C\u7684\u4EA4\u63A5\u6587\u6863\uFF1A\u300C\u2026\u2026\u5982\u679C\u4F60\u770B\u5230\u8FD9\u884C\u5B57\uFF0C\u8BF4\u660E\u4ED6\u4EEC\u8FDE\u7535\u8D39\u90FD\u61D2\u5F97\u65AD\u3002\u300D",
+      choices: [
+        {
+          text: "\u63D0\u8D70\u4ED6\u6512\u4E0B\u7684\u9063\u6563\u8D39\uFF08\u5F97 40 \u91D1\u5E01\uFF0C\u60CA\u52A8\u5B89\u4FDD\u503C\u5B88\uFF09",
+          result: { gold: 40, fight: ["silent_observer"] },
+          resultText: "\u7F13\u5B58\u6E05\u7A7A\u7684\u77AC\u95F4\uFF0C\u4E00\u53CC\u6C89\u9ED8\u7684\u773C\u775B\u5728\u9ED1\u6697\u91CC\u7741\u5F00\u2014\u2014\u4EBA\u8D70\u4E86\uFF0C\u89C2\u5BDF\u8005\u8FD8\u5728\u66FF\u4ED6\u6253\u5361\u3002"
+        },
+        {
+          text: "\u7EE7\u627F\u4ED6\u7684\u300C\u8BB0\u5FC6\u6D77\u7EF5\u300D\uFF08\u5931\u53BB 8 \u751F\u547D\uFF09",
+          requires: (run2) => run2.relics.includes("memory_foam") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
+          result: { hp: -8, relic: "memory_foam" },
+          resultText: "\u6D77\u7EF5\u91CC\u5B58\u7740\u4ED6\u52A0\u73ED\u7684\u5F62\u72B6\u3002\u4F60\u8BFB\u5B8C\u6700\u540E\u4E00\u6BB5\uFF0C\u592A\u9633\u7A74\u7A81\u7A81\u76F4\u8DF3\u3002"
+        },
+        {
+          text: "\u66FF\u4ED6\u62D4\u6389\u7535\u6E90\uFF08\u56DE\u590D 10 \u751F\u547D\uFF09",
+          result: { hp: 10 },
+          resultText: "\u4EA4\u63A5\u6587\u6863\u505C\u5728\u6700\u540E\u4E00\u884C\uFF1A\u300C\u522B\u52A0\u73ED\u3002\u300D\u4F60\u9ED8\u54C0\u4E86\u4E09\u5341\u79D2\uFF0C\u4F24\u53E3\u83AB\u540D\u597D\u4E86\u4E00\u70B9\u3002"
+        }
+      ]
+    },
+    {
+      id: "defense_bootcamp",
+      title: "\u9632\u53CD\u8BAD\u7EC3\u8425",
+      icon: "knight",
+      text: "\u4E00\u5757\u9000\u5F79\u9632\u706B\u5899\u628A\u8D70\u5ECA\u6539\u6210\u4E86\u8BAD\u7EC3\u8425\uFF0C\u95E8\u53E3\u6302\u7740\u62DB\u751F\u7B80\u7AE0\uFF1A\u300C\u9632\u53CD\u8BAD\u7EC3\u8425\u7B2C 1 \u671F\u2014\u2014\u6559\u5B98\uFF1A\u672C\u4EBA\uFF1B\u5B66\u5458\uFF1A\u4F60\uFF1B\u6BD5\u4E1A\u7387\uFF1A\u5C1A\u672A\u7EDF\u8BA1\u3002\u300D",
+      choices: [
+        {
+          text: "\u62A5\u540D\u6297\u51FB\u6253\u6D4B\u8BD5\uFF08\u5931\u53BB 6 \u751F\u547D\uFF0C\u751F\u547D\u4E0A\u9650 +5\uFF09",
+          result: { hp: -6, maxHp: 5 },
+          resultText: "\u6559\u5B98\u7528\u6570\u636E\u5305\u62CD\u4E86\u4F60\u4E09\u5206\u949F\uFF0C\u6EE1\u610F\u70B9\u5934\uFF1A\u300C\u625B\u63CD\uFF0C\u662F\u9632\u53CD\u7684\u7B2C\u4E00\u7F8E\u5FB7\u3002\u300D"
+        },
+        {
+          text: "\u9009\u4FEE\u53CD\u4F24\u8BFE\uFF08\u5931\u53BB 3 \u751F\u547D\uFF0C\u83B7\u5F97\u300C\u8346\u68D8\u62A4\u7532\u300D\uFF09",
+          result: { hp: -3, addCard: { id: "d_thorns", upgraded: false } },
+          resultText: "\u4F60\u5728\u638C\u5FC3\u710A\u4E0A\u4E00\u6392\u5012\u523A\u3002\u6559\u5B98\u8865\u4E86\u53E5\u6821\u8BAD\uFF1A\u300C\u522B\u4E3B\u52A8\u624E\u4EBA\uFF0C\u4F46\u4E5F\u522B\u5BA2\u6C14\u3002\u300D"
+        },
+        {
+          text: "\u76F4\u63A5\u7533\u8BF7\u6BD5\u4E1A\u8003\u6838\uFF08\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF0C\u6559\u5B98\u4EB2\u81EA\u9A8C\u8D27\uFF09",
+          result: { upgradeRandom: 1, fight: ["firewall_shard"] },
+          resultText: "\u8003\u6838\u5185\u5BB9\u662F\u6253\u5012\u6559\u5B98\u7684\u4E00\u5757\u65E7\u88C5\u7532\u3002\u5B83\u770B\u5230\u4F60\u65F6\uFF0C\u5162\u5162\u4E1A\u4E1A\u5730\u91CD\u65B0\u7ACB\u4E86\u8D77\u6765\u3002"
         }
       ]
     }
