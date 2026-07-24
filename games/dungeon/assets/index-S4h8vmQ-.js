@@ -145,10 +145,12 @@ var e=Object.defineProperty,t=(t,n)=>{let r={};for(var i in t)e(r,i,{get:t[i],en
 #ui .bottom-stack { position: absolute; left: 0; right: 0; bottom: 0;
   display: flex; flex-direction: column; align-items: flex-start; }
 #ui .xp-wrap { position: relative; order: 2; width: 100%;
-  height: calc(clamp(16px, 2.4vh, 18px) + env(safe-area-inset-bottom));
+  height: clamp(16px, 2.4vh, 18px);
+  /* 美观定稿（2026-07-24 用户拍板）：经验条直接触底、满宽通栏——品类标准样式。
+     曾因 iPhone 手势条做 safe-area 垫高，两版修正（涂满/透明露地板）均被否：
+     「太粗」/「空中悬浮黑条条」。手势线盖住条的下沿几像素属可接受代价（用户明示要触底）。 */
   background: #1c2422; border-top: 1px solid #3d4a44;
-  display: flex; align-items: center; justify-content: center;
-  padding-bottom: env(safe-area-inset-bottom); box-sizing: border-box; }
+  display: flex; align-items: center; justify-content: center; }
 #ui .xp-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%; background: #5f9e97; }
 #ui .xp-text { position: relative; z-index: 1; font-size: clamp(10px, 0.9vw + 4px, 12px);
   color: #dfeeea; text-shadow: 0 1px 2px #000; white-space: nowrap; }

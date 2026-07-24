@@ -118,8 +118,12 @@ body.no-crt .app-crt { display: none; }
   min-height: calc(100dvh - 2 * var(--shell-pad) - env(safe-area-inset-bottom, 0px));
   transform-origin: top center; /* 整屏自适应缩放（fitCombat）的缩放原点 */
 }
-/* 自适应缩放激活时锁定整页滚动（布局高 > 视觉高，防幻影滚动条；换屏/终局自动解除） */
-body.cb-noscroll { overflow: hidden; }
+/* 战斗存续期无条件锁整页滚动/橡皮筋（2026-07-25 起与 fitCombat 缩放系数解耦：进战斗即加，
+   换屏/终局由既有路径解除；ff≥1 时微信橡皮筋曾把整页拖上黑区）。
+   html 一并钉：html 的 overflow-x:clip 会阻断 body 溢出向视口传播，单靠 body 锁不住 window 级滚动；
+   overscroll-behavior:none 双轴关橡皮筋链式回弹（手牌 pan-x / 日志纵滚 / 弹层滚动由各自容器放行） */
+html:has(> body.cb-noscroll),
+body.cb-noscroll { overflow: hidden; overscroll-behavior: none; }
 
 /* —— 顶部信息行 —— */
 .cb-head {
@@ -596,20 +600,51 @@ body.cb-noscroll { overflow: hidden; }
   filter: drop-shadow(0 0 14px color-mix(in srgb, var(--phos) 35%, transparent));
 }
 
-/* 结束回合：字号/内边距流体化；.cb-combo 为连击计数（fx.comboPop 动画本体在 fx.css） */
-.cb-endwrap { display: flex; flex-direction: column; align-items: flex-end; gap: clamp(6px, .8vw, 8px); }
+/* 结束回合：字号/内边距流体化；endwrap 兼作提示/连击两个浮层的锚（position:relative） */
+.cb-endwrap { position: relative; display: flex; flex-direction: column; align-items: flex-end; gap: clamp(6px, .8vw, 8px); }
 /* endwrap 内按钮行（「?」词汇表 + 结束回合）：新骨架沿用类名，样式常驻 */
 .cb-player-meters { display: flex; align-items: center; gap: var(--gap); flex-wrap: wrap; justify-content: flex-end; }
-.cb-hint { min-height: calc(var(--fs-sm) * 1.6); font-size: var(--fs-sm); color: var(--amber); letter-spacing: .03em; }
-.cb-hint:empty { visibility: hidden; } /* D-010：空提示不可见但占位（.cb-combo 同模式），出现/消失零位移 */
-.cb-combo {
-  min-height: calc(var(--fs-md) * 1.5);
-  line-height: 1.5; /* D-010：文本行高与 min-height 严格同高，空/有文本占位零差 */
+/* 提示/连击浮层化（方案 A，2026-07-25）：position:absolute 不参与布局——平时零占位，
+   底排按钮与手牌之间不再留空地；出现/消失对布局贡献恒 0（位移红线语义不变）。
+   两浮层 pointer-events:none 永不挡点击；z-index 10 高于卡牌(≤5)、低于 modal(9000)/tooltip(9500) */
+.cb-hint {
+  position: absolute;
+  bottom: calc(100% + 12px); /* 锚在结束回合按钮上方，右缘对齐向左展开 */
+  right: 0;
+  max-width: calc(100vw - 24px);
+  padding: .3em .85em;
+  font-size: var(--fs-sm);
   color: var(--amber);
-  font-size: var(--fs-md);
+  letter-spacing: .03em;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  border-radius: 999px;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--amber) 16%, transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+.cb-hint:empty { visibility: hidden; } /* 空提示不渲染；浮层本不占位，:empty 只管可见性 */
+/* 连击徽标：贴在结束回合按钮右上角外缘（锚=endwrap 右上角），不遮按钮本体点击区。
+   定位只用 top/right 偏移、禁用 transform——fx-combo-pop 动画改写 transform，静态 transform 会被覆盖 */
+.cb-combo {
+  position: absolute;
+  top: -.55em;
+  right: -.55em;
+  padding: .08em .55em;
+  line-height: 1.5;
+  font-size: var(--fs-sm);
   font-weight: 700;
-  letter-spacing: .14em;
+  letter-spacing: .08em;
+  white-space: nowrap;
+  color: var(--amber);
+  background: var(--panel2);
+  border: 1px solid color-mix(in srgb, var(--amber) 55%, transparent);
+  border-radius: 999px;
   text-shadow: 0 0 12px color-mix(in srgb, var(--amber) 45%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--amber) 22%, transparent);
+  pointer-events: none;
+  z-index: 10;
 }
 .cb-combo:empty { visibility: hidden; }
 .cb-endturn {
@@ -802,12 +837,8 @@ body.cb-noscroll { overflow: hidden; }
   .cb-pilebox { display: contents; } /* 拍平两列：三个牌堆按钮直接参与底排，与结束回合整齐同行 */
   .cb-pilebox > * { order: 2; } /* 拍平后保持次序：手牌(1) → 牌堆按钮(2) → 结束区(3) */
   .cb-endwrap { order: 3; margin-left: auto; }
-  /* D-010 同族（2026-07 真机实锤）：提示/连击只许纵向占位，绝不许撑宽 endwrap ——
-     长提示曾把 endwrap 顶到 252px 宽，迫使 .cb-bottom(flex-wrap:wrap) 换行、底排 +1 行、
-     全屏被顶起 -33.2px（390×844 实测）。width:0 + flex justify-end + nowrap：
-     文本作为弹性项钉在右缘、向左溢出绘制（该高度层左侧本为空区；实测 text-align:right
-     在 0 宽盒里溢出方向不可靠），对 endwrap 宽度贡献恒 0，纵向仍由 min-height 占位 */
-  .cb-hint, .cb-combo { width: 0; display: flex; justify-content: flex-end; white-space: nowrap; }
+  /* 提示/连击已浮层化（absolute，见基础规则）：对 endwrap 宽度贡献恒 0，本档不再需要
+     旧 width:0 + justify-end 钉右缘 hack（长提示撑宽 endwrap 致底排换行 -33.2px 一族随之根除） */
 }
 
 /* ≤720 追加：卡宽 46vw 上限横滑+吸附、牌堆/结束按钮收一档（行宽紧张不被裁） */
@@ -861,7 +892,7 @@ body.cb-noscroll { overflow: hidden; }
   .cb-enemy-icon svg { width: clamp(24px, 3.6vw, 34px); height: clamp(24px, 3.6vw, 34px); }
   .cb-intent { font-size: var(--fs-sm); height: calc(var(--fs-sm) * var(--cb-intent-lh) * 2 + 4px); }
   /* D-010：矮屏档同样保留 pip 行占位（旧 min-height:0 是 0↔1 pip 抖动源，已根除；
-     占位成本 ~19px×2 由 fitCombat 缩放吸收，与 .cb-hint 同族判例一致） */
+     占位成本 ~19px×2 由 fitCombat 缩放吸收） */
   /* 矮屏玩家列瘦身：能量球移到灵像右侧（免纵向叠加），容器宽度随行内容自适应，
      热量环圆心钉在灵像本体中心（左起第一个子件） */
   .cb-avatar { flex-direction: row; align-items: center; width: auto; }
@@ -875,8 +906,7 @@ body.cb-noscroll { overflow: hidden; }
     padding-bottom: clamp(4px, .8vh, 6px);
   }
   .cb-pilebox { padding-bottom: 0; }
-  /* D-010：.cb-hint 占位不得抹除（旧 min-height:0 已回滚）——矮屏 × ≤720 堆叠档下
-     提示出现曾 +1 行顶起布局；占位成本 ~19px 由 fitCombat 缩放吸收，底排高度由手牌行主导无视觉变化 */
+  /* 提示/连击已浮层化（见基础规则）：absolute 不占布局，本档无需任何占位规则 */
   /* 矮屏档同步钉死：标题隐藏，扣减项仅剩边框+上内边距；下限从 48px 抬到 58px，
      保证最大行高组合下也收整出 ≥2 整行（extra≤10px 时 2×19.375px+10px=48.75px≤58px），避免收整塌成单行；
      下内边距同基础规则必须为 0（防溢出内容下一行洇进 padding 露半行） */
@@ -11476,15 +11506,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         const f = Math.min(1, availW / Math.max(1, naturalW), availH / Math.max(1, naturalH));
         fitLocked = { ff: Math.max(0.55, f), naturalH: shell.scrollHeight };
       }
+      document.body.classList.add("cb-noscroll");
       if (fitLocked.ff < 1) {
         shell.style.height = `${fitLocked.naturalH}px`;
         shell.style.transform = `scale(${fitLocked.ff})`;
-        document.body.classList.add("cb-noscroll");
         if (fitLocked.ff > 0.55 && window.scrollY !== 0) window.scrollTo(0, 0);
       } else {
         shell.style.height = "";
         shell.style.transform = "";
-        document.body.classList.remove("cb-noscroll");
       }
     }
     markStart();
