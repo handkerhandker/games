@@ -108,6 +108,11 @@ body.no-crt .app-crt { display: none; }
    任何情况下元素本体永不被削（舞台溢出可见性由 overflow:visible 保证） */
 .cb-shell {
   --card-w: clamp(104px, 15vw, 158px);
+  /* D-011：基准卡宽/卡高的壳层冻结副本——桌面端计数感知收缩只覆写卡槽上的 --card-w，
+     而手牌排 min-height 与收缩 clamp 上限须引用「未收缩」的当档基准值
+     （自定义属性按元素各自计算后继承：壳层取值不受后代卡槽覆写影响，媒体查询改 --card-w 时自动跟随） */
+  --card-w-base: var(--card-w);
+  --card-h-base: calc(var(--card-w) * 1.325);
   --enemy-w: clamp(150px, 16vw, 210px);
   --avatar: clamp(110px, 14vw, 160px);
   display: flex;
@@ -536,8 +541,10 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   /* 顶部 16-22px / 底部 10-12px：hover/选中卡上抬 10px + scale 1.06 + 辉光 + 费用徽标(-10px)
      会顶到滚动容器的上下裁剪缘，留出余量防截断 */
   padding: clamp(16px, 2.4vh, 22px) var(--gap) clamp(10px, 1.4vh, 12px);
-  /* D-010 第三轮：min-height 与有牌态精确同高（卡高+上下内边距）——打空手牌显占位行时高度零差 */
-  min-height: calc(var(--card-h) + clamp(16px, 2.4vh, 22px) + clamp(10px, 1.4vh, 12px));
+  /* D-010 第三轮：min-height 与有牌态精确同高（卡高+上下内边距）——打空手牌显占位行时高度零差。
+     D-011：卡高改用壳层冻结的 --card-h-base——桌面端计数感知收缩把卡做矮时行高不随动，
+     底排/舞台/敌我区垂直位移恒 0（位移红线不破），余量由卡槽底对齐留在排顶 */
+  min-height: calc(var(--card-h-base) + clamp(16px, 2.4vh, 22px) + clamp(10px, 1.4vh, 12px));
   /* D-010 第三轮主链：隐藏自绘滚动条——经典滚动条（微信 X5 等内核）占布局高度，
      5 张溢出时 +~15px、打到 4 张消失，底排高度生灭经舞台 flex 重分配放大成整屏下移；
      隐藏后手牌区高度与手牌数彻底解耦。触屏 pan-x 滑动不受滚动条显隐影响 */
@@ -889,6 +896,31 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   .cb-shell { --card-w: clamp(96px, calc(20vw - 102px), 132px); }
 }
 
+/* —— D-011 桌面端（≥1024 + 精确指针）手牌计数感知收缩：5~7 张全入镜，8+ 回退横滚 ——
+   背景：D-010 第三轮隐藏滚动条后，桌面端 5 张即轻微溢出、6+ 张最右卡明显被裁，
+   且失去「还能往右拖」的滚动条线索。机制：.cb-hand 声明为 inline-size 查询容器，
+   :has() 计数命中时只在卡槽作用域覆写 --card-w（卡牌尺寸唯一来源仍是变量，契约 §5.2；
+   卡高经 --card-h 随动变矮，卡槽底对齐，余量留在排顶）。
+   行高不随收缩动：min-height 已钉 --card-h-base（壳层冻结基准卡高）——底排/舞台/敌我区
+   垂直位移恒 0（D-010 位移红线不破）。收缩量按容器内容盒实测自适应（cqw），
+   各档/各窗宽无需逐档算数；clamp 上限为当档基准卡宽（够放就不缩）。
+   下限 96/88/80px 对齐既有最矮档卡宽区间（矮屏档下限 80px），装不下时宁回 overflow-x 横滚
+   不缩到不可读（桌面滚轮横移见 combatScreen.js D-011）。
+   cqw/:has() 不支持的旧内核整组忽略：维持基准卡宽 + 横滚，行为与修复前一致（优雅降级）。
+   触屏/窄屏不在本媒体查询命中范围：≤1023 各档与 coarse 指针行为零变化 */
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .cb-hand { container-type: inline-size; }
+  .cb-hand:has(> .cb-card-slot:nth-child(5):last-child) > .cb-card-slot {
+    --card-w: clamp(96px, calc((100cqw - 4 * var(--gap)) / 5 - 1px), var(--card-w-base));
+  }
+  .cb-hand:has(> .cb-card-slot:nth-child(6):last-child) > .cb-card-slot {
+    --card-w: clamp(88px, calc((100cqw - 5 * var(--gap)) / 6 - 1px), var(--card-w-base));
+  }
+  .cb-hand:has(> .cb-card-slot:nth-child(7):last-child) > .cb-card-slot {
+    --card-w: clamp(80px, calc((100cqw - 6 * var(--gap)) / 7 - 1px), var(--card-w-base));
+  }
+}
+
 /* (max-height:700px) 矮屏压缩：舞台下限再降、灵像/敌人图标降档、手牌卡再降一档、日志压到 ~48px */
 @media (max-height: 700px) {
   .cb-shell { --card-w: clamp(80px, 11vw, 118px); --avatar: clamp(64px, 9vw, 104px); gap: clamp(3px, .6vh, 5px); }
@@ -909,8 +941,9 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   .cb-avatar { flex-direction: row; align-items: center; width: auto; }
   .cb-avatar-heat { left: calc(var(--avatar) / 2); }
   .cb-hand {
-    /* D-010：与有牌态精确同高（卡高+本档上下内边距），打空手牌零位移 */
-    min-height: calc(var(--card-h) + clamp(14px, 2.2vh, 18px) + clamp(4px, .8vh, 6px));
+    /* D-010：与有牌态精确同高（卡高+本档上下内边距），打空手牌零位移；
+       D-011：同基础规则改用 --card-h-base（收缩不动行高） */
+    min-height: calc(var(--card-h-base) + clamp(14px, 2.2vh, 18px) + clamp(4px, .8vh, 6px));
     /* 上内边距须容纳费用角标凸出（cost-s/3 ≈ 8-10px）+ hover 上抬 10px：
        旧值 4-6px 会把角标圆圈顶部削掉（矮屏手机实锤），下限抬到 14px */
     padding-top: clamp(14px, 2.2vh, 18px);
@@ -10476,6 +10509,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   var TOUCH_DIR_RATIO = 1.2;
   var ENEMY_ACT_MS = 440;
   var VQ_MAX_MS = 1200;
+  var FINE_POINTER = typeof matchMedia === "function" ? matchMedia("(hover: hover) and (pointer: fine)") : { matches: false };
   function renderCombat(root, run2, ctx2, enemyIds, onDone) {
     const rng = runRng(run2);
     const combat = new Combat(run2, enemyIds, rng);
@@ -11540,6 +11574,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
     function renderHand(p) {
       const row = el("div", { class: "cb-hand" });
+      if (FINE_POINTER.matches) {
+        row.addEventListener("wheel", (ev) => {
+          if (Math.abs(ev.deltaY) <= Math.abs(ev.deltaX)) return;
+          row.scrollLeft += ev.deltaMode === 1 ? ev.deltaY * 16 : ev.deltaY;
+        }, { passive: true });
+      }
       if (!p.hand.length) {
         row.append(el("div", { class: "cb-hand-empty" }, "\u2014\u2014 \u624B\u724C\u4E3A\u7A7A \u2014\u2014"));
         return row;

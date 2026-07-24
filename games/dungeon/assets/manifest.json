@@ -116,5 +116,12 @@
   "relic_crown_ember": "sprites/relic_crown_ember.png",
   "relic_soul_chime": "sprites/relic_soul_chime.png",
   "relic_revenant_core": "sprites/relic_revenant_core.png",
-  "relic_abyss_eye": "sprites/relic_abyss_eye.png"
+  "relic_abyss_eye": "sprites/relic_abyss_eye.png",
+  "relic_curator_ink": "sprites/relic_curator_ink.png",
+  "relic_revenant_crown": "sprites/relic_revenant_crown.png",
+  "relic_ninefold_spindle": "sprites/relic_ninefold_spindle.png",
+  "ach_evo_codex": "sprites/ach_evo_codex.png",
+  "ach_events_10": "sprites/ach_events_10.png",
+  "ach_curses_3": "sprites/ach_curses_3.png",
+  "ach_synergy_5": "sprites/ach_synergy_5.png"
 }
