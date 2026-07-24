@@ -1830,6 +1830,15 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
   .sc-gmenu-btn { min-width: 42px; min-height: 42px; }
   .sc-gmenu-item { min-height: 42px; }
 }
+/* ============ 局内子屏菜单按钮挂载（奖励/商店/休息/事件/宝箱接线微调） ============ */
+/* 奖励/休息/宝箱（sc-center 居中壳）：壳转 relative，齿轮绝对定位浮挂右上角，
+   居中标题行保持原位不被顶偏；top 对齐 .sc-shell 上 padding 令牌 */
+.sc-gmenu-shell { position: relative; }
+.sc-gmenu-float { position: absolute; top: clamp(10px, 1.5vw, 16px); right: 0; }
+/* 商店（块级壳）：screenHead 天然整行，齿轮 margin-left:auto 推至右端 */
+.sc-gmenu-head-btn { margin-left: auto; }
+/* 事件（无标题行）：面板内顶行，事件图标居左、齿轮居右 */
+.sc-gmenu-event-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--gap); }
 
 /* ==== styles/fx.css ==== */
 /* 《零日协议》动效样式（.fx-* 命名空间，美术音效工程师所有）
@@ -8040,8 +8049,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     ) : null;
     root.append(el(
       "div",
-      { class: "sc-shell sc-center" },
+      { class: "sc-shell sc-center sc-gmenu-shell" },
       screenHead(ctx2, "coin", "\u6218\u5229\u54C1\u56DE\u6536", "\u6570\u636E\u788E\u7247\u5DF2\u5230\u8D26"),
+      // 全局菜单齿轮：居中壳右上角浮挂（组件接线签名 gameMenuButton(ctx, cls)）
+      gameMenuButton(ctx2, "sc-gmenu-float"),
       el(
         "div",
         { class: "sc-reward-gold" },
@@ -8215,10 +8226,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       );
     }
     refresh();
+    const shopHead = screenHead(ctx2, "chip", "\u9ED1\u5E02\u63A5\u5165\u70B9", "\u4E00\u624B\u4EA4\u94B1\uFF0C\u4E00\u624B\u4EA4\u8D27");
+    shopHead.append(gameMenuButton(ctx2, "sc-gmenu-head-btn"));
     root.append(el(
       "div",
       { class: "sc-shell" },
-      screenHead(ctx2, "chip", "\u9ED1\u5E02\u63A5\u5165\u70B9", "\u4E00\u624B\u4EA4\u94B1\uFF0C\u4E00\u624B\u4EA4\u8D27"),
+      shopHead,
       el(
         "div",
         { class: "sc-shop-top" },
@@ -8298,8 +8311,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     );
     root.append(el(
       "div",
-      { class: "sc-shell sc-center" },
+      { class: "sc-shell sc-center sc-gmenu-shell" },
       screenHead(ctx2, "flame", "\u5B89\u5168\u5C4B", "\u4FE1\u53F7\u5C4F\u853D\u4E2D\u2026\u2026\u53EA\u80FD\u6267\u884C\u4E00\u9879\u64CD\u4F5C"),
+      // 全局菜单齿轮：居中壳右上角浮挂
+      gameMenuButton(ctx2, "sc-gmenu-float"),
       body
     ));
     tip(root, ctx2, "rest");
@@ -8349,7 +8364,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       el(
         "div",
         { class: "sc-event-panel" },
-        el("span", { class: "sc-ic-wrap", html: ctx2.icon(event.icon || "eye", "sc-event-ic") }),
+        // 全局菜单齿轮：事件屏无标题行，面板顶行图标居左、齿轮居右
+        el(
+          "div",
+          { class: "sc-gmenu-event-top" },
+          el("span", { class: "sc-ic-wrap", html: ctx2.icon(event.icon || "eye", "sc-event-ic") }),
+          gameMenuButton(ctx2)
+        ),
         el("div", { class: "sc-event-title" }, event.title || "\u672A\u77E5\u4FE1\u53F7"),
         el("div", { class: "sc-event-text" }, event.text || ""),
         choiceWrap,
@@ -8362,8 +8383,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const relic = RELICS[relicId] || { id: relicId, name: relicId, icon: "relic", rarity: "common", desc: "" };
     root.append(el(
       "div",
-      { class: "sc-shell sc-center" },
+      { class: "sc-shell sc-center sc-gmenu-shell" },
       screenHead(ctx2, "eye", "\u52A0\u5BC6\u7F13\u5B58\u8231", "\u68C0\u6D4B\u5230\u672A\u767B\u8BB0\u7684\u786C\u4EF6\u4FE1\u53F7"),
+      // 全局菜单齿轮：居中壳右上角浮挂
+      gameMenuButton(ctx2, "sc-gmenu-float"),
       el(
         "div",
         { class: "sc-treasure-panel" },
