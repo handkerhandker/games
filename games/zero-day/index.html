@@ -570,6 +570,7 @@ body.cb-noscroll { overflow: hidden; }
 /* endwrap 内按钮行（「?」词汇表 + 结束回合）：新骨架沿用类名，样式常驻 */
 .cb-player-meters { display: flex; align-items: center; gap: var(--gap); flex-wrap: wrap; justify-content: flex-end; }
 .cb-hint { min-height: calc(var(--fs-sm) * 1.6); font-size: var(--fs-sm); color: var(--amber); letter-spacing: .03em; }
+.cb-hint:empty { visibility: hidden; } /* D-010：空提示不可见但占位（.cb-combo 同模式），出现/消失零位移 */
 .cb-combo {
   min-height: calc(var(--fs-md) * 1.5);
   line-height: 1.5; /* D-010：文本行高与 min-height 严格同高，空/有文本占位零差 */
@@ -770,6 +771,12 @@ body.cb-noscroll { overflow: hidden; }
   .cb-pilebox { display: contents; } /* 拍平两列：三个牌堆按钮直接参与底排，与结束回合整齐同行 */
   .cb-pilebox > * { order: 2; } /* 拍平后保持次序：手牌(1) → 牌堆按钮(2) → 结束区(3) */
   .cb-endwrap { order: 3; margin-left: auto; }
+  /* D-010 同族（2026-07 真机实锤）：提示/连击只许纵向占位，绝不许撑宽 endwrap ——
+     长提示曾把 endwrap 顶到 252px 宽，迫使 .cb-bottom(flex-wrap:wrap) 换行、底排 +1 行、
+     全屏被顶起 -33.2px（390×844 实测）。width:0 + flex justify-end + nowrap：
+     文本作为弹性项钉在右缘、向左溢出绘制（该高度层左侧本为空区；实测 text-align:right
+     在 0 宽盒里溢出方向不可靠），对 endwrap 宽度贡献恒 0，纵向仍由 min-height 占位 */
+  .cb-hint, .cb-combo { width: 0; display: flex; justify-content: flex-end; white-space: nowrap; }
 }
 
 /* ≤720 追加：卡宽 46vw 上限横滑+吸附、牌堆/结束按钮收一档（行宽紧张不被裁） */
@@ -834,7 +841,8 @@ body.cb-noscroll { overflow: hidden; }
     padding-bottom: clamp(4px, .8vh, 6px);
   }
   .cb-pilebox { padding-bottom: 0; }
-  .cb-hint { min-height: 0; }
+  /* D-010：.cb-hint 占位不得抹除（旧 min-height:0 已回滚）——矮屏 × ≤720 堆叠档下
+     提示出现曾 +1 行顶起布局；占位成本 ~19px 由 fitCombat 缩放吸收，底排高度由手牌行主导无视觉变化 */
   /* 矮屏档同步钉死：标题隐藏，扣减项仅剩边框+上内边距；下限从 48px 抬到 58px，
      保证最大行高组合下也收整出 ≥2 整行（extra≤10px 时 2×19.375px+10px=48.75px≤58px），避免收整塌成单行；
      下内边距同基础规则必须为 0（防溢出内容下一行洇进 padding 露半行） */
