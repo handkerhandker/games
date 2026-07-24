@@ -150,6 +150,9 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 }
 .cb-head-title { color: var(--phos); font-size: var(--fs-md); }
 .cb-head-turn { color: var(--dim); font-size: var(--fs-sm); }
+/* 右侧组：回合计数 + 全局菜单齿轮（基类 .sc-gmenu-btn 在 screens.css，此处只负责行内对齐） */
+.cb-head-side { display: inline-flex; align-items: center; gap: var(--gap); }
+.cb-head-gmenu { align-self: center; }
 
 /* —— §7.1 舞台：终端网格 + 中心径向磷光微光；≤1023 堆叠两行（矮屏除外），≥1024/矮屏改对垒横排 —— */
 .cb-stage {
@@ -11875,7 +11878,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         "div",
         { class: "cb-head" },
         el("span", { class: "cb-head-title" }, `\u906D\u9047\u6218 // ${S().enemies.map((e) => e.name).join(" \xB7 ")}`),
-        el("span", { class: "cb-head-turn" }, `\u56DE\u5408 ${turn}`)
+        el(
+          "span",
+          { class: "cb-head-side" },
+          el("span", { class: "cb-head-turn" }, `\u56DE\u5408 ${turn}`),
+          gameMenuButton(ctx2, "cb-head-gmenu")
+        )
       ));
       const stage = el("div", { class: "cb-stage" });
       stageEl = stage;
