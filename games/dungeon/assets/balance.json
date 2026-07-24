@@ -1344,7 +1344,8 @@
       "slowmoScale": 0.3,
       "slowmoSeconds": 1.2,
       "whiteFlashMs": 200
-    }
+    },
+    "deprecated": true
   },
   "waves": [
     {
@@ -2641,7 +2642,7 @@
             {
               "time": 600,
               "type": "boss",
-              "enemy": "lich",
+              "enemy": "curator",
               "count": 1
             }
           ]
@@ -2719,13 +2720,6 @@
           "telegraph": "pageTurn ×3（每区 1 次，delay 0/0.15/0.30s）",
           "active": "mistRise ×1（激活瞬间）"
         }
-      },
-      "bossCopy": {
-        "banner": "巫妖·维萨里昂 自禁书库现身！",
-        "introNarration": "他是这里最后的读者，也是唯一的藏书。",
-        "preBanner585": "书页无风自翻……",
-        "victoryLine": "图书馆安静下来，烛火替魂火守夜。",
-        "note": "仅文案替换（boss.onSpawn.banner / 585 横幅 / 胜利结算行），Boss 数值/阶段/召唤池不动"
       },
       "audio": {
         "musicGameLibrary": {
@@ -3016,68 +3010,132 @@
       "capsNote": "全部派生量有上界，c>=18 后数值完全稳态，防溢出/防实体上限；maxAlive 触顶时 spawner 既有闸门暂停补刷，不超刷不排队"
     },
     "revenant": {
-      "name": "巫妖残影·维萨里昂",
-      "asset": "boss_lich",
-      "tint": "#9fd8ff",
-      "alpha": 0.9,
-      "scheduleFormula": "t = 600 + 180 * r（r = 1,2,3,...）",
-      "scheduleSeconds": [
-        780,
-        960,
-        1140,
-        1320,
-        1500
-      ],
-      "hpFormula": "hp(r) = 30000 * 1.5^(r-1)",
-      "hpBase": 30000,
-      "hpTable": [
-        {
-          "r": 1,
-          "t": 780,
-          "hp": 30000
+      "dungeon": {
+        "name": "巫妖残影·维萨里昂",
+        "asset": "boss_lich",
+        "tint": "#9fd8ff",
+        "alpha": 0.9,
+        "scheduleFormula": "t = 600 + 180 * r（r = 1,2,3,...）",
+        "scheduleSeconds": [
+          780,
+          960,
+          1140,
+          1320,
+          1500
+        ],
+        "hpFormula": "hp(r) = 30000 * 1.5^(r-1)",
+        "hpBase": 30000,
+        "hpTable": [
+          {
+            "r": 1,
+            "t": 780,
+            "hp": 30000
+          },
+          {
+            "r": 2,
+            "t": 960,
+            "hp": 45000
+          },
+          {
+            "r": 3,
+            "t": 1140,
+            "hp": 67500
+          },
+          {
+            "r": 4,
+            "t": 1320,
+            "hp": 101250
+          },
+          {
+            "r": 5,
+            "t": 1500,
+            "hp": 151875
+          }
+        ],
+        "onlyOneAlive": true,
+        "skipIfPreviousAlive": "上一只残影未击杀时到点跳过本次复活，不排队",
+        "ai": "复用 boss.ts 三阶段状态机（P1 弹幕+召唤 / P2 密弹幕+闪烁+怨灵 / P3 死亡螺旋+冲锋），3s intro + 10px 震屏 + 阶段红心掉落全部沿用",
+        "summonHpMul": "当前循环 scaling.hpMul（不再用本体战固定 2.5）",
+        "banner": "巫妖残影 再度凝聚（第 r 次）",
+        "whileAliveMaxAlive": 220,
+        "drops": {
+          "chest": 1,
+          "gemL": {
+            "count": 5,
+            "xpEach": 20
+          },
+          "shards": {
+            "count": 5,
+            "valueFormula": "10 + 2 * (r-1)",
+            "totalFormula": "50 + 10 * (r-1)",
+            "excludedFromEndlessMul": true
+          }
         },
-        {
-          "r": 2,
-          "t": 960,
-          "hp": 45000
-        },
-        {
-          "r": 3,
-          "t": 1140,
-          "hp": 67500
-        },
-        {
-          "r": 4,
-          "t": 1320,
-          "hp": 101250
-        },
-        {
-          "r": 5,
-          "t": 1500,
-          "hp": 151875
-        }
-      ],
-      "onlyOneAlive": true,
-      "skipIfPreviousAlive": "上一只残影未击杀时到点跳过本次复活，不排队",
-      "ai": "复用 boss.ts 三阶段状态机（P1 弹幕+召唤 / P2 密弹幕+闪烁+怨灵 / P3 死亡螺旋+冲锋），3s intro + 10px 震屏 + 阶段红心掉落全部沿用",
-      "summonHpMul": "当前循环 scaling.hpMul（不再用本体战固定 2.5）",
-      "banner": "巫妖残影 再度凝聚（第 r 次）",
-      "whileAliveMaxAlive": 220,
-      "drops": {
-        "chest": 1,
-        "gemL": {
-          "count": 5,
-          "xpEach": 20
-        },
-        "shards": {
-          "count": 5,
-          "valueFormula": "10 + 2 * (r-1)",
-          "totalFormula": "50 + 10 * (r-1)",
-          "excludedFromEndlessMul": true
-        }
+        "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true }；不触发 victory、不触发两选、不中断计时",
+        "hitStopMs": 150
       },
-      "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true }；不触发 victory、不触发两选、不中断计时",
-      "hitStopMs": 150
+      "library": {
+        "name": "大馆长残影·塞维鲁",
+        "asset": "boss_curator",
+        "tint": "#8fd8c8",
+        "alpha": 0.9,
+        "scheduleFormula": "t = 600 + 180 * r（r = 1,2,3,...），与巫妖残影一致",
+        "scheduleSeconds": [
+          780,
+          960,
+          1140,
+          1320,
+          1500
+        ],
+        "hpFormula": "hp(r) = 33000 * 1.5^(r-1)（= 2 × 馆长本体 16500，对标巫妖残影 2×15000）",
+        "hpBase": 33000,
+        "hpTable": [
+          {
+            "r": 1,
+            "t": 780,
+            "hp": 33000
+          },
+          {
+            "r": 2,
+            "t": 960,
+            "hp": 49500
+          },
+          {
+            "r": 3,
+            "t": 1140,
+            "hp": 74250
+          },
+          {
+            "r": 4,
+            "t": 1320,
+            "hp": 111375
+          },
+          {
+            "r": 5,
+            "t": 1500,
+            "hp": 167063
+          }
+        ],
+        "ai": "复用 boss.ts 三阶段状态机（馆长 P1 飞页连击+点录 / P2 留隙环+墨爆+抄经 / P3 终页风暴+巨典坠击+猎手），3s intro + 10px 震屏 + 阶段红心掉落全部沿用",
+        "summonHpMul": "当前循环 scaling.hpMul（同巫妖残影口径）",
+        "banner": "大馆长残影 再度开馆（第 {r} 次）",
+        "mechanicNote": "残影存活期间禁忌书页 zoneCount 适用 bossPhase=2（『Boss 战』语义扩展为任意 Boss 实体存活窗口，工程需求 #2）；墨爆在无尽期自然成立",
+        "drops": {
+          "chest": 1,
+          "gemL": {
+            "count": 5,
+            "xpEach": 20
+          },
+          "shards": {
+            "count": 5,
+            "valueFormula": "10 + 2 * (r-1)",
+            "totalFormula": "50 + 10 * (r-1)",
+            "excludedFromEndlessMul": true
+          }
+        },
+        "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true, id: 'curator' }；不触发 victory、不触发两选、不中断计时",
+        "hitStopMs": 150
+      }
     },
     "xpExtension": {
       "levelCap": {
@@ -3105,7 +3163,7 @@
         "45": 1796
       },
       "beyondTable": "cost(50) = 2893；45 级后按公式续推",
-      "levelupFallback": "31 级起装备全满时走既有兜底屏（治疗 30 HP / +50 经验 / 献祭跳过），不新增卡牌",
+      "levelupFallback": "31 级起装备全满时走既有兜底屏（治疗 30 HP / +50 经验 / 跳过），不新增卡牌",
       "xpMulChain": "经验乘区（学者魂匣×博学者、贤者颅骨）沿用 addXp 入口乘算，不改动",
       "gemMergeOverride": {
         "mergeThreshold": 28,
@@ -3214,5 +3272,971 @@
       },
       "conclusion": "稳态实体峰值 241–261 低于普通局 540s 已验证水位 280；全部派生量封顶，60 FPS 红线无新增风险点"
     }
+  },
+  "eventRules": {
+    "clock": "g.time.elapsed 战斗时钟（与 spawner/禁忌书页同钟）：暂停/升级屏/事件模态/Boss 演出期间全冻结，不推进调度与存活倒计时",
+    "standardSchedule": {
+      "attemptTimes": [
+        105,
+        225,
+        345,
+        465
+      ],
+      "jitterSeconds": 15,
+      "attemptChance": 0.85,
+      "perRunCap": 4,
+      "minSpacingSeconds": 60,
+      "eliteAvoidance": "抖动后 |t_spawn - t_elite| < 12s 时顺延至 t_elite + 15s；落点校验不过则作废本次尝试",
+      "bossSuppression": "t >= 545 的尝试作废；bossActive 期间禁止生成；Boss 出场演出开始瞬间场上未消费事件 1s 淡出回收"
+    },
+    "placement": {
+      "ringMin": 360,
+      "ringMax": 560,
+      "angle": "均匀随机",
+      "minDistToOtherEvent": 200,
+      "minDistToEliteOrBoss": 120,
+      "avoidActiveMistZones": "仅图书馆：不得落入禁忌书页预警中/激活中墨雾区（仅生成瞬间校验，生成后雾漫过来不回收）",
+      "maxRetries": 8,
+      "onFail": "重抽 8 次仍失败则本次尝试作废，不补刷"
+    },
+    "typeLottery": {
+      "noRepeatLastType": true,
+      "perRunTypeCaps": {
+        "event_sacrifice_altar": 2,
+        "event_cursed_chest": 2,
+        "event_wandering_peddler": 2,
+        "event_mystic_spring": 1
+      },
+      "mapWeights": {
+        "dungeon": {
+          "event_sacrifice_altar": 0.3,
+          "event_cursed_chest": 0.25,
+          "event_wandering_peddler": 0.25,
+          "event_mystic_spring": 0.2
+        },
+        "library": {
+          "event_sacrifice_altar": 0.25,
+          "event_cursed_chest": 0.3,
+          "event_wandering_peddler": 0.2,
+          "event_mystic_spring": 0.25
+        }
+      },
+      "mapWeightNote": "时刻表/上限/落点双地图一致，差异仅类型权重与图书馆墨雾落点校验"
+    },
+    "endlessConversion": {
+      "attemptPerCycle": 1,
+      "attemptTimeOffsetSeconds": 12,
+      "attemptChance": 0.5,
+      "perCycleCap": 1,
+      "typeCooldownCycles": {
+        "default": 2,
+        "event_mystic_spring": 3
+      },
+      "densityNote": "期望 ≈1 事件/120s，略稀于标准局 ≈1/109s：无尽期事件职能转为 XP 出口与续航，过密稀释循环难度压迫",
+      "merchantPricing": "同一公式 price = round(k × cost(L))；L>=31 自动接 xpExtension 续表 cost(L)=round(430×1.10^(L-30))，零特判",
+      "curseDuration": "120s 不折算（=2 个循环）",
+      "huntCount": "min(14, 6+floor(t/60)) 同一公式，t 为全局战斗时钟自然封顶 14",
+      "revenantSuppression": "残影存活期间禁止生成（等价 bossActive）"
+    },
+    "lifecycle": {
+      "despawnSeconds": 45,
+      "blinkLastSeconds": 8,
+      "consumeFadeSeconds": 0.5,
+      "bossRecallFadeSeconds": 1.0,
+      "singleUse": "每个事件实体消费一次即消耗（石坛选完/宝箱开完/商人关闭模态/泉水引导完成）",
+      "leaveIsFree": "驻留未完成或模态中点离开均不消耗事件，45s 内可折返",
+      "maxConcurrentOnField": 2
+    },
+    "antiFarm": {
+      "xpSpendFloor": "spendXp 不得低过当前等级已攒 0 点：不降级、不反向触发升级、不能买卖循环",
+      "noDrops": "事件实体自身不掉落碎片/宝石",
+      "huntBounded": "追猎波来源受诅咒宝箱类型上限封顶（标准局 ≤2 次、无尽 2 循环冷却），≤28 只/标准局 ≈40~80 XP，对经济体量可忽略",
+      "modalMutex": "全局限 1 个事件模态；与升级屏经 pendingLevels 互斥排队",
+      "noRerollNoSkip": "事件模态不支持重掷（reroll 作用域=levelupScreen）、无 skip 得碎片按钮；离开恒免费"
+    },
+    "interaction": {
+      "modalTrigger": "进入触发半径后驻留 dwellSeconds → 冻结模态（levelup.trigger 同款：0.3x 慢动作 200ms → 全冻结）",
+      "dwellSeconds": 0.6,
+      "modalFreeze": "冻结期间书页/波次/事件时钟/诅咒计时全部冻结",
+      "levelupQueue": "事件模态期间经验条满 → 升级屏排队，模态关闭后立即弹出（复用 pendingLevels）",
+      "hotkeys": "Digit1/2/3 选卡，Esc = 离开；鼠标/触屏点选；无倒计时",
+      "eventRadiusIsNotPickup": "事件触发半径与泉水引导半径为独立常量，不受 pickupRadius 任何加成影响"
+    },
+    "hud": {
+      "curseRow": "右上角击杀数下方新增诅咒图标行：24px 图标 + 剩余秒数环，最多 3 格（hunt 即时结算不占位）",
+      "worldLabel": "事件头顶 12px 名称标签常显 + 触发环 alpha 0.25 呼吸 0.8Hz",
+      "spawnFeedback": "生成时一行 toast（eventCommon.spawnToast）+ 短音效；不占精英/Boss 的 banner 字幕槽",
+      "libraryTint": "图书馆中事件触发环/底座光环色改用 palette.accentGlow（#66c2b0），纯渲染 tint 零新资产"
+    },
+    "scope": "全部事件状态为 run 作用域，局末清零，零存档 schema 变更"
+  },
+  "eventBuffRules": {
+    "zone": "eventBuff 为独立乘区（第 3 个身份乘区，与特性/角色乘区同构）：与被动加法区/祭坛/信物/特性/角色全部叠乘，不做加法合并；局内获取，run 结束清零",
+    "stacks": {
+      "damageMulPerStack": 1.07,
+      "moveSpeedMulPerStack": 1.05,
+      "xpMulPerStack": 1.08,
+      "maxStacksPerField": 2
+    },
+    "formulas": {
+      "speed": "speed = 180 × (1 + 0.07×被动swift级 + 0.03×祭坛swiftL) × 特性moveSpeedMul × 角色moveSpeedMul × eventBuff.moveSpeedMul",
+      "damage": "dmg = 武器等级dmg × (1 + 0.08×被动power级) × 特性damageMul × 角色damageMul × (family==\"ranged\" ? 角色projectileDmgMul : 1) × eventBuff.damageMul",
+      "xp": "xp = 基础经验 × (1 + 0.06×被动wisdom级) × (1 + 0.04×祭坛scholarL) × 特性xpMul × 角色xpMul × eventBuff.xpMul"
+    }
+  },
+  "events": [
+    {
+      "id": "event_sacrifice_altar",
+      "name": "献祭石坛",
+      "asset": "event_sacrifice_altar",
+      "triggerRadius": 56,
+      "interaction": "dwell_modal",
+      "modal": {
+        "cards": 3,
+        "leaveButton": true,
+        "sharedCost": {
+          "type": "maxHpPct",
+          "value": 0.2,
+          "floor": "round 向下取整；当前 HP <= 成本时该石坛全部卡片置灰（costLocked），保证扣后 >= 1 HP，永不致死、永不触发不灭魂火",
+          "channel": "damagePlayerDot 同通道：绕过无敌帧、不触发 hitStop/震屏/受击音；emit playerDamaged{source:'sacrificeAltar'}（minPlayerHp 成就指标照常记账）"
+        },
+        "options": [
+          {
+            "id": "blood_power",
+            "tag": "献祭",
+            "effect": {
+              "eventBuff": "damageMul"
+            },
+            "desc": "全武器伤害 ×1.07（永久，本局）"
+          },
+          {
+            "id": "blood_swift",
+            "tag": "献祭",
+            "effect": {
+              "eventBuff": "moveSpeedMul"
+            },
+            "desc": "移动速度 ×1.05（永久，本局）"
+          },
+          {
+            "id": "blood_wisdom",
+            "tag": "献祭",
+            "effect": {
+              "eventBuff": "xpMul"
+            },
+            "desc": "经验获取 ×1.08（永久，本局）"
+          }
+        ]
+      },
+      "activationParticles": 20,
+      "note": "局内献祭换局内强化；不卖进化/新装备/装备等级，单项增益 ≤1.4 次三选一等价——D-007 延伸到局内的执行件"
+    },
+    {
+      "id": "event_cursed_chest",
+      "name": "诅咒宝箱",
+      "asset": "event_cursed_chest",
+      "triggerRadius": 56,
+      "interaction": "dwell_modal",
+      "modal": {
+        "cards": 1,
+        "leaveButton": true,
+        "disclosure": "开箱卡上完整公示：获得内容 + 本次所附诅咒全文与时长（生成事件时即抽定诅咒，先知情后决策）",
+        "open": {
+          "reward": "随机 1 件已拥有未满级装备 +2 级（武器/被动均等权；不超 maxLevel/5 级；仅差 1 级满时溢出 1 级顺延另 1 件随机已拥有装备；全部满级/已进化 → 3 颗大宝石 20 XP×3 兜底）",
+          "curseDraw": "从 curses 池按权重抽 1 条，开箱瞬间生效",
+          "emit": "eventChestOpened（不 emit chestOpened，不吃 altar_luck.chestThirdItemChance）"
+        }
+      },
+      "activationParticles": 15,
+      "notDropsChest": "本事件不是 drops.chest 语义下的宝箱：精英/Boss 的 pickup_chest 即拾即开纯奖励规则零变更",
+      "note": "高风险高回报：毛收益 2.0 次三选一等价（=上限），诅咒成本 ≈0.9~1.1 次等价；可绕开（走开零成本）但诱人（收益封顶档）"
+    },
+    {
+      "id": "event_wandering_peddler",
+      "name": "游荡商人",
+      "asset": "event_wandering_peddler",
+      "triggerRadius": 56,
+      "interaction": "dwell_modal",
+      "modal": {
+        "cards": 3,
+        "leaveButton": true,
+        "buyLimitPerVisit": 2,
+        "soldOutRule": "买满 2 件后第 3 件置灰「已售罄」；关闭模态即消费事件，不可反复进出",
+        "insufficientXp": "XP 不足的商品卡置灰并显示差额",
+        "currency": "xp",
+        "pricingFormula": "price = round(k × cost(当前等级))；cost 查 xpCurve.table，L>=31 接 endless.xpExtension 续表公式",
+        "spendRule": "spendXp(amount)：从经验条当前进度扣减，不低于本等级 0 点地板",
+        "wares": [
+          {
+            "id": "ware_equip_level",
+            "name": "强化符",
+            "k": 0.6,
+            "effect": "随机 1 件已拥有未满级装备 +1 级（全满 → 2 颗大宝石兜底）",
+            "priceExamples": {
+              "L7": 28,
+              "L12": 59,
+              "L20": 133,
+              "L35": 416
+            }
+          },
+          {
+            "id": "ware_heal",
+            "name": "血瓶",
+            "k": 0.18,
+            "effect": "立即恢复 40 HP（不超上限）",
+            "priceExamples": {
+              "L7": 8,
+              "L12": 18,
+              "L20": 40,
+              "L35": 125
+            }
+          },
+          {
+            "id": "ware_magnet",
+            "name": "引魂铃",
+            "k": 0.12,
+            "effect": "触发一次磁铁效果（吸取全屏宝石，同 pickup_magnet）",
+            "priceExamples": {
+              "L7": 6,
+              "L12": 12,
+              "L20": 27,
+              "L35": 83
+            }
+          }
+        ]
+      },
+      "activationParticles": 10,
+      "currencyVerdict": "交易媒介=经验值：唯一持续流入的局内液体资源；HP 已被石坛母题占用；武器等级牵涉进化/成就/结算台账被否决（spec §5）",
+      "note": "单次访问毛收益 ≤1.3 次三选一等价、净 ≤+0.6 次；强化符比升级屏便宜 40% 的代价是随机装备且无进化保底"
+    },
+    {
+      "id": "event_mystic_spring",
+      "name": "神秘泉水",
+      "asset": "event_mystic_spring",
+      "triggerRadius": 96,
+      "interaction": "channel",
+      "channel": {
+        "seconds": 3.0,
+        "freeze": false,
+        "progressRule": "驻留满 3.0s 一次性结算；离开半径进度清零不保留；引导期间战场照常推进（含墨雾 DoT 不豁免）",
+        "reward": {
+          "healMaxHpPct": 0.25,
+          "cleanseCurses": "洗净全部限时诅咒（curse_weak/hunger/rust；hunt 为即时结算无可洗）"
+        }
+      },
+      "activationParticles": 12,
+      "channelParticlesPerSecond": 4,
+      "note": "唯一不冻结战场的事件：收益 ≈0.4 次三选一等价 + 诅咒生态对冲出口；单局上限 1、无尽 3 循环冷却"
+    }
+  ],
+  "curses": [
+    {
+      "id": "curse_weak",
+      "name": "虚弱诅咒",
+      "weight": 0.3,
+      "durationSeconds": 120,
+      "effect": {
+        "curseDamageTakenMul": 1.2
+      },
+      "zone": "独立乘区：与守护印记加法区结算后叠乘",
+      "icon": "curse_icon_weak",
+      "costEstimate": "理论稳态增伤 ≈0.2×2.7DPS×120s≈65 HP（6 分钟档），可走位规避"
+    },
+    {
+      "id": "curse_hunger",
+      "name": "饥渴诅咒",
+      "weight": 0.25,
+      "durationSeconds": 120,
+      "effect": {
+        "curseXpMul": 0.75
+      },
+      "zone": "addXp 入口乘算（与 eventBuff.xpMul 同点位）",
+      "icon": "curse_icon_hunger",
+      "costEstimate": "≈0.25×2.2 次/min×2min ≈ 1.1 次三选一等价"
+    },
+    {
+      "id": "curse_rust",
+      "name": "锈蚀诅咒",
+      "weight": 0.25,
+      "durationSeconds": 120,
+      "effect": {
+        "curseCooldownMul": 1.1
+      },
+      "zone": "独立乘区：与被动 haste 加法区/信物/角色冷却区结算后叠乘",
+      "icon": "curse_icon_rust",
+      "costEstimate": "≈-9.1% 输出 120s ≈ 0.9 次三选一等价"
+    },
+    {
+      "id": "curse_hunt",
+      "name": "追猎诅咒",
+      "weight": 0.2,
+      "durationSeconds": 0,
+      "effect": {
+        "spawnWave": {
+          "countFormula": "min(14, 6 + floor(t/60))",
+          "ringRadius": 320,
+          "weightsSource": "当前波次 weights（无尽期 endless.weights）",
+          "tricklePerSecond": 2,
+          "gate": "经 spawner 既有闸门：countEnemies >= maxAlive 时多余丢弃不排队"
+        }
+      },
+      "icon": "curse_icon_hunt",
+      "costEstimate": "即时压力波，无持续账面成本"
+    }
+  ],
+  "curseRules": {
+    "sameNameRefresh": "同名诅咒重复获得刷新剩余时长",
+    "coexistCap": "异名限时诅咒并存，并发上限 3（hunt 即时结算不占位）",
+    "cleanse": "仅神秘泉水可提前洗净（全部限时诅咒一次洗净）；其余情况只能等时长耗尽",
+    "runScoped": "诅咒随 run 结束清零，不进结算统计、不落盘"
+  },
+  "copyKeys": {
+    "eventCommon": [
+      "spawnToast",
+      "leave",
+      "costLocked",
+      "xpShort",
+      "soldOut"
+    ],
+    "eventSacrificeAltar": [
+      "title",
+      "flavor",
+      "options[3].{name,desc}",
+      "consumeToast"
+    ],
+    "eventCursedChest": [
+      "title",
+      "flavor",
+      "optionOpen",
+      "curseLine"
+    ],
+    "eventPeddler": [
+      "title",
+      "flavor",
+      "wares[3].{name,desc}",
+      "buyLimitToast"
+    ],
+    "eventMysticSpring": [
+      "title",
+      "flavor",
+      "channelHint",
+      "doneToast"
+    ],
+    "curseHud": [
+      "weak.{name,desc}",
+      "hunger.{name,desc}",
+      "rust.{name,desc}",
+      "hunt.{name,desc}"
+    ],
+    "note": "键名定死；终稿文案归 Wave2 文案师（copy-v15.json），基调暗色奇幻凝练不说教，flavor <=15 字（copydeck/research-vs 货架位叙事法）"
+  },
+  "bosses": [
+    {
+      "id": "curator",
+      "name": "大馆长·塞维鲁",
+      "title": "最后的读者",
+      "asset": "boss_curator",
+      "themeColor": "#66c2b0",
+      "hp": 16500,
+      "speed": 30,
+      "dmg": 25,
+      "xp": 100,
+      "radius": 38,
+      "mass": 0.0,
+      "spawnTime": 600,
+      "introSeconds": 3.0,
+      "maps": [
+        "library"
+      ],
+      "drops": [
+        "pickup_chest",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l"
+      ],
+      "shardDrops": {
+        "count": 5,
+        "totalValueFormula": "50 + 3 * 祭坛bossShard等级",
+        "scatterRingRadiusPx": 60,
+        "note": "复用 boss 自管掉落路径，与巫妖逐字段一致（meta-data shards.drops.boss）"
+      },
+      "phaseDrops": [
+        {
+          "phase": 2,
+          "drop": "pickup_heart"
+        },
+        {
+          "phase": 3,
+          "drop": "pickup_heart"
+        }
+      ],
+      "onSpawn": {
+        "regularSpawnIntervalMul": 2.0,
+        "maxAlive": 120,
+        "weights": {
+          "skeleton": 0.4,
+          "cultist": 0.4,
+          "ghost": 0.2
+        },
+        "banner": "大馆长·塞维鲁 为你闭馆。",
+        "shakeAmp": 10,
+        "shakeTauMs": 120
+      },
+      "movement": {
+        "type": "kiteDrift",
+        "keepMinRange": 280,
+        "keepMaxRange": 360,
+        "strafeSpeed": 30,
+        "strafeFlipSeconds": [
+          4.0,
+          7.0
+        ],
+        "note": "与玩家保持 280~360px 环带：径向出带以阶段 speed 修正，带内切向绕行并每 4~7s 随机换向；与巫妖 chase 对偶，Boss 不主动贴脸"
+      },
+      "phases": [
+        {
+          "phase": 1,
+          "hpRange": [
+            1.0,
+            0.7
+          ],
+          "speed": 30,
+          "attacks": [
+            {
+              "id": "pageVolley",
+              "type": "aimedFanVolley",
+              "name": "飞页连击",
+              "interval": 3.4,
+              "telegraphSeconds": 0.4,
+              "bursts": 3,
+              "burstGapSeconds": 0.28,
+              "boltsPerBurst": 5,
+              "fanDeg": 24,
+              "aim": "player",
+              "boltDmg": 10,
+              "boltSpeed": 240,
+              "boltAsset": "proj_page",
+              "note": "3 连发各自重新瞄准玩家当时位置；横向持续走位恒有解（spec §2.3）"
+            },
+            {
+              "id": "summonClerk",
+              "type": "summon",
+              "name": "点录侍从",
+              "interval": 9.0,
+              "enemy": "skeleton",
+              "count": 3,
+              "ringRadius": 160,
+              "addsCap": 8,
+              "note": "召唤物 HP 走 maps[1] 600s 行 hpMul 2.5"
+            }
+          ],
+          "movement": "kiteDrift"
+        },
+        {
+          "phase": 2,
+          "hpRange": [
+            0.7,
+            0.35
+          ],
+          "speed": 38,
+          "attacks": [
+            {
+              "id": "ringWithGap",
+              "type": "ringWithGap",
+              "name": "环页·留隙",
+              "interval": 4.6,
+              "telegraphSeconds": 0.5,
+              "boltCount": 18,
+              "gapDeg": 70,
+              "gapAim": "random",
+              "boltDmg": 11,
+              "boltSpeed": 230,
+              "boltAsset": "proj_page",
+              "note": "360° 均布留 70° 随机缺口；缺口=环周 19.4% 完全无弹，读缺口站位"
+            },
+            {
+              "id": "inkDetonate",
+              "type": "inkDetonate",
+              "name": "墨爆",
+              "interval": 12.0,
+              "telegraphSeconds": 1.2,
+              "zoneDmg": 18,
+              "zoneRadius": 150,
+              "boltsPerZone": 8,
+              "boltDmg": 10,
+              "boltSpeed": 200,
+              "boltAsset": "proj_page",
+              "consumeZone": "引爆的禁忌书页雾区立即进入 fade（1.0s 消散），当轮不恢复",
+              "fallback": {
+                "id": "remnantInk",
+                "name": "余墨",
+                "trigger": "释放时场上无活跃禁忌书页雾区",
+                "placement": "玩家当前位置（telegraph 开始时刻锁定，不追踪）",
+                "radius": 110,
+                "telegraphSeconds": 1.2,
+                "activeSeconds": 6.0,
+                "dot": {
+                  "tickSeconds": 0.5,
+                  "pctMaxHpPerTick": 0.01,
+                  "channel": "dotBypassInvuln",
+                  "source": "curatorInk"
+                },
+                "enemySpeedMul": 1.0,
+                "note": "玩家侧规则与 forbiddenPages.playerEffect 逐字段一致；不触发敌人侧提速"
+              },
+              "note": "禁忌书页联动技（spec §3）：引爆全部活跃雾区，每区半径 150 内 18 伤害 + 8 弹墨渍径向；无雾区时退化为余墨区，技能永不空转"
+            },
+            {
+              "id": "summonScribe",
+              "type": "summon",
+              "name": "抄经信徒",
+              "interval": 10.0,
+              "enemy": "cultist",
+              "count": 2,
+              "ringRadius": 200,
+              "addsCap": 6
+            }
+          ],
+          "movement": "kiteDrift"
+        },
+        {
+          "phase": 3,
+          "hpRange": [
+            0.35,
+            0.0
+          ],
+          "speed": 46,
+          "attacks": [
+            {
+              "id": "finalStorm",
+              "type": "aimedFanVolley",
+              "name": "终页风暴",
+              "interval": 0.9,
+              "telegraphSeconds": 0.0,
+              "bursts": 3,
+              "burstGapSeconds": 0.12,
+              "boltsPerBurst": 3,
+              "fanDeg": 20,
+              "aim": "player",
+              "boltDmg": 12,
+              "boltSpeed": 270,
+              "boltAsset": "proj_page",
+              "note": "高频小扇形持续压迫；与巨典坠击同参考系，横移一个动作同解两者（spec §2.3）"
+            },
+            {
+              "id": "tomeSlam",
+              "type": "tomeSlam",
+              "name": "巨典坠击",
+              "interval": 6.5,
+              "telegraphSeconds": 1.0,
+              "lockOn": "telegraphStart",
+              "radius": 110,
+              "dmg": 26,
+              "shake": {
+                "amp": 4,
+                "tauMs": 70
+              },
+              "fx": "fx_explosion",
+              "note": "锁定 telegraph 开始时刻玩家位置，地面墨纹预警圈程序绘制；落击震屏复用 judgementCast 档"
+            },
+            {
+              "id": "summonHunter",
+              "type": "summon",
+              "name": "放页猎手",
+              "interval": 8.0,
+              "enemy": "spider",
+              "count": 2,
+              "ringRadius": 250,
+              "addsCap": 6
+            }
+          ],
+          "movement": "kiteDrift"
+        }
+      ],
+      "phaseTransition": {
+        "hitStopMs": 150,
+        "particles": 60,
+        "subtitleSeconds": 1.5,
+        "note": "与巫妖阶段切换演出逐字段一致（feel.hitStop.bossPhaseMs / feel.particles.bossPhase）"
+      },
+      "deathSequence": {
+        "duration": 1.5,
+        "explosions": 3,
+        "explosionGapSeconds": 0.4,
+        "slowmoScale": 0.3,
+        "slowmoSeconds": 1.2,
+        "whiteFlashMs": 200,
+        "hitStopMs": 400,
+        "particles": 120,
+        "particleTheme": "书页碎屑 + 青墨灵魂雾（复用 feel.particles 参数与 gravity.soul -40 上浮）",
+        "note": "数值与巫妖 deathSequence + feel.hitStop.bossDeathMs 逐字段一致，仅粒子配色主题差异"
+      },
+      "onKill": "emit bossKilled（payload 含 id:'curator'，与 revenant 标记并列）；触发 endless 远征两选，语义与巫妖一致"
+    }
+  ],
+  "synergies": [
+    {
+      "id": "steamBurst",
+      "name": "蒸汽爆裂",
+      "pair": [
+        "ice",
+        "fireball"
+      ],
+      "pairFamilies": [
+        "ranged",
+        "ranged"
+      ],
+      "conditionText": "冰锥术 Lv5 或绝对零度 + 火球术 Lv5 或陨星术",
+      "effect": {
+        "type": "onHitBurst",
+        "host": "fireball",
+        "stateSource": "ice",
+        "stateRequired": [
+          "slowed",
+          "frozen"
+        ],
+        "dmgPctOfHostPanel": 0.35,
+        "radius": 60,
+        "perCastCap": 2,
+        "perEnemyIcdSeconds": 0.5,
+        "globalMinIntervalSeconds": 0.2,
+        "targetRule": "每次火系武器开火周期内，前 2 个受到火系伤害且处于减速/冻结的敌人（用伤害事件序替代命中判定：火球无 pierce、陨星无弹道，见 spec §12 备注#5）",
+        "family": "ranged",
+        "damageSource": "steamBurst",
+        "knockback": 0,
+        "damageNumber": {
+          "mergeWithHost": true,
+          "color": "#66d9e8"
+        },
+        "particles": {
+          "asset": "fx_steam_burst",
+          "count": 8,
+          "lifeMs": [
+            300,
+            500
+          ],
+          "style": "白雾团，fireballExplosion 烟雾通道改青灰"
+        },
+        "settleTiming": "火系伤害结算同帧追加，范围判定以被引爆敌人为圆心"
+      },
+      "effectText": "火系武器每次开火，前 2 个命中正处于减速/冻结的敌人时引爆蒸汽：以其为圆心半径 60 范围追加该火系面板 35% 的伤害。",
+      "flavor": "冰火相逢处，白雾起杀心。",
+      "estGain": "≈+29 DPS（双 L5，≈7%）/ ≈+64 DPS（含陨星，≈10~12%）；口径 synergy-spec §9"
+    },
+    {
+      "id": "sanctifiedStorm",
+      "name": "圣雷共鸣",
+      "pair": [
+        "holyNova",
+        "lightning"
+      ],
+      "pairFamilies": [
+        "melee",
+        "ranged"
+      ],
+      "conditionText": "神圣新星 Lv5 或圣光审判 + 闪电链 Lv5 或雷域风暴",
+      "effect": {
+        "type": "markAmp",
+        "markSource": "holyNova",
+        "mark": {
+          "flag": "shock",
+          "durationSeconds": 1.5,
+          "refresh": true,
+          "appliesToEliteBoss": true,
+          "feedback": "敌人体表 2px 电弧贴花（程序绘制，不占粒子池，同减速 tint 路径）"
+        },
+        "amp": {
+          "target": "lightning",
+          "damageMul": 1.2,
+          "chainPreferMarked": true,
+          "chainRangeMulVsMarked": 1.4
+        },
+        "family": "ranged",
+        "damageSource": "lightning",
+        "newDamageInstance": false,
+        "settleTiming": "闪电伤害结算时按目标标记实时判定；标记在新星/审判命中同帧刷新"
+      },
+      "effectText": "新星/审判命中的敌人感电 1.5s：闪电系对其伤害 ×1.20，链跳优先跳向感电敌人（对感电目标的检索范围 ×1.4）。",
+      "flavor": "圣光所指，雷霆随行。",
+      "estGain": "≈+20 DPS（双 L5，≈5%）/ ≈+69 DPS（雷域清群，≈12%）/ Boss ≈+5%"
+    },
+    {
+      "id": "bladeDance",
+      "name": "刃舞狂潮",
+      "pair": [
+        "dagger",
+        "boomerang"
+      ],
+      "pairFamilies": [
+        "melee",
+        "melee"
+      ],
+      "conditionText": "疾风飞刀 Lv5 或千刃风暴 + 回旋骨刃 Lv5 或风暴环刃",
+      "effect": {
+        "type": "counterRing",
+        "counterSources": [
+          "dagger",
+          "boomerang"
+        ],
+        "hitsRequired": 18,
+        "icdSeconds": 0.8,
+        "icdRule": "触发后清零计数；ICD 期间暂停计数（硬封顶，防千刃期命中爆炸）",
+        "ring": {
+          "count": 4,
+          "dmg": 9,
+          "pierce": 1,
+          "projectileSpeed": 600,
+          "lifeSeconds": 0.5,
+          "knockback": 40,
+          "fanAngleDeg": 90,
+          "asset": "proj_dagger",
+          "scaleMul": 0.8,
+          "tint": "#66d9e8",
+          "trail": "拖尾 2 粒/柄（trailSpark 型）"
+        },
+        "family": "melee",
+        "damageSource": "bladeDance",
+        "damageNumber": {
+          "mergeWithHost": false,
+          "color": "#66d9e8"
+        },
+        "settleTiming": "计数满 18 且距上次刃环 ≥0.8s 的命中帧立即触发，向移动方向 ±45° 扇形泼出"
+      },
+      "effectText": "飞刀与回旋刃每命中 18 次，向移动方向 ±45° 泼出 4 柄回旋飞刃（各 9 伤害、穿透 1；触发间隔 ≥0.8s）。",
+      "flavor": "双刃同拍，刀雨成潮。",
+      "estGain": "≈+39 DPS（双 L5，≈10%）/ ≈+58 DPS（双进化被 ICD 封顶，≈9~11%）"
+    },
+    {
+      "id": "huntingGround",
+      "name": "猎场牧歌",
+      "pair": [
+        "familiar",
+        "holyWater"
+      ],
+      "pairFamilies": [
+        "ranged",
+        "ranged"
+      ],
+      "conditionText": "暗影魔宠 Lv5 或深渊巨口 + 驱邪圣水 Lv5 或永燃圣域",
+      "effect": {
+        "type": "zoneAmp",
+        "zoneSource": "holyWater",
+        "zoneDef": "任一活跃圣水/圣域区（读取 zones 只读列表，每帧 ≤4 区线性查）",
+        "ampTarget": "familiar",
+        "damageMulVsZoned": 1.25,
+        "moveSpeedMulInZone": 1.15,
+        "lingerSeconds": 0.5,
+        "stackWithSanctum": "与 sanctum vulnerabilityPct 0.15 叠乘（目标侧易伤取最高规则不变）",
+        "family": "ranged",
+        "damageSource": "familiar",
+        "newDamageInstance": false,
+        "feedback": "域内魔宠 2px 青色描边（#66d9e8，复用特性描边路径）",
+        "settleTiming": "魔宠攻击命中判定帧读取目标是否在区内；移速按魔宠位置每帧判定，离场 0.5s 后失效"
+      },
+      "effectText": "魔宠攻击位于圣水/圣域区内的敌人时伤害 ×1.25；魔宠处于区内时移速 ×1.15（离场 0.5s 后失效）。",
+      "flavor": "圣水画圈，它替你放牧。",
+      "estGain": "≈+10 DPS（≈2.5%）/ ≈+20 DPS（≈4~6%，提速隐性收益折算后 ≤8%）"
+    },
+    {
+      "id": "wardingVolley",
+      "name": "驱魔齐射",
+      "pair": [
+        "magicBolt",
+        "holyNova"
+      ],
+      "pairFamilies": [
+        "ranged",
+        "melee"
+      ],
+      "conditionText": "魔法飞弹 Lv5 或三相魔弹 + 神圣新星 Lv5 或圣光审判",
+      "effect": {
+        "type": "castVolley",
+        "triggerCast": "holyNova",
+        "volley": {
+          "source": "magicBolt",
+          "countFrom": "hostCurrentCount",
+          "dmgPctOfHostPanel": 0.75,
+          "inherit": [
+            "projectileSpeed",
+            "pierce",
+            "knockback",
+            "targeting"
+          ],
+          "targetRule": "最近敌人；目标不足 count 时向同一目标扇形连发（同 triBolt 规则）",
+          "asset": "proj_magicbolt",
+          "cooldownNote": "不占飞弹自身冷却"
+        },
+        "family": "ranged",
+        "damageSource": "wardingVolley",
+        "damageNumber": {
+          "mergeWithHost": true,
+          "color": "#66d9e8"
+        },
+        "settleTiming": "新星/审判施放同帧补发"
+      },
+      "effectText": "新星/审判每次施放，立即向最近敌人补发一轮飞弹（数量同当前飞弹，单发伤害为飞弹面板 75%）。",
+      "flavor": "新星一亮，飞弹齐答。",
+      "estGain": "≈+25 DPS（双 L5，≈6%）/ ≈+48 DPS（三相+审判，≈8~9%）"
+    },
+    {
+      "id": "superconductor",
+      "name": "霜狱超导",
+      "pair": [
+        "lightning",
+        "ice"
+      ],
+      "pairFamilies": [
+        "ranged",
+        "ranged"
+      ],
+      "conditionText": "闪电链 Lv5 或雷域风暴 + 冰锥术 Lv5 或绝对零度",
+      "effect": {
+        "type": "controlAmp",
+        "stateSource": "ice",
+        "stateRequired": [
+          "slowed",
+          "frozen"
+        ],
+        "ampTarget": "lightning",
+        "damageMul": 1.25,
+        "freezeExtendSeconds": 0.2,
+        "freezeExtendExcludes": [
+          "elite",
+          "boss"
+        ],
+        "family": "ranged",
+        "damageSource": "lightning",
+        "newDamageInstance": false,
+        "settleTiming": "闪电伤害结算时按目标受控状态实时判定；冻结延长在命中同帧应用"
+      },
+      "effectText": "闪电系命中减速/冻结的敌人时伤害 ×1.25；命中被冻结的敌人时冻结延长 0.2s（对精英与 Boss 无效）。",
+      "flavor": "冻住的，更好导电。",
+      "estGain": "≈+22 DPS（双 L5，≈5.5%）/ ≈+50 DPS（雷域+绝对零度，≈7~9%，落雷随机索敌按冰锥覆盖 40% 打折）"
+    },
+    {
+      "id": "moltenChakram",
+      "name": "熔火环刃",
+      "pair": [
+        "boomerang",
+        "fireball"
+      ],
+      "pairFamilies": [
+        "melee",
+        "ranged"
+      ],
+      "conditionText": "回旋骨刃 Lv5 或风暴环刃 + 火球术 Lv5 或陨星术",
+      "effect": {
+        "type": "zoneEnchant",
+        "carrier": "boomerang",
+        "zoneSource": "fireball",
+        "zoneDef": "火球爆炸 AoE（爆炸后 0.35s 判定窗）+ 陨星燃烧区（3s）",
+        "enchant": {
+          "duration": "本趟往返（回程结束即失效）",
+          "hitDamageMul": 1.15,
+          "burnDps": 6,
+          "burnDurationSeconds": 2.0,
+          "burnStack": "刷新不叠加；与陨星燃烧区 DoT 独立并存"
+        },
+        "family": "melee",
+        "damageSource": "boomerang",
+        "newDamageInstance": false,
+        "feedback": "附火刃体拖尾 2 粒/帧（trailSpark 型，橙红）",
+        "settleTiming": "每帧检测刃体中心是否在任一活跃火区内，进入即附魔至本趟结束；命中帧应用增伤与燃烧"
+      },
+      "effectText": "回旋刃/环刃穿过火焰区域后燃起熔火附魔：本趟命中伤害 ×1.15 并附加燃烧（6 DPS ×2s，刷新不叠加）。",
+      "flavor": "穿过火的刃，带着火回来。",
+      "estGain": "≈+28 DPS（≈7%）/ ≈+40 DPS（≈7%，附魔覆盖率按 50% 打折）"
+    },
+    {
+      "id": "packHunt",
+      "name": "群猎号令",
+      "pair": [
+        "dagger",
+        "familiar"
+      ],
+      "pairFamilies": [
+        "melee",
+        "ranged"
+      ],
+      "conditionText": "疾风飞刀 Lv5 或千刃风暴 + 暗影魔宠 Lv5 或深渊巨口",
+      "effect": {
+        "type": "huntMark",
+        "markSource": "dagger",
+        "mark": {
+          "flag": "hunt",
+          "durationSeconds": 2.0,
+          "maxMarks": 3,
+          "evictRule": "新标顶替最旧",
+          "appliesToEliteBoss": true,
+          "feedback": "目标头顶 12px 猎人三角（程序绘制，icon_synergy_link 同色）"
+        },
+        "ampTarget": "familiar",
+        "damageMulVsMarked": 1.2,
+        "priority": "魔宠/巨口索敌优先猎标（多标取最近；覆盖 abyssMaw 的 preferTarget=strongest）",
+        "family": "ranged",
+        "damageSource": "familiar",
+        "newDamageInstance": false,
+        "settleTiming": "飞刀/千刃命中同帧上标；魔宠每次索敌 tick 读取标表"
+      },
+      "effectText": "飞刀/千刃命中的敌人挂上 2s 猎标（至多 3 个）：魔宠优先扑咬猎标且对其伤害 ×1.20。",
+      "flavor": "刀指之处，它必扑咬。",
+      "estGain": "≈+10 DPS（≈2.5%）/ ≈+16 DPS（≈3~4%，集火价值不折算，留安全边际）"
+    }
+  ],
+  "synergyRules": {
+    "matureDef": "武器成熟 = 持有其 Lv5 基础形态，或持有其进化形态（进化形态恒成熟）。pair 按族系根 id 判定：进化后连携不失效，效果数值自动改读进化面板",
+    "conditionModel": "同局同时持有 pair 两件武器且均成熟 → 下一条件 tick 自动激活：不占升级选项位、不要求/消耗任何被动、不替换武器、永久生效",
+    "tickSeconds": 0.5,
+    "seats": {
+      "max": 2,
+      "order": "按条件满足的 tick 顺序先到先得；同帧多条满足（如宝箱同时升 2 件）→ 按 synergies[] 数组序裁决（确定性，无随机）",
+      "overflow": "第 3 条起条件满足但席位已满 → 蛰伏（dormant）：效果不生效、武器栏灰链角标、一次性 toast；席位永不释放、不提供局中换席",
+      "rationale": "8 条配对图在 6 武器槽下数学上最多可同时满足 5 条（{新星,闪电,冰,火,回旋刃,飞刀}→S1/S2/S3/S6/S7），天然限制不成立，必须规则封顶；无尽模式升级无限同理"
+    },
+    "discovery": "连携条件首次满足即点亮图鉴（无论激活或蛰伏），持久化 codex.synergiesDiscovered，immediate 写入",
+    "evolutionRelation": "正交对照：进化=武器 Lv5+配对被动→占 1 选项位、替换武器；连携=双武器成熟→自动、保留双武器、与被动无关。点进化对连携永远正收益",
+    "stackingOrder": [
+      "1 武器面板（等级/进化 stats；信物字段修正 appliesTo 直改面板）",
+      "2 被动加法区（×(1+0.08×power级) 等）",
+      "3 特性乘区（trait damageMul）",
+      "4 角色乘区（character damageMul / projectileDmgMul，family=='ranged' 判定）",
+      "5 连携乘区（多条作用于同一伤害时互相叠乘，如 S2×S6 同劈一道闪电=×1.20×1.25=×1.50）",
+      "6 目标侧易伤（sanctum vulnerabilityPct 取最高不叠加，既有规则）",
+      "7 暴击 ×2（crit 加法区判定，既有规则）"
+    ],
+    "extraEffectRule": "连携额外效果伤害（S1 蒸汽/S3 刃环/S5 齐射）以宿主面板×系数起算，吃被动/特性/角色/易伤/暴击全额修正，但跳过连携乘区（防循环放大）；family 继承宿主（蒸汽/齐射=ranged，刃环=melee），狂战士 projectileDmgMul 照常作用于 ranged 额外效果",
+    "cooldownRule": "本包 8 条连携零冷却修正（刻意）：冷却管线 cd=面板×(1−0.06×haste级)×信物×角色 完全不动",
+    "bossRule": "标记类（S2 感电/S8 猎标）对精英/Boss 生效；受控类（减速/冻结）按现有控制规则不扩张；S6 冻结延长对精英/Boss 无效；现有数据未声明 Boss 控制免疫清单（spec §12 备注#1），按不扩张保守实现",
+    "chestNote": "宝箱随机升级可使武器跨越 Lv5 瞬间成熟并触发连携（可同帧完成两对→数组序裁决），属设计内正向惊喜，备案",
+    "damageNumberColor": "#66d9e8",
+    "damageSourceRule": "S1/S3/S5 记连携 id（结算墙伤害构成自动分行，备案#1 同族扩展）；S2/S4/S6/S7/S8 为增益型，来源仍记宿主武器 id",
+    "awakenFx": {
+      "bannerSeconds": 1.2,
+      "bannerTiming": "渐显 0.2/停留 0.8/渐隐 0.2",
+      "particles": 8,
+      "hitStop": "无（刻意：觉醒是常驻增益开幕，§11 打击感预算零占用）",
+      "screenShake": "无",
+      "sfx": "synergyAwaken"
+    },
+    "ui": {
+      "weaponBarBadge": "武器图标右上角 12×12 链环角标（icon_synergy_link）：候选=灰链 40%alpha；在即=金链 0.8Hz 脉动；已激活=金链常驻；蛰伏=灰链+斜杠；缺图走几何兜底（两相扣圆环程序绘制）",
+      "levelupCard": "选项使武器首次成熟且配对武器已成熟在手→金链徽记+卡底小字「集齐：{连携名}」；新武器选项且配对武器已成熟→灰链徽记+「连携候选：{连携名}」；仅叠加徽记/小字层，卡面结构与 levelup.weights 零改动",
+      "toasts": {
+        "awaken": "连携觉醒：{连携名}",
+        "dormant": "共鸣席位已满：{连携名}转入蛰伏（图鉴已收录）"
+      }
+    }
+  },
+  "controlImmune": {
+    "elite": [
+      "freeze",
+      "stun"
+    ],
+    "boss": [
+      "freeze",
+      "stun"
+    ],
+    "note": "slow 不免疫：精英/Boss 仅免疫 freeze/stun，减速照常生效（D-026② 拍板；消除 design.md §8 散文与数据断层）"
   }
 }
