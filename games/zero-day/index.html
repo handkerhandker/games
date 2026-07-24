@@ -247,16 +247,21 @@ body.cb-noscroll { overflow: hidden; }
 .cb-avatar-energy { display: flex; justify-content: center; }
 
 .cb-unit-name { color: var(--phos); font-size: var(--fs-md); letter-spacing: .12em; text-align: center; }
-.cb-unit-hp { width: 100%; display: flex; align-items: center; gap: clamp(4px, .6vw, 6px); }
+/* D-010：行高钉到格挡徽标高度（line-height fs-sm+5 + 上下边框 2px）——
+   徽标出现/消失（防御打出/回合清零）不再改变行高（桌面纵列实锤 +3.28px） */
+.cb-unit-hp { width: 100%; display: flex; align-items: center; gap: clamp(4px, .6vw, 6px); min-height: calc(var(--fs-sm) + 7px); }
 .cb-unit-hp > :first-child { flex: 1 1 auto; min-width: 0; }
+/* D-010：min-height 恰一 pip 行高（pip 文本行 1.3 + 上下 padding/border 4px + 2px 余量），
+   pip 行高同步钉死免疫平台字体差异——0↔1 个状态 pip 零位移（实锤 +1.7px） */
 .cb-unit-status {
-  min-height: calc(var(--fs-sm) * 1.6);
+  min-height: calc(var(--fs-xs) * 1.3 + 6px);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: 4px;
 }
+.cb-unit-status .sc-pip { line-height: 1.3; }
 
 /* 格挡徽标：敌人用 .cb-block（位于 .cb-enemy-meta），玩家用 .cb-unit-block（位于 .cb-unit-hp） */
 .cb-block,
@@ -276,6 +281,15 @@ body.cb-noscroll { overflow: hidden; }
 .cb-unit-block svg { width: clamp(10px, 1vw, 12px); height: clamp(10px, 1vw, 12px); display: block; }
 .cb-block i,
 .cb-unit-block i { font-style: normal; font-weight: 700; }
+/* D-010：敌人格挡徽标移出流——绝对定位贴卡左上（与 .cb-predict 右上镜像对称），
+   出现/消失不再改变 .cb-enemy-meta 行内容；窄卡「徽标+多 pip 换行 +12.4px」实锤由此根除 */
+.cb-enemy .cb-block {
+  position: absolute;
+  top: calc(-1 * var(--fs-lg));
+  left: clamp(4px, .6vw, 8px);
+  z-index: 6;
+  pointer-events: none;
+}
 
 /* —— §7.3 敌人侧与敌人卡 —— */
 .cb-side--enemies {
@@ -287,7 +301,11 @@ body.cb-noscroll { overflow: hidden; }
   justify-content: flex-end;
   flex-wrap: wrap;
   gap: var(--gap);
+  /* D-010：堆叠档 overflow-x:auto 的经典滚动条同样占布局高度（3 敌窄屏溢出时），
+     与手牌同法隐藏，高度与溢出状态解耦 */
+  scrollbar-width: none;
 }
+.cb-side--enemies::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .cb-enemy {
   width: var(--enemy-w);
   position: relative;
@@ -346,9 +364,13 @@ body.cb-noscroll { overflow: hidden; }
   overflow-wrap: anywhere;
 }
 
-/* 意图条（大一号带图标；名称恒定两行高避免布局抖动） */
+/* 意图条（大一号带图标；名称恒定两行高避免布局抖动）
+   D-010 第三轮：min-height → 固定 height + 行高钉死 1.3——1 行/2 行名称、「离线」、「…」全等
+   同高；旧版在 701~880h 档被压成 1 行高（fs-xs×1.5），意图重掷时 1↔2 行切换实锤 ±12~14px */
 .cb-intent {
-  min-height: calc(var(--fs-md) * 2.7);
+  --cb-intent-lh: 1.3;
+  line-height: var(--cb-intent-lh);
+  height: calc(var(--fs-md) * var(--cb-intent-lh) * 2 + 4px); /* 2 行文本 + 上下 padding/border */
   max-width: 100%;
   display: flex;
   align-items: center;
@@ -412,8 +434,11 @@ body.cb-noscroll { overflow: hidden; }
   justify-content: center;
   flex-wrap: wrap;
   gap: clamp(4px, .6vw, 6px);
-  min-height: calc(var(--fs-sm) * 1.6);
+  /* D-010：恰一 pip 行高（与 .cb-unit-status 同式）；格挡徽标已移出流（贴卡左上），
+     本行只剩状态 pip——0↔1 pip 零位移（实锤 +1.68px） */
+  min-height: calc(var(--fs-xs) * 1.3 + 6px);
 }
+.cb-enemy-meta .sc-pip { line-height: 1.3; }
 .cb-status {
   min-height: calc(var(--fs-sm) * 1.6);
   display: flex;
@@ -502,9 +527,15 @@ body.cb-noscroll { overflow: hidden; }
   /* 顶部 16-22px / 底部 10-12px：hover/选中卡上抬 10px + scale 1.06 + 辉光 + 费用徽标(-10px)
      会顶到滚动容器的上下裁剪缘，留出余量防截断 */
   padding: clamp(16px, 2.4vh, 22px) var(--gap) clamp(10px, 1.4vh, 12px);
-  min-height: calc(var(--card-h) + 14px);
+  /* D-010 第三轮：min-height 与有牌态精确同高（卡高+上下内边距）——打空手牌显占位行时高度零差 */
+  min-height: calc(var(--card-h) + clamp(16px, 2.4vh, 22px) + clamp(10px, 1.4vh, 12px));
+  /* D-010 第三轮主链：隐藏自绘滚动条——经典滚动条（微信 X5 等内核）占布局高度，
+     5 张溢出时 +~15px、打到 4 张消失，底排高度生灭经舞台 flex 重分配放大成整屏下移；
+     隐藏后手牌区高度与手牌数彻底解耦。触屏 pan-x 滑动不受滚动条显隐影响 */
+  scrollbar-width: none;
   touch-action: pan-x pan-y; /* 牌缝间（非卡槽区域）保留浏览器原生横滑手牌与纵向页面滚动 */
 }
+.cb-hand::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .cb-hand-empty { align-self: center; color: var(--dim); letter-spacing: .1em; }
 
 /* 手牌槽：三类型低饱和配色（attack=red / skill=cyan / power=amber）
@@ -752,7 +783,7 @@ body.cb-noscroll { overflow: hidden; }
   /* 敌人卡内部同步紧凑化：图标降档、卡名 --fs-sm、血条更薄、意图徽章 --fs-xs */
   .cb-side--enemies .cb-enemy-icon svg { width: clamp(30px, 9vw, 44px); height: clamp(30px, 9vw, 44px); }
   .cb-side--enemies .cb-enemy-name { font-size: var(--fs-sm); }
-  .cb-side--enemies .cb-intent { font-size: var(--fs-xs); min-height: calc(var(--fs-xs) * 2.7); }
+  .cb-side--enemies .cb-intent { font-size: var(--fs-xs); height: calc(var(--fs-xs) * var(--cb-intent-lh) * 2 + 4px); }
   .cb-side--enemies .cb-intent-icon svg { width: clamp(11px, 3vw, 14px); height: clamp(11px, 3vw, 14px); }
   .cb-side--enemies .sc-hpbar { min-width: 0; height: clamp(12px, 3vw, 15px); }
   .cb-side--player {
@@ -765,7 +796,7 @@ body.cb-noscroll { overflow: hidden; }
   }
   .cb-avatar { grid-row: 1 / span 3; }
   .cb-unit-name { text-align: left; }
-  .cb-unit-status { justify-content: flex-start; min-height: 0; }
+  .cb-unit-status { justify-content: flex-start; } /* D-010：min-height 占位全档保留（旧 min-height:0 已根除） */
   /* 底排：手牌独占一行横滑；两列牌堆与结束回合同占一行 */
   .cb-hand { order: 1; flex: 1 1 100%; }
   .cb-pilebox { display: contents; } /* 拍平两列：三个牌堆按钮直接参与底排，与结束回合整齐同行 */
@@ -801,7 +832,9 @@ body.cb-noscroll { overflow: hidden; }
   .cb-side--enemies .cb-enemy { padding: clamp(4px, 1vh, 6px); gap: 3px; }
   .cb-side--enemies .cb-enemy-icon svg { width: clamp(22px, 6vw, 30px); height: clamp(22px, 6vw, 30px); }
   .cb-side--enemies .cb-enemy-name { font-size: var(--fs-xs); }
-  .cb-side--enemies .cb-intent { min-height: calc(var(--fs-xs) * 1.5); }
+  /* D-010：本档旧值 fs-xs×1.5（1 行高）是意图重掷 ±12~14px 实锤元凶——
+     恒定两行高与全档对齐，多出的一行预算由 fitCombat 缩放吸收 */
+  .cb-side--enemies .cb-intent { height: calc(var(--fs-xs) * var(--cb-intent-lh) * 2 + 4px); }
   .cb-side--enemies .sc-hpbar { height: clamp(10px, 2.4vw, 12px); }
   .cb-avatar-energy .sc-orb { width: clamp(34px, 7vw, 42px); height: clamp(34px, 7vw, 42px); }
 }
@@ -826,15 +859,16 @@ body.cb-noscroll { overflow: hidden; }
   .cb-side--enemies { gap: clamp(6px, 1vw, 10px); }
   .cb-enemy { padding: clamp(5px, 1vh, 7px) clamp(6px, .9vw, 8px); gap: clamp(4px, .6vh, 5px); }
   .cb-enemy-icon svg { width: clamp(24px, 3.6vw, 34px); height: clamp(24px, 3.6vw, 34px); }
-  .cb-intent { min-height: calc(var(--fs-sm) * 2.4); font-size: var(--fs-sm); }
-  .cb-unit-status,
-  .cb-enemy-meta { min-height: 0; }
+  .cb-intent { font-size: var(--fs-sm); height: calc(var(--fs-sm) * var(--cb-intent-lh) * 2 + 4px); }
+  /* D-010：矮屏档同样保留 pip 行占位（旧 min-height:0 是 0↔1 pip 抖动源，已根除；
+     占位成本 ~19px×2 由 fitCombat 缩放吸收，与 .cb-hint 同族判例一致） */
   /* 矮屏玩家列瘦身：能量球移到灵像右侧（免纵向叠加），容器宽度随行内容自适应，
      热量环圆心钉在灵像本体中心（左起第一个子件） */
   .cb-avatar { flex-direction: row; align-items: center; width: auto; }
   .cb-avatar-heat { left: calc(var(--avatar) / 2); }
   .cb-hand {
-    min-height: calc(var(--card-h) + 6px);
+    /* D-010：与有牌态精确同高（卡高+本档上下内边距），打空手牌零位移 */
+    min-height: calc(var(--card-h) + clamp(14px, 2.2vh, 18px) + clamp(4px, .8vh, 6px));
     /* 上内边距须容纳费用角标凸出（cost-s/3 ≈ 8-10px）+ hover 上抬 10px：
        旧值 4-6px 会把角标圆圈顶部削掉（矮屏手机实锤），下限抬到 14px */
     padding-top: clamp(14px, 2.2vh, 18px);

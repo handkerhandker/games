@@ -103,5 +103,18 @@
   "ach_evo_lightning": "sprites/ach_evo_lightning.png",
   "ach_evo_boomerang": "sprites/ach_evo_boomerang.png",
   "ach_evo_holywater": "sprites/ach_evo_holywater.png",
-  "ach_evo_familiar": "sprites/ach_evo_familiar.png"
+  "ach_evo_familiar": "sprites/ach_evo_familiar.png",
+  "ach_lich_nemesis": "sprites/ach_lich_nemesis.png",
+  "ach_endless_vigil": "sprites/ach_endless_vigil.png",
+  "ach_first_relic": "sprites/ach_first_relic.png",
+  "ach_relic_hoarder": "sprites/ach_relic_hoarder.png",
+  "ach_daily_first": "sprites/ach_daily_first.png",
+  "ach_daily_win": "sprites/ach_daily_win.png",
+  "ach_daily_regular": "sprites/ach_daily_regular.png",
+  "ach_elite_50": "sprites/ach_elite_50.png",
+  "relic_phylactery": "sprites/relic_phylactery.png",
+  "relic_crown_ember": "sprites/relic_crown_ember.png",
+  "relic_soul_chime": "sprites/relic_soul_chime.png",
+  "relic_revenant_core": "sprites/relic_revenant_core.png",
+  "relic_abyss_eye": "sprites/relic_abyss_eye.png"
 }
