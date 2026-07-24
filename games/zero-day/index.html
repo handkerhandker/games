@@ -7210,6 +7210,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           check: (meta2, run2) => st(run2, "maxBlockInTurn") >= 20
         },
         {
+          id: "block_fortress",
+          name: "\u94C1\u58C1\u8981\u585E",
+          icon: "shield",
+          secret: true,
+          desc: "\u5355\u56DE\u5408\u683C\u6321\u503C\u8FBE\u5230 40 \u70B9\u3002\u654C\u4EBA\u7684\u653B\u51FB\u53EA\u662F\u5728\u7ED9\u88C5\u7532\u629B\u5149\u3002",
+          check: (meta2, run2) => st(run2, "maxBlockInTurn") >= 40
+        },
+        {
           id: "poison_cloud",
           name: "\u761F\u75AB\u4F7F\u8005",
           icon: "virus",
@@ -7218,12 +7226,27 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           check: (meta2, run2) => st(run2, "poisonPeak") >= 30
         },
         {
+          id: "poison_nova",
+          name: "\u5267\u6BD2\u65B0\u661F",
+          icon: "virus",
+          secret: true,
+          desc: "\u8BA9\u5355\u4E2A\u654C\u4EBA\u8EAB\u4E0A\u7684\u75C5\u6BD2\u53E0\u5230 60 \u5C42\u3002\u5B83\u5DF2\u7ECF\u4E0D\u662F\u654C\u4EBA\u4E86\uFF0C\u662F\u57F9\u517B\u76BF\u3002",
+          check: (meta2, run2) => st(run2, "poisonPeak") >= 60
+        },
+        {
           id: "overheat_win",
           name: "\u8FC7\u8F7D\u8FB9\u7F18",
           icon: "flame",
           secret: true,
           desc: "\u4E00\u5C40\u4E4B\u5185\u8FC7\u70ED 5 \u6B21\uFF0C\u4ECD\u7136\u901A\u5173\u3002",
           check: (meta2, run2) => st(run2, "overheats") >= 5 && runWon(run2)
+        },
+        {
+          id: "first_overheat",
+          name: "\u6C57\u6D41\u6D43\u80CC",
+          icon: "flame",
+          desc: "\u4E00\u5C40\u4E4B\u5185\u8FC7\u70ED 1 \u6B21\u3002\u98CE\u6247\u5F00\u59CB\u6000\u7591\u4F60\u7684\u804C\u4E1A\u89C4\u5212\u3002",
+          check: (meta2, run2) => st(run2, "overheats") >= 1
         },
         {
           id: "low_hp_win",
@@ -7308,6 +7331,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           icon: "coin",
           desc: "\u4E00\u5C40\u4E4B\u5185\u8D5A\u53D6 500 \u91D1\u5E01\u3002",
           check: (meta2, run2) => st(run2, "goldEarned") >= 500
+        },
+        {
+          id: "shop_spree",
+          name: "\u8D2D\u7269\u72C2",
+          icon: "coin",
+          desc: "\u4E00\u5C40\u4E4B\u5185\u5728\u5546\u5E97\u6D88\u8D39 8 \u6B21\u3002\u9ED1\u5E02\u5546\u4EBA\u6084\u6084\u7ED9\u4F60\u529E\u4E86\u4F1A\u5458\u5361\u3002",
+          check: (meta2, run2) => st(run2, "shopBuys") >= 8
         },
         {
           id: "hoarder",
