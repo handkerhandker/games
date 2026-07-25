@@ -2125,6 +2125,9 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
     0 0 14px color-mix(in srgb, var(--amber) 55%, transparent);
 }
 
+/* —— MONOTONY ① 大数字 roll-up 内层（anim.floatText opts.roll 创建；数字滚动由 rAF 驱动 textContent） —— */
+.fx-roll { display: inline-block; }
+
 /* 长按放大检视卡（风味文本两全方案：悬停 tooltip / 触屏长按放大） */
 .fx-magnify {
   position: fixed; left: 50%; top: 42%; transform: translate(-50%, -50%);
@@ -2799,12 +2802,31 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       upgraded: true
     };
   }
+  function factionOf(id) {
+    if (id.startsWith("v_")) return "v";
+    if (id.startsWith("o_")) return "o";
+    if (id.startsWith("d_")) return "d";
+    return null;
+  }
+  function dominantFaction(run2) {
+    const deck = run2 && run2.deck || [];
+    const counts = { v: 0, o: 0, d: 0 };
+    for (const ref of deck) {
+      const f = ref && factionOf(ref.id);
+      if (f) counts[f]++;
+    }
+    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const [top, second] = sorted;
+    if (top[1] >= 4 && top[1] - second[1] >= 2) return top[0];
+    return null;
+  }
   function draftCards(rng, n, run2) {
     const pool = {
       common: Object.values(COMMON_CARDS).map((c) => c.id),
       uncommon: Object.values(UNCOMMON_CARDS).map((c) => c.id),
       rare: Object.values(RARE_CARDS).map((c) => c.id)
     };
+    const dominant = dominantFaction(run2);
     const out = [];
     let guard = 0;
     while (out.length < n && guard < n * 50 + 50) {
@@ -2820,13 +2842,29 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         rarity = ["common", "uncommon", "rare"].find((r) => pool[r].length > 0);
         if (!rarity) break;
       }
-      const idx = rng.int(0, pool[rarity].length - 1);
+      let idx;
+      if (!dominant) {
+        idx = rng.int(0, pool[rarity].length - 1);
+      } else {
+        const tier = pool[rarity];
+        let total = 0;
+        for (const id2 of tier) total += factionOf(id2) === dominant ? FACTION_BIAS : 1;
+        let pick = rng.next() * total;
+        idx = tier.length - 1;
+        for (let i = 0; i < tier.length; i++) {
+          pick -= factionOf(tier[i]) === dominant ? FACTION_BIAS : 1;
+          if (pick <= 0) {
+            idx = i;
+            break;
+          }
+        }
+      }
       const id = pool[rarity].splice(idx, 1)[0];
       out.push({ id, upgraded: false });
     }
     return out;
   }
-  var STARTER_CARDS, COMMON_CARDS, UNCOMMON_CARDS, RARE_CARDS, CARDS, STARTER_DECK;
+  var STARTER_CARDS, COMMON_CARDS, UNCOMMON_CARDS, RARE_CARDS, CARDS, STARTER_DECK, FACTION_BIAS;
   var init_cards = __esm({
     "src/data/cards.js"() {
       STARTER_CARDS = {
@@ -2849,8 +2887,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "skill",
           rarity: "starter",
           target: "self",
-          effects: [{ op: "block", amount: 8 }],
-          upgrade: { effects: [{ op: "block", amount: 10 }] },
+          effects: [{ op: "block", amount: 9 }],
+          upgrade: { effects: [{ op: "block", amount: 11 }] },
           flavor: "\u5173\u6389\u4E0D\u5FC5\u8981\u7684\u7AEF\u53E3\uFF0C\u5305\u62EC\u540C\u7406\u5FC3\u3002",
           icon: "shield"
         },
@@ -3935,6 +3973,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         { id: "vent_heat", upgraded: false },
         { id: "weak_scan", upgraded: false }
       ];
+      FACTION_BIAS = 1.75;
     }
   });
 
@@ -5178,7 +5217,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u5DE1\u903B\u54E8\u5175",
           act: 1,
           tier: "normal",
-          hp: [20, 25],
+          hp: [28, 34],
           icon: "eye",
           opener: "scan",
           moves: [
@@ -5195,7 +5234,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u7535\u51FB\u8B66\u68CD",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 5 }]
+              effects: [{ op: "damage", amount: 3 }]
             },
             {
               id: "patrol",
@@ -5211,7 +5250,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6570\u636E\u6C34\u86ED",
           act: 1,
           tier: "normal",
-          hp: [18, 23],
+          hp: [26, 31],
           icon: "virus",
           moves: [
             {
@@ -5219,7 +5258,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u5543\u54AC\u542E\u5438",
               type: "mixed",
               weight: 3,
-              effects: [{ op: "damage", amount: 4 }, { op: "heal", amount: 3 }]
+              effects: [{ op: "damage", amount: 3 }, { op: "heal", amount: 5 }]
             },
             {
               id: "latch",
@@ -5236,7 +5275,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u9632\u706B\u5899\u788E\u7247",
           act: 1,
           tier: "normal",
-          hp: [26, 32],
+          hp: [37, 44],
           icon: "shield",
           opener: "erect",
           moves: [
@@ -5252,7 +5291,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u788E\u5C51\u55B7\u5C04",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 5 }]
+              effects: [{ op: "damage", amount: 3 }]
             },
             {
               id: "barb",
@@ -5269,7 +5308,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u5783\u573E\u56DE\u6536\u8FDB\u7A0B",
           act: 1,
           tier: "normal",
-          hp: [22, 28],
+          hp: [31, 38],
           icon: "discardpile",
           moves: [
             {
@@ -5292,7 +5331,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u6E05\u626B",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 5 }]
+              effects: [{ op: "damage", amount: 3 }]
             }
           ]
         },
@@ -5301,7 +5340,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u871C\u7F50\u9677\u9631",
           act: 1,
           tier: "normal",
-          hp: [19, 24],
+          hp: [27, 33],
           icon: "warn",
           opener: "sweet_bait",
           moves: [
@@ -5318,7 +5357,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u8702\u523A",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 6 }]
+              effects: [{ op: "damage", amount: 4 }]
             },
             {
               id: "wax_wall",
@@ -5335,7 +5374,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u730E\u72AC\u534F\u8BAE\u03B2",
           act: 1,
           tier: "elite",
-          hp: [46, 54],
+          hp: [54, 64],
           icon: "bolt",
           opener: "track",
           moves: [
@@ -5369,7 +5408,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u7F51\u95F8\u5B88\u536B",
           act: 1,
           tier: "elite",
-          hp: [52, 60],
+          hp: [60, 71],
           icon: "shield",
           opener: "raise_gate",
           moves: [
@@ -5403,7 +5442,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u770B\u95E8\u4EBA GATEKEEPER",
           act: 1,
           tier: "boss",
-          hp: [85, 98],
+          hp: [97, 111],
           icon: "node-boss",
           opener: "credential_check",
           enrage: {
@@ -5430,7 +5469,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u8B66\u68CD\u6A2A\u626B",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 8 }]
             },
             {
               id: "ice_wall",
@@ -5445,7 +5484,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 1,
               cooldown: 3,
-              effects: [{ op: "damage", amount: 13 }]
+              effects: [{ op: "damage", amount: 12 }]
             }
           ]
         },
@@ -5456,7 +5495,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6DF1\u6F5C\u8815\u866B",
           act: 2,
           tier: "normal",
-          hp: [28, 34],
+          hp: [46, 54],
           icon: "st-poison",
           opener: "bore",
           moves: [
@@ -5466,7 +5505,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 4 }, { op: "applyStatus", status: "poison", amount: 1, to: "target" }]
+              effects: [{ op: "damage", amount: 2 }, { op: "applyStatus", status: "poison", amount: 1, to: "target" }]
             },
             {
               id: "burrow",
@@ -5480,7 +5519,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u9178\u6DB2\u55B7\u5410",
               type: "attack",
               weight: 2,
-              effects: [{ op: "damage", amount: 6 }]
+              effects: [{ op: "damage", amount: 3 }]
             }
           ]
         },
@@ -5489,7 +5528,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6697\u7F51\u63AE\u5BA2",
           act: 2,
           tier: "normal",
-          hp: [26, 32],
+          hp: [43, 51],
           icon: "coin",
           opener: "insider",
           moves: [
@@ -5506,7 +5545,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u62BD\u6210",
               type: "mixed",
               weight: 2,
-              effects: [{ op: "damage", amount: 4 }, { op: "heal", amount: 4 }]
+              effects: [{ op: "damage", amount: 2 }, { op: "heal", amount: 9 }]
             },
             {
               id: "shake_down",
@@ -5514,7 +5553,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 7 }]
+              effects: [{ op: "damage", amount: 3 }]
             }
           ]
         },
@@ -5523,7 +5562,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u8150\u5316\u8282\u70B9",
           act: 2,
           tier: "normal",
-          hp: [30, 37],
+          hp: [49, 58],
           icon: "virus",
           opener: "corrupt",
           moves: [
@@ -5548,7 +5587,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u6545\u969C\u8109\u51B2",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 5 }]
+              effects: [{ op: "damage", amount: 3 }]
             }
           ]
         },
@@ -5557,7 +5596,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6C89\u9ED8\u89C2\u5BDF\u8005",
           act: 2,
           tier: "normal",
-          hp: [29, 35],
+          hp: [48, 56],
           icon: "eye",
           opener: "observe",
           moves: [
@@ -5582,7 +5621,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 8 }]
+              effects: [{ op: "damage", amount: 4 }]
             }
           ]
         },
@@ -5626,7 +5665,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6DF1\u6E0A\u6E05\u9053\u592B",
           act: 2,
           tier: "elite",
-          hp: [60, 68],
+          hp: [84, 95],
           icon: "skull",
           opener: "scrap_armor",
           moves: [
@@ -5644,14 +5683,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 6 }, { op: "heal", amount: 4 }]
+              effects: [{ op: "damage", amount: 6 }, { op: "heal", amount: 9 }]
             },
             {
               id: "gnaw",
               name: "\u5543\u566C",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 7 }]
+              effects: [{ op: "damage", amount: 4 }]
             }
           ]
         },
@@ -5660,7 +5699,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u9ED1\u51B0",
           act: 2,
           tier: "elite",
-          hp: [68, 77],
+          hp: [92, 104],
           icon: "st-weak",
           opener: "freeze",
           moves: [
@@ -5677,7 +5716,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u51B0\u523A",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 8 }]
+              effects: [{ op: "damage", amount: 5 }]
             },
             {
               id: "mirror_coat",
@@ -5703,14 +5742,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6DF1\u6E0A\u7267\u5E08 ABYSS CURATE",
           act: 2,
           tier: "boss",
-          hp: [98, 112],
+          hp: [114, 128],
           icon: "skull",
           opener: "sermon",
           enrage: {
             below: 0.5,
             effects: [
               { op: "applyStatus", status: "strength", amount: 2, to: "self" },
-              { op: "applyStatus", status: "poison", amount: 3, to: "target" }
+              { op: "applyStatus", status: "poison", amount: 2, to: "target" }
             ]
           },
           moves: [
@@ -5731,14 +5770,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 3,
-              effects: [{ op: "applyStatus", status: "regen", amount: 2, to: "self" }, { op: "block", amount: 7 }]
+              effects: [{ op: "applyStatus", status: "regen", amount: 4, to: "self" }, { op: "block", amount: 7 }]
             },
             {
               id: "tithe",
               name: "\u5341\u4E00\u7A0E",
               type: "mixed",
               weight: 2,
-              effects: [{ op: "damage", amount: 8 }, { op: "heal", amount: 2 }]
+              effects: [{ op: "damage", amount: 7 }, { op: "heal", amount: 6 }]
             },
             {
               id: "baptism",
@@ -5746,7 +5785,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 3,
-              effects: [{ op: "damage", amount: 12 }]
+              effects: [{ op: "damage", amount: 8 }]
             }
           ]
         },
@@ -5773,7 +5812,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u9999\u7089\u6325\u51FB",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 8 }]
             },
             {
               id: "rite",
@@ -5789,7 +5828,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 1,
               cooldown: 3,
-              effects: [{ op: "applyStatus", status: "weak", amount: 1, to: "target" }, { op: "heat", amount: 2 }]
+              effects: [{ op: "applyStatus", status: "weak", amount: 1, to: "target" }, { op: "heat", amount: 1 }]
             }
           ]
         },
@@ -5808,7 +5847,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 9 }, { op: "heat", amount: 2 }]
+              effects: [{ op: "damage", amount: 8 }, { op: "heat", amount: 1 }]
             },
             {
               id: "halo",
@@ -5823,7 +5862,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u5929\u7F5A",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 12 }]
+              effects: [{ op: "damage", amount: 9 }]
             }
           ]
         },
@@ -5832,7 +5871,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u52A0\u5BC6\u5723\u50CF",
           act: 3,
           tier: "normal",
-          hp: [46, 55],
+          hp: [72, 84],
           icon: "chip",
           opener: "encrypt",
           moves: [
@@ -5849,7 +5888,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               name: "\u89E3\u5BC6\u51B2\u51FB",
               type: "attack",
               weight: 3,
-              effects: [{ op: "damage", amount: 10 }]
+              effects: [{ op: "damage", amount: 9 }]
             },
             {
               id: "key_exchange",
@@ -5866,7 +5905,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u79E9\u5E8F\u9501\u94FE",
           act: 3,
           tier: "normal",
-          hp: [42, 50],
+          hp: [68, 78],
           icon: "st-weak",
           opener: "bind",
           moves: [
@@ -5891,7 +5930,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 7 }, { op: "applyStatus", status: "weak", amount: 1, to: "target" }]
+              effects: [{ op: "damage", amount: 6 }, { op: "applyStatus", status: "weak", amount: 1, to: "target" }]
             },
             {
               id: "anchor",
@@ -5919,7 +5958,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               cooldown: 3,
               effects: [
                 { op: "applyStatus", status: "poison", amount: 2, to: "target" },
-                { op: "heat", amount: 2 }
+                { op: "heat", amount: 1 }
               ]
             },
             {
@@ -5928,7 +5967,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "attack",
               weight: 2,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 12 }]
+              effects: [{ op: "damage", amount: 10 }]
             },
             {
               id: "flicker",
@@ -5945,7 +5984,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u767D\u7687\u540E\u9A91\u58EB",
           act: 3,
           tier: "elite",
-          hp: [90, 102],
+          hp: [120, 136],
           icon: "sword",
           opener: "gambit",
           moves: [
@@ -5977,7 +6016,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               type: "mixed",
               weight: 1,
               cooldown: 2,
-              effects: [{ op: "damage", amount: 9 }, { op: "applyStatus", status: "vulnerable", amount: 1, to: "target" }]
+              effects: [{ op: "damage", amount: 8 }, { op: "applyStatus", status: "vulnerable", amount: 1, to: "target" }]
             }
           ]
         },
@@ -5986,7 +6025,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u7EC8\u6781\u9632\u706B\u5899",
           act: 3,
           tier: "elite",
-          hp: [94, 106],
+          hp: [124, 140],
           icon: "shield",
           opener: "iron_curtain",
           moves: [
@@ -6234,7 +6273,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   var BUILD_STAMP;
   var init_buildStamp = __esm({
     "src/buildStamp.js"() {
-      BUILD_STAMP = "2026-07-26 01:33 \xB7 243175ce";
+      BUILD_STAMP = "2026-07-26 03:00 \xB7 4d6b2358";
     }
   });
 
@@ -11042,6 +11081,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     let finalResult = null;
     let pendingPlay = null;
     let combo = 0;
+    let killStreak = 0;
+    let dumpChain = 0;
     const logs = [];
     const fxQueue = [];
     let dealInPending = false;
@@ -11149,10 +11190,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         spotOff();
         return;
       }
+      if (f.kind === "shakeStage") {
+        if (stageEl) ctx2.anim.shake(stageEl, f.power ?? 1);
+        return;
+      }
       const node = f.target === "player" ? playerEl : enemyEls.get(f.target);
       if (!node) return;
-      if (f.kind === "float") ctx2.anim.floatText(node, f.text, f.cls);
-      else if (f.kind === "shake") ctx2.anim.shake(node);
+      if (f.kind === "float") ctx2.anim.floatText(node, f.text, f.cls, { roll: f.roll, flash: f.killFlash });
+      else if (f.kind === "shake") ctx2.anim.shake(node, f.power ?? 1);
       else if (f.kind === "flash") ctx2.anim.flash(node);
       else if (f.kind === "burst") ctx2.anim.burst(node);
       else if (f.kind === "dissolve") {
@@ -11283,6 +11328,15 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       if (n != null && n >= 12) return "fx-t-dmg fx-t-dmg--big";
       return "fx-t-dmg";
     }
+    function shakeTierOf2(n) {
+      try {
+        if (ctx2.anim && typeof ctx2.anim.shakeTierOf === "function") return ctx2.anim.shakeTierOf(n);
+      } catch {
+      }
+      if (n != null && n >= 20) return "heavy";
+      if (n != null && n >= 10) return "mid";
+      return "light";
+    }
     function markStart() {
       if (started) return;
       started = true;
@@ -11311,6 +11365,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         }
       }
       sfxPlay("card", { rate: 1 + 0.06 * combo });
+      dumpChain = 0;
+      try {
+        const effs = p?.card?.effects;
+        if (Array.isArray(effs) && effs.some((op) => op && op.op === "dumpHeat" && op.damagePerPoint)) dumpChain = 1;
+      } catch {
+        dumpChain = 0;
+      }
       scheduleRender();
     });
     combat.on("damage", (p) => {
@@ -11324,12 +11385,17 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       } else {
         logPush(n == null ? `${label} \u53D7\u5230\u4F24\u5BB3` : blocked > 0 ? `${label} \u53D7\u5230 ${n} \u70B9\u4F24\u5BB3\uFF08\u683C\u6321 ${blocked}\uFF09` : `${label} \u53D7\u5230 ${n} \u70B9\u4F24\u5BB3`);
         pushHitFx([
-          { kind: "float", target: t, text: n == null ? "\u2715" : `-${n}`, cls: dmgTierCls(n) },
-          { kind: "shake", target: t }
+          { kind: "float", target: t, text: n == null ? "\u2715" : `-${n}`, cls: dmgTierCls(n), roll: n != null && n >= 12 },
+          { kind: "shake", target: t, power: shakeTierOf2(n) }
         ]);
         if (n != null && n >= 20) sfxPlay("crit");
       }
-      ctx2.sfx.play("attack");
+      let atkRate = 1;
+      if (dumpChain > 0 && t !== "player" && n != null && n > 0) {
+        atkRate = 1 + 0.05 * (dumpChain - 1);
+        dumpChain += 1;
+      }
+      ctx2.sfx.play("attack", { rate: atkRate });
       scheduleRender();
     });
     combat.on("blockGained", (p) => {
@@ -11380,21 +11446,34 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       logPush(n == null ? "\u8FC7\u70ED\uFF01\u6838\u5FC3\u7194\u6BC1" : `\u8FC7\u70ED\uFF01\u6838\u5FC3\u7194\u6BC1\uFF0C\u76F4\u63A5\u635F\u5931 ${n} \u70B9\u751F\u547D`);
       fxNew("vignette", "heat");
       fxQueue.push({ kind: "glitchStage" });
-      if (n != null && n > 0) fxQueue.push({ kind: "float", target: "player", text: `-${n}`, cls: dmgTierCls(n) });
-      fxQueue.push({ kind: "shake", target: "player" });
+      if (n != null && n > 0) {
+        fxQueue.push({ kind: "float", target: "player", text: `-${n}`, cls: dmgTierCls(n), roll: n >= 12 });
+      }
+      fxQueue.push({ kind: "shake", target: "player", power: shakeTierOf2(n) });
       ctx2.sfx.play("overheat");
       scheduleRender();
     });
     combat.on("enemyDied", (p) => {
       const uid = pickTarget(p);
       logPush(`${uid ? enemyName(uid) : "\u654C\u4EBA"} \u5DF2\u88AB\u51FB\u6E83`);
+      killStreak += 1;
+      for (let i = fxQueue.length - 1; i >= 0; i--) {
+        const f = fxQueue[i];
+        if (f.kind === "float" && f.target === uid) {
+          f.killFlash = true;
+          break;
+        }
+        if (f.kind === "float") break;
+      }
       fxQueue.push({ kind: "hitstop" });
+      fxQueue.push({ kind: "shakeStage", power: "kill" });
       fxQueue.push({ kind: "dissolve", target: uid });
-      sfxPlay("death");
+      sfxPlay("death", { rate: 1 + 0.12 * (killStreak - 1) });
       scheduleRender();
     });
     combat.on("turnStart", (p) => {
       vqAt = 0;
+      killStreak = 0;
       if (p?.side === "enemy") {
         enemyPhase = true;
         logPush("\u2014\u2014 \u654C\u65B9\u884C\u52A8 \u2014\u2014");
@@ -12833,6 +12912,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   // src/fx/anim.js
   var anim_exports = {};
   __export(anim_exports, {
+    SHAKE_TIERS: () => SHAKE_TIERS,
     banner: () => banner,
     burst: () => burst,
     comboPop: () => comboPop,
@@ -12846,6 +12926,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     lunge: () => lunge,
     projectile: () => projectile,
     shake: () => shake,
+    shakeTierOf: () => shakeTierOf,
     vignette: () => vignette
   });
   var floatSeq = 0;
@@ -12857,7 +12938,34 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     el2.addEventListener("animationend", off, { once: true });
     setTimeout(off, holdMs + 150);
   }
-  function floatText(container, text, cls) {
+  var SHAKE_TIERS = { light: 0.5, mid: 1, heavy: 1.6, kill: 2.4 };
+  function shakeTierOf(n) {
+    if (typeof n === "number" && Number.isFinite(n)) {
+      if (n >= 20) return "heavy";
+      if (n >= 10) return "mid";
+    }
+    return "light";
+  }
+  function reducedFx() {
+    try {
+      if (typeof document !== "undefined" && document.body && document.body.classList.contains("rm")) return true;
+      if (typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return true;
+    } catch {
+    }
+    return false;
+  }
+  function rollNumber(inner, prefix, target, ms = 360) {
+    const t0 = performance.now();
+    const node = document.createTextNode(prefix + "0");
+    inner.appendChild(node);
+    const tick = (now) => {
+      const t = Math.min(1, (now - t0) / ms);
+      node.nodeValue = prefix + Math.round(target * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+  function floatText(container, text, cls, opts) {
     if (!container) return;
     try {
       if (getComputedStyle(container).position === "static") {
@@ -12865,8 +12973,17 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       }
       const s = document.createElement("span");
       s.className = "fx-float" + (cls ? " " + cls : "");
-      s.textContent = text;
       s.style.setProperty("--fx-drift", [-16, -8, 0, 8, 16][floatSeq++ % 5] + "px");
+      const m = /^([^\d]*)(\d+)$/.exec(String(text));
+      const roll = !!(opts && opts.roll) && !!m && !reducedFx() && typeof requestAnimationFrame === "function" && typeof performance !== "undefined";
+      if (roll) {
+        const inner = document.createElement("span");
+        inner.className = "fx-roll" + (opts && opts.flash ? " fx-flash" : "");
+        s.appendChild(inner);
+        rollNumber(inner, m[1], Number(m[2]));
+      } else {
+        s.textContent = text;
+      }
       container.appendChild(s);
       const kill = () => {
         try {
@@ -12882,7 +12999,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function shake(el2, power = 1) {
     if (!el2) return;
     try {
-      el2.style.setProperty("--fx-amp", Math.max(1, Math.round(5 * power)) + "px");
+      if (reducedFx()) return;
+      const amp = typeof power === "string" ? SHAKE_TIERS[power] ?? 1 : power;
+      el2.style.setProperty("--fx-amp", Math.max(1, Math.round(5 * amp)) + "px");
       restart(el2, "fx-shake", 400);
     } catch {
     }
