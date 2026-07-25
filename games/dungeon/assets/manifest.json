@@ -123,5 +123,21 @@
   "ach_evo_codex": "sprites/ach_evo_codex.png",
   "ach_events_10": "sprites/ach_events_10.png",
   "ach_curses_3": "sprites/ach_curses_3.png",
-  "ach_synergy_5": "sprites/ach_synergy_5.png"
+  "ach_synergy_5": "sprites/ach_synergy_5.png",
+  "tile_hive_floor_1": "tiles/tile_hive_floor_1.png",
+  "tile_hive_floor_2": "tiles/tile_hive_floor_2.png",
+  "tile_hive_floor_3": "tiles/tile_hive_floor_3.png",
+  "tile_hive_wall": "tiles/tile_hive_wall.png",
+  "tile_hive_deco_sac": "tiles/tile_hive_deco_sac.png",
+  "tile_hive_deco_bone": "tiles/tile_hive_deco_bone.png",
+  "tile_hive_deco_wax": "tiles/tile_hive_deco_wax.png",
+  "enemy_hive_worker": "sprites/enemy_hive_worker.png",
+  "enemy_hive_stinger": "sprites/enemy_hive_stinger.png",
+  "enemy_hive_guard": "sprites/enemy_hive_guard.png",
+  "enemy_hive_weaver": "sprites/enemy_hive_weaver.png",
+  "boss_queen": "sprites/boss_queen.png",
+  "proj_stinger": "sprites/proj_stinger.png",
+  "brood_sac": "sprites/brood_sac.png",
+  "brood_sac_dmg": "sprites/brood_sac_dmg.png",
+  "brood_sac_hatch": "sprites/brood_sac_hatch.png"
 }

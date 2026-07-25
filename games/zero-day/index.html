@@ -2855,6 +2855,47 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           upgrade: { effects: [{ op: "applyStatus", status: "vulnerable", amount: 3, to: "target" }] },
           flavor: "\u6BCF\u4E2A\u7CFB\u7EDF\u90FD\u6709\u7834\u7EFD\uFF0C\u5C24\u5176\u662F\u81EA\u79F0\u6CA1\u6709\u7684\u90A3\u79CD\u3002",
           icon: "eye"
+        },
+        // 木马卡（c_*）：赫尔墨斯反制注入卡——只允许 rarity:'starter'，严禁移入 COMMON/UNCOMMON/RARE const（会污染 draft 奖励池，实测 60% 权重反复挤占选项位）；注入通道仅为事件 addCard。
+        c_adpopup: {
+          id: "c_adpopup",
+          name: "\u5E7F\u544A\u5F39\u7A97",
+          cost: 0,
+          type: "skill",
+          rarity: "starter",
+          target: "self",
+          exhaust: true,
+          effects: [],
+          upgrade: { effects: [] },
+          flavor: "\u70B9\u51FB\u5173\u95ED\u3002\u771F\u7684\u80FD\u5173\u95ED\uFF0C\u8FD9\u6B21\u4E0D\u9A97\u4F60\u3002",
+          icon: "warn"
+        },
+        c_tracker: {
+          id: "c_tracker",
+          name: "\u8FFD\u8E2A\u7A0B\u5E8F",
+          cost: 0,
+          type: "skill",
+          rarity: "starter",
+          target: "self",
+          exhaust: true,
+          retain: true,
+          effects: [{ op: "heat", amount: 2 }],
+          upgrade: { effects: [{ op: "heat", amount: 1 }] },
+          flavor: "\u5B83\u4E0D\u8D70\uFF0C\u9664\u975E\u4F60\u4EB2\u624B\u7B7E\u6536\u5B83\u7684\u53D1\u70ED\u3002",
+          icon: "eye"
+        },
+        c_parasite: {
+          id: "c_parasite",
+          name: "\u6570\u636E\u5BC4\u751F\u866B",
+          cost: 2,
+          type: "skill",
+          rarity: "starter",
+          target: "self",
+          exhaust: true,
+          effects: [{ op: "block", amount: 2 }],
+          upgrade: { effects: [{ op: "block", amount: 4 }] },
+          flavor: "\u9AD8\u85AA\u4F4E\u80FD\uFF0C\u8FD8\u62D2\u7EDD\u88AB\u4F18\u5316\u3002",
+          icon: "chip"
         }
       };
       COMMON_CARDS = {
@@ -3040,6 +3081,19 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           flavor: "\u4E94\u5341\u5E74\u6CA1\u62E7\u8FC7\u7684\u9600\u95E8\uFF0C\u4E00\u62E7\u5C31\u671D\u7740\u5BF9\u65B9\u3002",
           icon: "flame"
         },
+        o_preheat: {
+          id: "o_preheat",
+          name: "\u9884\u70ED\u56DE\u8DEF",
+          cost: 0,
+          type: "skill",
+          rarity: "common",
+          target: "self",
+          retain: true,
+          effects: [{ op: "applyStatus", status: "charge", amount: 1, to: "self" }],
+          upgrade: { effects: [{ op: "applyStatus", status: "charge", amount: 2, to: "self" }] },
+          flavor: "\u5148\u7A7A\u8F6C\uFF0C\u540E\u7206\u53D1\uFF0C\u7535\u8868\u5012\u8F6C\u7684\u90E8\u5206\u522B\u58F0\u5F20\u3002",
+          icon: "st-charge"
+        },
         // 防反系
         d_thorns: {
           id: "d_thorns",
@@ -3130,6 +3184,19 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           ] },
           flavor: "\u9010\u6761\u6838\u5BF9\u5BF9\u65B9\u7684\u653B\u51FB\u610F\u56FE\uFF0C\u76F4\u5230\u5B83\u5F00\u59CB\u81EA\u6211\u6000\u7591\u3002",
           icon: "st-weak"
+        },
+        d_standby: {
+          id: "d_standby",
+          name: "\u5F85\u547D\u6A21\u5F0F",
+          cost: 1,
+          type: "skill",
+          rarity: "common",
+          target: "self",
+          retain: true,
+          effects: [{ op: "block", amount: 5 }],
+          upgrade: { effects: [{ op: "block", amount: 8 }] },
+          flavor: "\u76FE\u4E0D\u5728\u591A\uFF0C\u9876\u4F4F\u7684\u90A3\u4E00\u4E0B\u624D\u7B97\u6570\u3002",
+          icon: "shield"
         },
         // 通用系
         g_read: {
@@ -3229,6 +3296,19 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           ] },
           flavor: "\u5FEB\u8FDB\u5FEB\u51FA\uFF0C\u987A\u4FBF\u5E26\u8D70\u4E00\u6761\u601D\u8DEF\u3002",
           icon: "sword"
+        },
+        g_sandbox: {
+          id: "g_sandbox",
+          name: "\u6C99\u7BB1\u5FEB\u7167",
+          cost: 1,
+          type: "skill",
+          rarity: "common",
+          target: "self",
+          innate: true,
+          effects: [{ op: "block", amount: 6 }],
+          upgrade: { effects: [{ op: "block", amount: 9 }] },
+          flavor: "\u5F00\u5C40\u5148\u628A\u7CFB\u7EDF\u5907\u4EFD\u5230\u6628\u5929\uFF0C\u4ECA\u5929\u7684\u9505\u4ECA\u5929\u518D\u80CC\u3002",
+          icon: "shield"
         }
       };
       UNCOMMON_CARDS = {
@@ -3318,6 +3398,25 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           ] },
           flavor: "\u5728\u673A\u7BB1\u91CC\u517B\u70B9\u4EC0\u4E48\uFF0C\u5B83\u4F1A\u957F\u6210\u4F60\u7684\u6B66\u5668\u5E93\u3002",
           icon: "virus"
+        },
+        v_incubate: {
+          id: "v_incubate",
+          name: "\u6F5C\u4F0F\u611F\u67D3",
+          cost: 1,
+          type: "skill",
+          rarity: "uncommon",
+          target: "enemy",
+          retain: true,
+          effects: [
+            { op: "applyStatus", status: "poison", amount: 3, to: "target" },
+            { op: "applyStatus", status: "weak", amount: 1, to: "target" }
+          ],
+          upgrade: { effects: [
+            { op: "applyStatus", status: "poison", amount: 5, to: "target" },
+            { op: "applyStatus", status: "weak", amount: 1, to: "target" }
+          ] },
+          flavor: "\u75C5\u6BD2\u5DF2\u5C31\u4F4D\uFF0C\u5728\u7B49\u4E00\u4E2A\u503C\u5F97\u751F\u75C5\u7684\u5BF9\u624B\u3002",
+          icon: "st-poison"
         },
         // 过载系
         o_melt: {
@@ -3551,6 +3650,25 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           upgrade: { effects: [{ op: "applyStatus", status: "strength", amount: 3, to: "self" }] },
           flavor: "\u52A0\u8F7D\u653B\u51FB\u6027\u4EBA\u683C\uFF0C\u539F\u4EBA\u683C\u5DF2\u59A5\u5584\u5907\u4EFD\uFF08\u4E5F\u8BB8\uFF09\u3002",
           icon: "st-strength"
+        },
+        g_checkpoint: {
+          id: "g_checkpoint",
+          name: "\u5B58\u6863\u70B9",
+          cost: 2,
+          type: "skill",
+          rarity: "uncommon",
+          target: "self",
+          innate: true,
+          effects: [
+            { op: "block", amount: 6 },
+            { op: "draw", amount: 1 }
+          ],
+          upgrade: { effects: [
+            { op: "block", amount: 9 },
+            { op: "draw", amount: 1 }
+          ] },
+          flavor: "\u8FDB\u5EA6\u5DF2\u4FDD\u5B58\uFF0C\u7FFB\u8F66\u4E0D\u8D1F\u8D23\uFF0C\u91CD\u5F00\u8BF7\u8D81\u65E9\u3002",
+          icon: "check"
         }
       };
       RARE_CARDS = {
@@ -3654,6 +3772,25 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             { op: "heat", amount: 3 }
           ] },
           flavor: "\u8DF3\u5F97\u66F4\u5FEB\uFF0C\u8F6C\u5F97\u66F4\u70EB\uFF0C\u6D3B\u5F97\u66F4\u50CF\u4E00\u53F0\u673A\u5668\u3002",
+          icon: "st-heat"
+        },
+        o_capacitor: {
+          id: "o_capacitor",
+          name: "\u7535\u5BB9\u77E9\u9635",
+          cost: 2,
+          type: "attack",
+          rarity: "rare",
+          target: "enemy",
+          retain: true,
+          effects: [
+            { op: "damage", amount: 6 },
+            { op: "dumpHeat", damagePerPoint: 2 }
+          ],
+          upgrade: { effects: [
+            { op: "damage", amount: 9 },
+            { op: "dumpHeat", damagePerPoint: 2 }
+          ] },
+          flavor: "\u7535\u5BB9\u4E0D\u6311\u98DF\uFF0C\u70ED\u91CF\u6512\u591F\u4E86\u4E00\u8D77\u7B97\u603B\u8D26\u3002",
           icon: "st-heat"
         },
         // 防反系
@@ -7508,11 +7645,25 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           check: (meta2, run2) => charWon(meta2, run2, "molten_core")
         },
         {
+          id: "worm_mother_win",
+          name: "\u62D2\u7EDD\u9694\u79BB",
+          icon: "virus",
+          desc: "\u4F7F\u7528\u300C\u8815\u866B\u6BCD\u4F53\u300D\u901A\u5173\u4E00\u5C40\u3002\u68C0\u75AB\u90E8\u95E8\u5BA3\u5E03\u5BF9\u6B64\u8D1F\u5168\u8D23\u2014\u2014\u8D1F\u5168\u8D23\u7684\u610F\u601D\u662F\uFF0C\u5168\u4F53\u8D1F\u8D23\u5199\u68C0\u8BA8\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "worm_mother")
+        },
+        {
           id: "tri_wielder",
           name: "\u4E09\u4F4D\u4E00\u4F53",
           icon: "logo",
           desc: "\u4F7F\u7528\u300C\u96F6\u65E5\u300D\u300C\u58C1\u5792\u534F\u8BAE\u300D\u300C\u7194\u6838\u6838\u5FC3\u300D\u5404\u901A\u5173\u4E00\u6B21\u3002\u6F5C\u5165\u3001\u786C\u6297\u3001\u70E7\u7A7F\u2014\u2014\u6DF1\u6E0A\u7684\u4E09\u79CD\u6253\u5F00\u65B9\u5F0F\uFF0C\u4F60\u5168\u90E8\u7B7E\u6536\u3002",
           check: (meta2, run2) => charWon(meta2, run2, "zero_day") && charWon(meta2, run2, "bulwark") && charWon(meta2, run2, "molten_core")
+        },
+        {
+          id: "quad_wielder",
+          name: "\u5168\u5458\u901A\u884C",
+          icon: "logo",
+          desc: "\u4F7F\u7528\u300C\u96F6\u65E5\u300D\u300C\u58C1\u5792\u534F\u8BAE\u300D\u300C\u7194\u6838\u6838\u5FC3\u300D\u300C\u8815\u866B\u6BCD\u4F53\u300D\u5404\u901A\u5173\u4E00\u6B21\u3002\u6F5C\u5165\u3001\u786C\u6297\u3001\u70E7\u7A7F\u3001\u611F\u67D3\u2014\u2014\u8D6B\u5C14\u58A8\u65AF\u4ECA\u665A\u8C01\u4E5F\u522B\u60F3\u7761\u3002",
+          check: (meta2, run2) => charWon(meta2, run2, "zero_day") && charWon(meta2, run2, "bulwark") && charWon(meta2, run2, "molten_core") && charWon(meta2, run2, "worm_mother")
         },
         // ---------- 战斗技艺 ----------
         {
@@ -9760,6 +9911,76 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           text: "\u76F4\u63A5\u7533\u8BF7\u6BD5\u4E1A\u8003\u6838\uFF08\u968F\u673A\u5347\u7EA7 1 \u5F20\u5361\uFF0C\u6559\u5B98\u4EB2\u81EA\u9A8C\u8D27\uFF09",
           result: { upgradeRandom: 1, fight: ["firewall_shard"] },
           resultText: "\u8003\u6838\u5185\u5BB9\u662F\u6253\u5012\u6559\u5B98\u7684\u4E00\u5757\u65E7\u88C5\u7532\u3002\u5B83\u770B\u5230\u4F60\u65F6\uFF0C\u5162\u5162\u4E1A\u4E1A\u5730\u91CD\u65B0\u7ACB\u4E86\u8D77\u6765\u3002"
+        }
+      ]
+    },
+    {
+      id: "hermes_update",
+      title: "\u5B89\u5168\u66F4\u65B0\u63A8\u9001",
+      icon: "gear",
+      text: "\u8D70\u5ECA\u5587\u53ED\u7A81\u7136\u54CD\u8D77\uFF1A\u300C\u8D6B\u5C14\u58A8\u65AF\u5B89\u5168\u516C\u544A\uFF1A\u68C0\u6D4B\u5230\u60A8\u5C1A\u672A\u5B89\u88C5\u4ECA\u65E5\u8865\u4E01\u3002\u79EF\u6781\u914D\u5408\u8005\uFF0C\u5C06\u83B7\u5F97\u603B\u90E8\u5609\u5956\u3002\u300D",
+      choices: [
+        {
+          text: "\u914D\u5408\u5B89\u88C5\uFF08\u83B7\u5F97\u968F\u673A\u5347\u7EA7\uFF0C\u9644\u8D60\u8FFD\u8E2A\u7A0B\u5E8F\uFF09",
+          result: { upgradeRandom: 1, addCard: { id: "c_tracker", upgraded: false } },
+          resultText: "\u8865\u4E01\u6253\u5B8C\u4E86\uFF0C\u8FD0\u884C\u5F88\u6D41\u7545\u2014\u2014\u9664\u4E86\u540E\u53F0\u591A\u4E86\u4E00\u4E2A\u4E0D\u80AF\u8BF4\u540D\u5B57\u7684\u5C0F\u8FDB\u7A0B\u3002"
+        },
+        {
+          text: "\u6C38\u4E45\u63A8\u8FDF\u66F4\u65B0\uFF08\u5931\u53BB 8 \u751F\u547D\uFF09",
+          result: { hp: -8 },
+          resultText: "\u4F60\u70B9\u4E86\u300C\u7A0D\u540E\u63D0\u9192\u300D\u3002\u5587\u53ED\u6C89\u9ED8\u4E09\u79D2\uFF1A\u300C\u5DF2\u8BB0\u5F55\u60A8\u7684\u6001\u5EA6\u3002\u300D"
+        },
+        {
+          text: "\u7269\u7406\u65AD\u7F51\uFF08\u5F97 25 \u91D1\u5E01\uFF0C\u60CA\u52A8\u5DE1\u903B\u54E8\u5175\uFF09",
+          result: { gold: 25, fight: ["sentinel"] },
+          resultText: "\u4F60\u62D4\u4E86\u7F51\u7EBF\u3002\u9694\u58C1\u673A\u623F\u7684\u5DE1\u903B\u54E8\u5175\u7ACB\u523B\u8F6C\u5934\u770B\u4E86\u8FC7\u6765\u3002"
+        }
+      ]
+    },
+    {
+      id: "free_antivirus",
+      title: "\u514D\u8D39\u6740\u6BD2\u8F6F\u4EF6",
+      icon: "warn",
+      text: "\u8DEF\u8FB9\u81EA\u52A8\u552E\u8D27\u673A\u5F39\u51FA\u4E00\u4E2A\u7A97\u53E3\uFF1A\u300C\u606D\u559C\u60A8\u6210\u4E3A\u7B2C 99999 \u4F4D\u8BBF\u5BA2\uFF01\u514D\u8D39\u9886\u53D6\u4EF7\u503C 999 \u7684\u6740\u6BD2\u5927\u793C\u5305\uFF01\u300D",
+      choices: [
+        {
+          text: "\u4E00\u952E\u5B89\u88C5\uFF08\u56DE\u590D 12 \u751F\u547D\uFF0C\u9644\u8D60\u5E7F\u544A\u5F39\u7A97\uFF09",
+          result: { hp: 12, addCard: { id: "c_adpopup", upgraded: false } },
+          resultText: "\u626B\u63CF\u5B8C\u6210\uFF1A\u672A\u53D1\u73B0\u75C5\u6BD2\uFF0C\u53D1\u73B0\u60A8\u3002\u5E7F\u544A\u63D2\u4EF6\u5DF2\u9759\u9ED8\u88C5\u597D\u3002"
+        },
+        {
+          text: "\u9010\u4E2A\u70B9\u6389 17 \u4E2A\u786E\u8BA4\u6846\uFF08\u5931\u53BB 5 \u751F\u547D\uFF09",
+          result: { hp: -5 },
+          resultText: "\u7B2C 17 \u4E2A\u786E\u8BA4\u6846\u5199\u7740\u300C\u786E\u5B9A\u653E\u5F03\u4FDD\u62A4\u5417\u300D\u3002\u4F60\u70B9\u4E86\u786E\u5B9A\uFF0C\u773C\u775B\u6709\u70B9\u82B1\u3002"
+        },
+        {
+          text: "\u8585\u4E00\u628A\u63A8\u5E7F\u8D39\uFF08\u5F97 30 \u91D1\u5E01\uFF0C\u5F15\u6765\u6570\u636E\u6C34\u86ED\uFF09",
+          result: { gold: 30, fight: ["data_leech"] },
+          resultText: "\u4F60\u6309\u4E86 20 \u4E0B\u300C\u7ACB\u5373\u9886\u53D6\u300D\uFF0C\u6C34\u69FD\u5E95\u4E0B\u4F20\u6765\u7AB8\u7AA3\u58F0\u2014\u2014\u63A8\u5E7F\u8D39\u6709\u4E3B\u4E86\u3002"
+        }
+      ]
+    },
+    {
+      id: "welfare_package",
+      title: "\u5458\u5DE5\u798F\u5229\u5305\u88F9",
+      icon: "cardback",
+      text: "\u4F20\u9001\u5E26\u9001\u6765\u4E00\u4E2A\u5370\u7740\u8D6B\u5C14\u58A8\u65AF\u53F8\u5FBD\u7684\u5305\u88F9\uFF1A\u300C\u81F4\u7F16\u5916\u4F18\u79C0\u4E2A\u4F53\uFF1A\u60A8\u88AB\u62BD\u4E2D\u4E3A\u672C\u6708\u5E78\u8FD0\u5458\u5DE5\u3002\u798F\u5229\u5DF2\u53D1\u8D27\uFF0C\u62D2\u6536\u5C06\u5F71\u54CD\u5F81\u4FE1\u3002\u300D",
+      choices: [
+        {
+          text: "\u7B7E\u6536\uFF08\u5F97 55 \u91D1\u5E01\uFF0C\u9644\u8D60\u6570\u636E\u5BC4\u751F\u866B\uFF09",
+          requires: (run2) => (run2.deck || []).some((c) => c && c.id === "c_parasite") ? "\u5305\u88F9\u91CC\u5DF2\u7ECF\u6709\u4E00\u53EA\u4E86" : true,
+          result: { gold: 55, addCard: { id: "c_parasite", upgraded: false } },
+          resultText: "\u5305\u88F9\u91CC\u662F\u4E00\u5F20\u8D2D\u7269\u5361\u548C\u4E00\u4E2A\u5DE5\u724C\u3002\u5DE5\u724C\u80CC\u9762\u5199\u7740\uFF1A\u300C\u4ECE\u73B0\u5728\u8D77\uFF0C\u4F60\u7684\u4EA7\u51FA\u6709\u6211\u4E00\u4EFD\u3002\u300D"
+        },
+        {
+          text: "\u62D2\u6536\u5E76\u6295\u8BC9\uFF08\u751F\u547D\u4E0A\u9650 -4\uFF09",
+          result: { maxHp: -4 },
+          resultText: "\u6295\u8BC9\u5DF2\u53D7\u7406\u3002\u7CFB\u7EDF\u81EA\u52A8\u5C06\u4F60\u7684\u6863\u6848\u4ECE\u300C\u5E78\u8FD0\u5458\u5DE5\u300D\u6539\u4E3A\u300C\u91CD\u70B9\u5173\u6CE8\u5BF9\u8C61\u300D\u3002"
+        },
+        {
+          text: "\u539F\u8DEF\u9000\u56DE\uFF08\u5F97 15 \u91D1\u5E01\u8FD0\u8D39\u9669\uFF09",
+          result: { gold: 15 },
+          resultText: "\u5305\u88F9\u539F\u8DEF\u8FD4\u56DE\u3002\u4E09\u79D2\u540E\u4F60\u6536\u5230\u9000\u6B3E\u5230\u8D26\u901A\u77E5\u2014\u2014\u6263\u9664\u624B\u7EED\u8D39\uFF0C\u521A\u597D\u4E00\u676F\u5496\u5561\u94B1\u3002"
         }
       ]
     }
