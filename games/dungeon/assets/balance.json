@@ -1077,11 +1077,12 @@
         "keepMinRange": 300,
         "keepMaxRange": 380,
         "fleeRange": 200,
-        "castInterval": 3.0,
-        "projectileSpeed": 200,
+        "castInterval": 3.5,
+        "projectileSpeed": 150,
         "projectileDmg": 10,
-        "projectileHoming": 1.5,
-        "note": "保持 300~380px 风筝走位，玩家进入 200px 立即逃离；每 3s 施放 1 颗暗影法球（弱追踪 1.5 rad/s）"
+        "projectileHoming": 1.0,
+        "projectileLife": 4.0,
+        "note": "保持 300~380px 风筝走位，玩家进入 200px 立即逃离；每 3.5s 施放 1 颗暗影法球（150px/s、追踪 1.0 rad/s、弹寿 4s）。D-031 调参：弹速锚定最慢中性角色 cleric 162（直线可甩脱），弹寿 4s=600px 行程不足一整圈（扑空零回咬），弹寿自本版起收编入册（原工程裁量 6s）"
       }
     },
     {
