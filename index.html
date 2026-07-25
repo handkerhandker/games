@@ -222,7 +222,7 @@ const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN"
     var g = games.filter(function (x) { return x.slug === a.getAttribute('data-slug') })[0]
     if (isFile && g && g.needsServer) {
       e.preventDefault()
-      var online = 'https://handkerhandker.github.io/games/' + String(g.entry).replace(/^\.\//, '')
+      var online = 'https://cydgames.com/' + String(g.entry).replace(/^\.\//, '')
       showToast(
         '「' + g.title + '」需经本地服务或在线版进入：<a href="' + online + '" target="_blank" rel="noopener noreferrer">打开在线版 →</a>' +
         '<br><small>本地：在门户目录运行 npm run dev，或使用部署后的网址</small>'
