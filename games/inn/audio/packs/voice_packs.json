@@ -2714,6 +2714,456 @@
   "start": 41.67,
   "duration": 21.342
  },
+ "e8_adu_c3l02": {
+  "pack": "event08_ch3",
+  "start": 13.752,
+  "duration": 3.048
+ },
+ "e8_adu_c3l04": {
+  "pack": "event08_ch3",
+  "start": 31.224,
+  "duration": 7.08
+ },
+ "e8_adu_c3l07": {
+  "pack": "event08_ch3",
+  "start": 43.032,
+  "duration": 7.992
+ },
+ "e8_adu_c3l09": {
+  "pack": "event08_ch3",
+  "start": 52.2,
+  "duration": 19.95
+ },
+ "e8_adu_c3l11": {
+  "pack": "event08_ch3",
+  "start": 95.579,
+  "duration": 33.227
+ },
+ "e8_adu_c3l13": {
+  "pack": "event08_ch3",
+  "start": 138.575,
+  "duration": 4.488
+ },
+ "e8_adu_c4l11": {
+  "pack": "event08_ch4",
+  "start": 179.181,
+  "duration": 17.238
+ },
+ "e8_adu_c5l03": {
+  "pack": "event08_ch5",
+  "start": 20.79,
+  "duration": 10.056
+ },
+ "e8_adu_c6l09": {
+  "pack": "event08_ch6",
+  "start": 159.922,
+  "duration": 4.848
+ },
+ "e8_atang_c3l12": {
+  "pack": "event08_ch3",
+  "start": 128.806,
+  "duration": 9.768
+ },
+ "e8_atang_c5l04": {
+  "pack": "event08_ch5",
+  "start": 30.846,
+  "duration": 6.264
+ },
+ "e8_aurora_c3l05": {
+  "pack": "event08_ch3",
+  "start": 38.304,
+  "duration": 2.448
+ },
+ "e8_baili_c5l05": {
+  "pack": "event08_ch5",
+  "start": 37.11,
+  "duration": 9.192
+ },
+ "e8_baili_c5l07": {
+  "pack": "event08_ch5",
+  "start": 49.278,
+  "duration": 18.462
+ },
+ "e8_estelle_c4l14": {
+  "pack": "event08_ch4",
+  "start": 229.958,
+  "duration": 3.144
+ },
+ "e8_jianjian_c3l14": {
+  "pack": "event08_ch3",
+  "start": 143.062,
+  "duration": 14.64
+ },
+ "e8_jiugui_c1l08": {
+  "pack": "event08_ch1",
+  "start": 82.649,
+  "duration": 6.72
+ },
+ "e8_jiugui_c1l11": {
+  "pack": "event08_ch1",
+  "start": 106.169,
+  "duration": 7.848
+ },
+ "e8_jiugui_c1l14": {
+  "pack": "event08_ch1",
+  "start": 133.702,
+  "duration": 11.064
+ },
+ "e8_jiugui_c2l02": {
+  "pack": "event08_ch2",
+  "start": 17.526,
+  "duration": 9.576
+ },
+ "e8_jiugui_c2l04": {
+  "pack": "event08_ch2",
+  "start": 35.694,
+  "duration": 13.32
+ },
+ "e8_jiugui_c2l05": {
+  "pack": "event08_ch2",
+  "start": 49.014,
+  "duration": 15.102
+ },
+ "e8_jiugui_c2l07": {
+  "pack": "event08_ch2",
+  "start": 67.475,
+  "duration": 8.952
+ },
+ "e8_jiugui_c2l09": {
+  "pack": "event08_ch2",
+  "start": 89.987,
+  "duration": 4.968
+ },
+ "e8_jiugui_c2l11": {
+  "pack": "event08_ch2",
+  "start": 109.859,
+  "duration": 16.824
+ },
+ "e8_jiugui_c2l14": {
+  "pack": "event08_ch2",
+  "start": 147.827,
+  "duration": 7.008
+ },
+ "e8_jiugui_c3l06": {
+  "pack": "event08_ch3",
+  "start": 40.752,
+  "duration": 2.28
+ },
+ "e8_jiugui_c4l04": {
+  "pack": "event08_ch4",
+  "start": 36.078,
+  "duration": 33.563
+ },
+ "e8_jiugui_c4l05": {
+  "pack": "event08_ch4",
+  "start": 69.641,
+  "duration": 23.886
+ },
+ "e8_jiugui_c4l06": {
+  "pack": "event08_ch4",
+  "start": 93.526,
+  "duration": 18.654
+ },
+ "e8_jiugui_c4l08": {
+  "pack": "event08_ch4",
+  "start": 127.762,
+  "duration": 17.382
+ },
+ "e8_jiugui_c4l09": {
+  "pack": "event08_ch4",
+  "start": 145.143,
+  "duration": 22.398
+ },
+ "e8_jiugui_c4l10": {
+  "pack": "event08_ch4",
+  "start": 167.541,
+  "duration": 11.64
+ },
+ "e8_jiugui_c5l06": {
+  "pack": "event08_ch5",
+  "start": 46.302,
+  "duration": 2.976
+ },
+ "e8_jiugui_c5l09": {
+  "pack": "event08_ch5",
+  "start": 82.019,
+  "duration": 14.67
+ },
+ "e8_jiugui_c5l10": {
+  "pack": "event08_ch5",
+  "start": 96.689,
+  "duration": 24.39
+ },
+ "e8_jiugui_c5l11": {
+  "pack": "event08_ch5",
+  "start": 121.078,
+  "duration": 17.502
+ },
+ "e8_jiugui_c5l13": {
+  "pack": "event08_ch5",
+  "start": 139.948,
+  "duration": 11.256
+ },
+ "e8_jiugui_c6l03": {
+  "pack": "event08_ch6",
+  "start": 41.675,
+  "duration": 27.966
+ },
+ "e8_jiugui_c6l05": {
+  "pack": "event08_ch6",
+  "start": 90.983,
+  "duration": 11.712
+ },
+ "e8_jiugui_c6l08": {
+  "pack": "event08_ch6",
+  "start": 141.892,
+  "duration": 18.03
+ },
+ "e8_jiugui_c6l10": {
+  "pack": "event08_ch6",
+  "start": 164.77,
+  "duration": 6.72
+ },
+ "e8_jiugui_c6l13": {
+  "pack": "event08_ch6",
+  "start": 207.021,
+  "duration": 1.992
+ },
+ "e8_manager_c1l01": {
+  "pack": "event08_ch1",
+  "start": 0.0,
+  "duration": 19.734
+ },
+ "e8_manager_c1l03": {
+  "pack": "event08_ch1",
+  "start": 25.086,
+  "duration": 2.472
+ },
+ "e8_manager_c1l05": {
+  "pack": "event08_ch1",
+  "start": 40.326,
+  "duration": 17.982
+ },
+ "e8_manager_c1l07": {
+  "pack": "event08_ch1",
+  "start": 67.067,
+  "duration": 15.582
+ },
+ "e8_manager_c1l09": {
+  "pack": "event08_ch1",
+  "start": 89.369,
+  "duration": 3.432
+ },
+ "e8_manager_c1l13": {
+  "pack": "event08_ch1",
+  "start": 118.097,
+  "duration": 15.606
+ },
+ "e8_manager_c1l15": {
+  "pack": "event08_ch1",
+  "start": 144.766,
+  "duration": 18.438
+ },
+ "e8_manager_c2l01": {
+  "pack": "event08_ch2",
+  "start": 0.0,
+  "duration": 17.526
+ },
+ "e8_manager_c2l03": {
+  "pack": "event08_ch2",
+  "start": 27.102,
+  "duration": 8.592
+ },
+ "e8_manager_c2l06": {
+  "pack": "event08_ch2",
+  "start": 64.115,
+  "duration": 3.36
+ },
+ "e8_manager_c2l08": {
+  "pack": "event08_ch2",
+  "start": 76.427,
+  "duration": 13.56
+ },
+ "e8_manager_c2l10": {
+  "pack": "event08_ch2",
+  "start": 94.955,
+  "duration": 14.904
+ },
+ "e8_manager_c2l15": {
+  "pack": "event08_ch2",
+  "start": 154.835,
+  "duration": 16.158
+ },
+ "e8_manager_c3l01": {
+  "pack": "event08_ch3",
+  "start": 0.0,
+  "duration": 13.752
+ },
+ "e8_manager_c3l03": {
+  "pack": "event08_ch3",
+  "start": 16.8,
+  "duration": 14.424
+ },
+ "e8_manager_c3l08": {
+  "pack": "event08_ch3",
+  "start": 51.024,
+  "duration": 1.176
+ },
+ "e8_manager_c3l10": {
+  "pack": "event08_ch3",
+  "start": 72.15,
+  "duration": 23.43
+ },
+ "e8_manager_c3l15": {
+  "pack": "event08_ch3",
+  "start": 157.702,
+  "duration": 31.667
+ },
+ "e8_manager_c4l01": {
+  "pack": "event08_ch4",
+  "start": 0.0,
+  "duration": 20.622
+ },
+ "e8_manager_c4l07": {
+  "pack": "event08_ch4",
+  "start": 112.18,
+  "duration": 15.582
+ },
+ "e8_manager_c4l12": {
+  "pack": "event08_ch4",
+  "start": 196.419,
+  "duration": 29.723
+ },
+ "e8_manager_c5l01": {
+  "pack": "event08_ch5",
+  "start": 0.0,
+  "duration": 15.918
+ },
+ "e8_manager_c5l08": {
+  "pack": "event08_ch5",
+  "start": 67.739,
+  "duration": 14.28
+ },
+ "e8_manager_c5l12": {
+  "pack": "event08_ch5",
+  "start": 138.58,
+  "duration": 1.368
+ },
+ "e8_manager_c5l15": {
+  "pack": "event08_ch5",
+  "start": 152.644,
+  "duration": 23.334
+ },
+ "e8_manager_c6l01": {
+  "pack": "event08_ch6",
+  "start": 0.0,
+  "duration": 17.046
+ },
+ "e8_manager_c6l02": {
+  "pack": "event08_ch6",
+  "start": 17.046,
+  "duration": 24.63
+ },
+ "e8_manager_c6l04": {
+  "pack": "event08_ch6",
+  "start": 69.641,
+  "duration": 21.342
+ },
+ "e8_manager_c6l06": {
+  "pack": "event08_ch6",
+  "start": 102.695,
+  "duration": 24.318
+ },
+ "e8_manager_c6l11": {
+  "pack": "event08_ch6",
+  "start": 171.49,
+  "duration": 20.694
+ },
+ "e8_manager_c6l12": {
+  "pack": "event08_ch6",
+  "start": 192.183,
+  "duration": 14.838
+ },
+ "e8_manager_c6l14": {
+  "pack": "event08_ch6",
+  "start": 209.013,
+  "duration": 17.742
+ },
+ "e8_manager_c6l15": {
+  "pack": "event08_ch6",
+  "start": 226.755,
+  "duration": 33.875
+ },
+ "e8_mianmian_c1l10": {
+  "pack": "event08_ch1",
+  "start": 92.801,
+  "duration": 13.368
+ },
+ "e8_mianmian_c2l13": {
+  "pack": "event08_ch2",
+  "start": 135.731,
+  "duration": 12.096
+ },
+ "e8_mianmian_c4l03": {
+  "pack": "event08_ch4",
+  "start": 27.51,
+  "duration": 8.568
+ },
+ "e8_mianmian_c4l15": {
+  "pack": "event08_ch4",
+  "start": 233.102,
+  "duration": 10.08
+ },
+ "e8_tantan_c4l02": {
+  "pack": "event08_ch4",
+  "start": 20.622,
+  "duration": 6.888
+ },
+ "e8_vann_c1l06": {
+  "pack": "event08_ch1",
+  "start": 58.307,
+  "duration": 8.76
+ },
+ "e8_vann_c5l14": {
+  "pack": "event08_ch5",
+  "start": 151.204,
+  "duration": 1.44
+ },
+ "e8_xiandeng_c5l02": {
+  "pack": "event08_ch5",
+  "start": 15.918,
+  "duration": 4.872
+ },
+ "e8_xixi_c1l02": {
+  "pack": "event08_ch1",
+  "start": 19.734,
+  "duration": 5.352
+ },
+ "e8_xixi_c1l04": {
+  "pack": "event08_ch1",
+  "start": 27.558,
+  "duration": 12.768
+ },
+ "e8_xixi_c1l12": {
+  "pack": "event08_ch1",
+  "start": 114.017,
+  "duration": 4.08
+ },
+ "e8_xixi_c2l12": {
+  "pack": "event08_ch2",
+  "start": 126.683,
+  "duration": 9.048
+ },
+ "e8_yangui_c6l07": {
+  "pack": "event08_ch6",
+  "start": 127.012,
+  "duration": 14.88
+ },
+ "e8_yanxiao_c4l13": {
+  "pack": "event08_ch4",
+  "start": 226.142,
+  "duration": 3.816
+ },
  "luna_01": {
   "pack": "event01_ch4",
   "start": 32.544,
