@@ -557,6 +557,45 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 .cb-hand::-webkit-scrollbar { display: none; width: 0; height: 0; }
 .cb-hand-empty { align-self: center; color: var(--dim); letter-spacing: .1em; }
 
+/* —— 手牌高数量提示（2026-07-25 内容线移交项①：retain 连攥无上限的撑爆隐患） ——
+   牌数上限属内容线平衡域，工程侧不动规则，只补「可发现性」：
+   ①「共 N 张」角标（≥8 张由 combatScreen.js 渲染为流内末项）：sticky 钉右缘，
+     right:28px 避开 24px 右渐变区，pointer-events:none 不挡出牌/拖拽；
+     高度恒小于行高（行高由 --card-h 钉死，align-self:center 不撑行）→ 垂直零位移。
+   ② 滚动位置感知边缘渐变：容器 mask-image 只淡入 24px 边缘，信息随滑随显、
+     永不遮盖内容（不遮信息红线）；零布局占地（非流内元素，不产生 gap/位移）。
+     --scr-l/--scr-r 类由 JS 按 scrollLeft 实时切换；未溢出时无类无渐变，
+     桌面 5~7 收窄全入镜档视觉与旧版零差。
+   mask-image 不支持的旧内核：渐变静默缺失，角标与横滚不受影响（优雅降级）。 */
+.cb-hand-count {
+  position: sticky;
+  right: 28px;
+  align-self: center;
+  flex: 0 0 auto;
+  z-index: 3;
+  pointer-events: none;
+  padding: .28em .6em;
+  border-radius: 999px;
+  font-size: var(--fs-xs);
+  letter-spacing: .06em;
+  white-space: nowrap;
+  color: var(--cyan);
+  background: color-mix(in srgb, var(--panel) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cyan) 38%, transparent);
+}
+.cb-hand--scr-l {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24px);
+  mask-image: linear-gradient(to right, transparent, #000 24px);
+}
+.cb-hand--scr-r {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+}
+.cb-hand--scr-l.cb-hand--scr-r {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
 /* 手牌槽：三类型低饱和配色（attack=red / skill=cyan / power=amber）
    §5.3：hover/选中位移全部由 slot 负责（.sc-card--click:hover 不再 translate） */
 .cb-card-slot {
@@ -6233,7 +6272,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (!card) return "";
     if (card.text) return card.text;
     const parts = (card.effects || []).map((op) => opToText(op, card)).filter(Boolean);
-    let text = parts.join("\uFF0C");
+    let text = parts.join("\uFF0C") || "\u65E0\u6548\u679C";
     const flags = [];
     if (card.innate) flags.push("\u56FA\u6709");
     if (card.retain) flags.push("\u4FDD\u7559");
@@ -10965,6 +11004,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   var ENEMY_ACT_MS = 440;
   var VQ_MAX_MS = 1200;
   var FINE_POINTER = typeof matchMedia === "function" ? matchMedia("(hover: hover) and (pointer: fine)") : { matches: false };
+  function updateHandCue(row) {
+    if (!row) return;
+    const max = row.scrollWidth - row.clientWidth;
+    row.classList.toggle("cb-hand--scr-l", max > 1 && row.scrollLeft > 1);
+    row.classList.toggle("cb-hand--scr-r", max > 1 && row.scrollLeft < max - 1);
+  }
   function renderCombat(root, run2, ctx2, enemyIds, onDone) {
     const rng = runRng(run2);
     const combat = new Combat(run2, enemyIds, rng);
@@ -12035,6 +12080,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           row.scrollLeft += ev.deltaMode === 1 ? ev.deltaY * 16 : ev.deltaY;
         }, { passive: true });
       }
+      row.addEventListener("scroll", () => updateHandCue(row), { passive: true });
       if (!p.hand.length) {
         row.append(el("div", { class: "cb-hand-empty" }, "\u2014\u2014 \u624B\u724C\u4E3A\u7A7A \u2014\u2014"));
         return row;
@@ -12073,6 +12119,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         handEls[i] = slot;
         row.append(slot);
       });
+      if (p.hand.length >= 8) {
+        row.append(el("div", { class: "cb-hand-count", "aria-hidden": "true" }, `\u5171 ${p.hand.length} \u5F20`));
+      }
       return row;
     }
     function renderLog() {
@@ -12206,6 +12255,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       root.append(shell);
       const newHand = root.querySelector(".cb-hand");
       if (newHand && prevHandScroll) newHand.scrollLeft = prevHandScroll;
+      updateHandCue(newHand);
       guardFlavor(root);
       fitCombat();
     }
@@ -12241,6 +12291,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     window.addEventListener("resize", () => {
       fitLocked = null;
       fitCombat();
+      updateHandCue(root.querySelector(".cb-hand"));
     });
     tip3(root, ctx2, "combat");
   }

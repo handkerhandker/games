@@ -1180,6 +1180,147 @@
         "retreatSpeed": 40,
         "note": "不追玩家：向玩家 500px 范围内密度最高的敌群质心移动（钻入怪堆）。光环 170px（淡绿符文环常显）：范围内普通敌人每秒回复各自最大 HP 1.5%、速度 +20%、伤害 +15%（光环不作用于精英与 Boss，多萨满光环不叠加）。玩家进入 120px 时以 40px/s 缓慢退避（非风筝，无弹体、无逃离 AI）；精英化时治疗/增益百分比不吃 dmgMul"
       }
+    },
+    {
+      "id": "hive_worker",
+      "name": "蚀骨工蜂",
+      "asset": "enemy_hive_worker",
+      "hp": 12,
+      "speed": 120,
+      "dmg": 6,
+      "xp": 1,
+      "radius": 10,
+      "mass": 0.9,
+      "spawnWeight": 1.0,
+      "behavior": {
+        "type": "chase",
+        "pounce": {
+          "triggerRange": 140,
+          "windupSeconds": 0.25,
+          "dashSpeed": 340,
+          "dashDuration": 0.25,
+          "cooldownSeconds": 2.5,
+          "note": "接近至 140px 触发扑咬：前摇 0.25s（翅鞘张开+高频嗡鸣，可读）-> 340px/s 直线突进 0.25s（约 85px，不追踪）-> 冷却 2.5s；突进期接触伤害不变（6）；反制=前摇期横移或击退打断"
+        },
+        "note": "直线追击群冲（群体感=波次表高权重密度表达，无 pack 群刷机制——R13 裁决取消，spawner pack 为 rat 专用不泛化；比地窖鼠韧、比兽人脆）；与地窖鼠的差异=扑咬的爆发接近段；孵化囊产物语义以机制侧 broodsacs-config.json 为准（单只 1 只/12s/囊，t≥240s 起 hive_worker 0.85 / hive_stinger 0.15），产物是普通敌人：占 maxAlive、正常掉 xp1 宝石、正常参与红心/磁铁掉落；精英化时扑咬冷却/前摇不缩放"
+      }
+    },
+    {
+      "id": "hive_stinger",
+      "name": "悬刺蜂",
+      "asset": "enemy_hive_stinger",
+      "hp": 22,
+      "speed": 170,
+      "dmg": 7,
+      "xp": 3,
+      "radius": 11,
+      "mass": 0.9,
+      "spawnWeight": 1.0,
+      "behavior": {
+        "type": "hoverKeep",
+        "hoverMinRange": 300,
+        "hoverMaxRange": 380,
+        "hoverSectorDeg": [
+          225,
+          315
+        ],
+        "angleConvention": "0°=+x（右），90°=+y（屏幕下方）；扇环=以玩家为圆心、270°（正上方）±45°",
+        "repositionIntervalSeconds": 3.5,
+        "repositionJitterSeconds": 0.5,
+        "repositionDashSpeed": 520,
+        "shotInterval": 2.8,
+        "windupSeconds": 0.35,
+        "projectileSpeed": 320,
+        "projectileDmg": 8,
+        "projectileRadius": 4,
+        "projectileLifeSeconds": 1.4,
+        "vengeanceDive": {
+          "hpPctBelow": 0.3,
+          "chance": 0.25,
+          "maxTriggers": 1,
+          "triggerRange": 220,
+          "windupSeconds": 0.3,
+          "diveSpeed": 420,
+          "explosionRadius": 60,
+          "explosionDmg": 12,
+          "cancelOnDeath": true,
+          "note": "受击后若 HP<30% 且玩家在 220px 内，25% 概率（每只一生最多 1 次）俯冲：前摇 0.3s（尖啸+倒悬）-> 420px/s 俯冲，触地/触玩家爆炸：半径 60、伤害 12；俯冲途中被击杀=哑弹。非必爆：75% 不触发"
+        },
+        "note": "空中悬停于玩家斜上方 300~380px 扇环；每 2.8s 直射 1 根毒针（直线、320px/s、伤害 8、不追踪）；每 3.5±0.5s 以 520px/s 高速换悬停点（换点 0.2s 翅影模糊预警）。与骷髅弓手差异=空中扇环+周期换点，与蝙蝠差异=远程。悬停渲染 Y 偏移 -6px+地面椭圆影（纯视觉，碰撞不变）；精英化时毒针伤害吃 dmgMul（8->12），换点周期与俯冲概率不缩放"
+      }
+    },
+    {
+      "id": "hive_guard",
+      "name": "巢卫甲虫",
+      "asset": "enemy_hive_guard",
+      "hp": 100,
+      "speed": 40,
+      "dmg": 14,
+      "xp": 5,
+      "radius": 19,
+      "mass": 0.25,
+      "spawnWeight": 1.0,
+      "behavior": {
+        "type": "bulwark",
+        "chitinArcDeg": 150,
+        "frontalDamageTakenMul": 0.4,
+        "backstabDamageTakenMul": 1.25,
+        "turnRateDegPerSecond": 120,
+        "guardSac": {
+          "seekRange": 700,
+          "standoffRange": 40,
+          "retargetDelaySeconds": 1.0,
+          "interpose": true,
+          "fallbackBehavior": "chase",
+          "note": "出生后搜索 700px 内最近存活卵囊并走向它；到位后站定在'玩家->囊'连线上、距囊边缘 40px 处（interpose=插在玩家与囊之间）；所护囊被摧毁后 1.0s 重新选囊（RETARGET 硬直=拆囊的连带奖励）；全场无存活囊时退化为 40px/s 直线追击"
+        },
+        "note": "几丁质甲=位置向减伤：以朝向为轴正面 150° 弧内受到的一切伤害 ×0.4（不区分伤害类型，按伤害来源位置与朝向夹角 ≤75° 判定）；背面弧 ×1.25（腹部弱点）；朝向转速上限 120°/s。与护盾卫兵差异：卫兵=弹体全免+类型 bypass+追人；甲虫=全类型减伤+背刺加成+护囊。精英化时减伤弧/减伤率/背刺倍率不缩放"
+      }
+    },
+    {
+      "id": "hive_weaver",
+      "name": "织巢蜂",
+      "asset": "enemy_hive_weaver",
+      "hp": 30,
+      "speed": 75,
+      "dmg": 5,
+      "xp": 8,
+      "radius": 12,
+      "mass": 0.6,
+      "spawnWeight": 1.0,
+      "behavior": {
+        "type": "tender",
+        "seekSacRadius": 800,
+        "repairPerSecond": 12,
+        "repairCapPct": 0.8,
+        "channelRange": 50,
+        "hastenAuraRadius": 200,
+        "hastenIntervalMul": 0.75,
+        "auraStackRule": "noStack",
+        "fleeRange": 150,
+        "fleeSpeed": 60,
+        "tetherRange": 250,
+        "targets": [
+          "broodSac"
+        ],
+        "note": "不追玩家：搜索 800px 内 HP 缺口最大的卵囊并移动至其 50px 内持续修复 12 HP/s（0.5s/tick 调用 sac.repair(6)；囊侧钳制 hp ≤ maxHp × 0.8；多只修同囊修复量可叠加）；距囊 ≤200px 时该囊孵化间隔 ×0.75（多只不叠加取最小值）。玩家进入 150px 时以 60px/s 退避但不离所服务囊 250px（tether=击杀窗口）。仅可 target 卵囊，不能修复 Boss/其他物件；xp 8 高回报引导集火；精英化时修复/加速数值不吃 dmgMul"
+      }
+    },
+    {
+      "id": "brood_sac",
+      "name": "孵化囊",
+      "asset": "brood_sac",
+      "hp": 150,
+      "speed": 0,
+      "dmg": 0,
+      "xp": 4,
+      "radius": 18,
+      "mass": 0.0,
+      "spawnWeight": 1.0,
+      "behavior": {
+        "type": "structure",
+        "note": "场地装置：不移动、无 AI、无接触伤害（接触判定 skip，石像鬼沉睡先例）、锚定不分离（他怪绕行）、mass 0 免击退。永不进入任何 waves weights/精英池/追猎池/图鉴击杀过滤；精英化永不发生；HP 实际值 = 150 × 生成时刻 hpMul 快照（spawnEnemyEx hpMul 参数）；击杀死因不存在（dmg 0，永不进 deathTips）。⚠️ 工程注意：enemies.ts 兜底镜像表须同步本条目（mass 0 关键——statsTable 以 >0 判覆盖，缺镜像将回退 mass 1 被击退漂移）"
+      }
     }
   ],
   "elites": {
@@ -1995,7 +2136,12 @@
       "orc": "倒地 250ms + 8 粒尘土",
       "cultist": "自爆黑雾 10 粒",
       "elite": "fx_explosion + 冲击波环（半径 0->120px / 0.3s）",
-      "boss": "1.5s 处决演出：3 次连环爆炸 + 0.3x 慢动作 1.2s + 全屏白闪 200ms"
+      "boss": "1.5s 处决演出：3 次连环爆炸 + 0.3x 慢动作 1.2s + 全屏白闪 200ms",
+      "hive_worker": "仰面翻倒、六足蜷曲 150ms -> 爆散 8 粒甲壳碎屑",
+      "hive_stinger": "失控螺旋坠地 300ms -> 触地 8 粒爆裂",
+      "hive_guard": "几丁质甲壳崩裂 4 片抛物线抛散（受重力）+ 侧翻倒地 250ms + 6 粒酸雾",
+      "hive_weaver": "丝腺熄灭：8 粒荧光丝雾上升消散 300ms（无爆裂）+ 梭形躯体干瘪",
+      "brood_sac": "囊体瘪破：浆液爆裂 16 粒（琥珀/骨白双色，终色对齐地图 palette）+ 壳片 4 块抛物线 0.4s（受重力）；30ms hit-stop（normalKillMs 沿用）"
     }
   },
   "characters": [
@@ -2769,6 +2915,745 @@
           }
         ]
       }
+    },
+    {
+      "id": "hive",
+      "name": "蚀骨蜂巢",
+      "nameEn": "The Osseous Hive",
+      "flavor": "巢以骨筑，蜜以血酿。",
+      "introLines": [
+        "蜡香之下，万节攒动。",
+        "别碰那些会呼吸的卵。",
+        "十分钟后，巢心醒来。"
+      ],
+      "selectCard": {
+        "tilePreviewKeys": [
+          "tile_hive_floor_1",
+          "tile_hive_wall"
+        ],
+        "diffBullets": [
+          "蚀骨虫群分工成军，蜂拥压境",
+          "孵化囊不拆则孵，火力分配即生死",
+          "敌更韧、囊更密，高手向"
+        ],
+        "unlock": {
+          "type": "singleRunSurviveSeconds",
+          "mapId": "library",
+          "seconds": 300,
+          "lockedText": "在腐化图书馆单局存活 300s 解锁",
+          "progressText": "最佳 {best}s / 300s"
+        }
+      },
+      "palette": {
+        "floorBase": "#2b2118",
+        "floorVariant": "#342a1c",
+        "floorCrack": "#1a130c",
+        "chitinDark": "#241a10",
+        "chitinPlates": [
+          "#4a3620",
+          "#5c4224",
+          "#3a2b18"
+        ],
+        "sacGlowCore": "rgba(222,158,64,0.55)",
+        "sacGlowEdge": "rgba(222,158,64,0)",
+        "boneWhite": "#e6dcc2",
+        "amberFlame": "#f0b45c",
+        "accentGlow": "#d99a3e",
+        "vignette": "#120c07"
+      },
+      "tileKeys": [
+        {
+          "key": "tile_hive_floor_1",
+          "kind": "floor",
+          "weight": 0.625,
+          "desc": "主地板：几丁质碎屑与分泌物板结的巢底，暗棕暖调（palette.floorBase 基色），蜡质哑光斑 + 细密爪痕；16×16 源图 4 倍放大至 64px。建议 Tiny Dungeon 石地瓦片经 Pillow 调色（色相偏 32°、饱和 +10%、明度 -60%，对齐 floorBase v≈0.17 的暗暖签名——与地牢亮暖地板 v≈0.92 明度轴分离）"
+        },
+        {
+          "key": "tile_hive_floor_2",
+          "kind": "floor",
+          "weight": 0.25,
+          "desc": "地板变体 A：同基底，一角渗琥珀蜜渍（sacGlowCore 色高光点）+ 半埋碎骨片（boneWhite 污损色）"
+        },
+        {
+          "key": "tile_hive_floor_3",
+          "kind": "floor",
+          "weight": 0.125,
+          "desc": "地板变体 B：同基底，蚀痕裂纹（floorCrack 色）+ 干涸蜜迹暗斑（amberFlame 明度 -70%）"
+        },
+        {
+          "key": "tile_hive_wall",
+          "kind": "wall",
+          "weight": 1.0,
+          "desc": "巢壁：分泌蜡质与甲片层叠——chitinDark 基底上 chitinPlates 三色甲片呈鳞片状交叠排布（各约 1/3 随机），甲片接缝处渗琥珀蜜光细描边（amberFlame 暗化色），顶部垂 1~2 条蜜蜡钟乳；建议 Pillow 程序化生成"
+        },
+        {
+          "key": "tile_hive_deco_sac",
+          "kind": "deco",
+          "weight": 0.4,
+          "desc": "点缀 overlay：小型卵囊簇 2~3 枚，骨白囊体（boneWhite）微透蜜光（amberFlame 30% 透明叠色），静态帧（呼吸动效归 fx 层）；每格 1/24 概率触发 overlay 后按 2/2/1 抽选——纯视觉装饰，与可交互机制物件 broodSacs 不同层不同键，规格防混淆见 spec §5.4"
+        },
+        {
+          "key": "tile_hive_deco_bone",
+          "kind": "deco",
+          "weight": 0.4,
+          "desc": "点缀 overlay：半埋兽骨/肋条 1~2 根，boneWhite 污损色，一端没入地板"
+        },
+        {
+          "key": "tile_hive_deco_wax",
+          "kind": "deco",
+          "weight": 0.2,
+          "desc": "点缀 overlay：滴落凝固的蜜蜡钟乳 1~2 根，amberFlame 暗化色 + 30% 半透明质感"
+        }
+      ],
+      "waves": [
+        {
+          "start": 0,
+          "end": 30,
+          "interval": 1.35,
+          "hpMul": 1.0,
+          "maxAlive": 25,
+          "weights": {
+            "hive_worker": 0.75,
+            "rat": 0.25
+          },
+          "events": []
+        },
+        {
+          "start": 30,
+          "end": 60,
+          "interval": 1.25,
+          "hpMul": 1.0,
+          "maxAlive": 35,
+          "weights": {
+            "hive_worker": 0.65,
+            "rat": 0.35
+          },
+          "events": []
+        },
+        {
+          "start": 60,
+          "end": 90,
+          "interval": 1.1,
+          "hpMul": 1.15,
+          "maxAlive": 50,
+          "weights": {
+            "hive_worker": 0.55,
+            "rat": 0.25,
+            "hive_stinger": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 90,
+          "end": 120,
+          "interval": 1.0,
+          "hpMul": 1.15,
+          "maxAlive": 60,
+          "weights": {
+            "hive_worker": 0.5,
+            "hive_stinger": 0.25,
+            "rat": 0.25
+          },
+          "events": [
+            {
+              "time": 90,
+              "type": "elite",
+              "enemy": "hive_worker",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 120,
+          "end": 150,
+          "interval": 0.92,
+          "hpMul": 1.3,
+          "maxAlive": 75,
+          "weights": {
+            "hive_worker": 0.45,
+            "hive_stinger": 0.3,
+            "rat": 0.25
+          },
+          "events": []
+        },
+        {
+          "start": 150,
+          "end": 180,
+          "interval": 0.88,
+          "hpMul": 1.3,
+          "maxAlive": 85,
+          "weights": {
+            "hive_worker": 0.45,
+            "hive_stinger": 0.35,
+            "rat": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 180,
+          "end": 210,
+          "interval": 0.78,
+          "hpMul": 1.45,
+          "maxAlive": 100,
+          "weights": {
+            "hive_worker": 0.4,
+            "hive_stinger": 0.35,
+            "rat": 0.15,
+            "hive_guard": 0.1
+          },
+          "events": [
+            {
+              "time": 180,
+              "type": "elite",
+              "enemy": "hive_stinger",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 210,
+          "end": 240,
+          "interval": 0.72,
+          "hpMul": 1.45,
+          "maxAlive": 110,
+          "weights": {
+            "hive_worker": 0.35,
+            "hive_stinger": 0.3,
+            "hive_guard": 0.15,
+            "rat": 0.2
+          },
+          "events": []
+        },
+        {
+          "start": 240,
+          "end": 270,
+          "interval": 0.66,
+          "hpMul": 1.6,
+          "maxAlive": 120,
+          "weights": {
+            "hive_worker": 0.3,
+            "hive_stinger": 0.3,
+            "hive_guard": 0.3,
+            "hive_weaver": 0.1
+          },
+          "events": []
+        },
+        {
+          "start": 270,
+          "end": 300,
+          "interval": 0.6,
+          "hpMul": 1.6,
+          "maxAlive": 130,
+          "weights": {
+            "hive_worker": 0.3,
+            "hive_stinger": 0.25,
+            "hive_guard": 0.35,
+            "hive_weaver": 0.1
+          },
+          "events": [
+            {
+              "time": 270,
+              "type": "elite",
+              "enemy": "hive_guard",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 300,
+          "end": 330,
+          "interval": 0.54,
+          "hpMul": 1.8,
+          "maxAlive": 145,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_worker": 0.25,
+            "hive_guard": 0.35,
+            "hive_weaver": 0.1
+          },
+          "events": [
+            {
+              "time": 300,
+              "type": "elite",
+              "enemy": "hive_weaver",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 330,
+          "end": 360,
+          "interval": 0.5,
+          "hpMul": 1.8,
+          "maxAlive": 160,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_worker": 0.25,
+            "hive_guard": 0.35,
+            "hive_weaver": 0.1
+          },
+          "events": []
+        },
+        {
+          "start": 360,
+          "end": 390,
+          "interval": 0.46,
+          "hpMul": 2.0,
+          "maxAlive": 175,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_guard": 0.35,
+            "hive_weaver": 0.1,
+            "hive_worker": 0.25
+          },
+          "events": [
+            {
+              "time": 360,
+              "type": "elite",
+              "enemy": "hive_stinger",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 390,
+          "end": 420,
+          "interval": 0.42,
+          "hpMul": 2.0,
+          "maxAlive": 190,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_guard": 0.3,
+            "hive_weaver": 0.1,
+            "hive_worker": 0.3
+          },
+          "events": []
+        },
+        {
+          "start": 420,
+          "end": 450,
+          "interval": 0.38,
+          "hpMul": 2.2,
+          "maxAlive": 205,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_weaver": 0.1,
+            "hive_guard": 0.3,
+            "hive_worker": 0.3
+          },
+          "events": []
+        },
+        {
+          "start": 450,
+          "end": 480,
+          "interval": 0.35,
+          "hpMul": 2.2,
+          "maxAlive": 220,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_weaver": 0.1,
+            "hive_guard": 0.3,
+            "hive_worker": 0.3
+          },
+          "events": [
+            {
+              "time": 450,
+              "type": "elite",
+              "enemy": "hive_guard",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 480,
+          "end": 510,
+          "interval": 0.32,
+          "hpMul": 2.4,
+          "maxAlive": 235,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_weaver": 0.1,
+            "hive_guard": 0.3,
+            "hive_worker": 0.3
+          },
+          "events": []
+        },
+        {
+          "start": 510,
+          "end": 540,
+          "interval": 0.3,
+          "hpMul": 2.4,
+          "maxAlive": 250,
+          "weights": {
+            "hive_stinger": 0.3,
+            "hive_weaver": 0.1,
+            "hive_guard": 0.3,
+            "hive_worker": 0.3
+          },
+          "events": [
+            {
+              "time": 510,
+              "type": "elite",
+              "enemy": "hive_weaver",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "start": 540,
+          "end": 570,
+          "interval": 0.27,
+          "hpMul": 2.7,
+          "maxAlive": 260,
+          "weights": {
+            "hive_stinger": 0.35,
+            "hive_guard": 0.3,
+            "hive_weaver": 0.1,
+            "hive_worker": 0.25
+          },
+          "events": [
+            {
+              "time": 540,
+              "type": "elite",
+              "enemy": "hive_stinger",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "start": 570,
+          "end": 600,
+          "interval": 0.38,
+          "hpMul": 2.7,
+          "maxAlive": 180,
+          "weights": {
+            "hive_worker": 0.35,
+            "hive_stinger": 0.3,
+            "hive_guard": 0.25,
+            "hive_weaver": 0.1
+          },
+          "events": [
+            {
+              "time": 570,
+              "type": "elite",
+              "enemy": "hive_guard",
+              "count": 2
+            },
+            {
+              "time": 585,
+              "type": "banner",
+              "text": "万囊齐搏，巢心在醒……"
+            }
+          ]
+        },
+        {
+          "start": 600,
+          "end": 9999,
+          "interval": 0.75,
+          "hpMul": 2.7,
+          "maxAlive": 110,
+          "weights": {
+            "hive_worker": 0.6,
+            "hive_stinger": 0.4
+          },
+          "events": [
+            {
+              "time": 600,
+              "type": "boss",
+              "enemy": "queen",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "eliteEvents": [
+        {
+          "id": "elite_chitin_warden",
+          "time": 270,
+          "enemy": "hive_guard",
+          "count": 1,
+          "title": "瓮卫·护巢者",
+          "banner": "巢壁深处，甲片开始合拢。",
+          "note": "标志性事件 E1；走 waves[9].events 刷怪（全局 elites 规则不变），banner 走 waveNarration elite 字幕槽；命名仅文案层，终稿措辞归 copydeck（Wave2）。设计意图：hpMul×10 的巢卫堡垒（100×10×1.6=1600；正面等效 TTK ≈18.8s / 背面 ≈6.0s——有意的「勿正面集火」考题，口径见 map-spec §9.2-R3）+ 护囊行为 = 「拆囊还是拆墙」考题首考，接 300s 织巢蜂精英首发，双记忆点连打（对位图书馆 E1→馆雕首发节奏）"
+        },
+        {
+          "id": "elite_brood_weavers",
+          "time": 510,
+          "enemy": "hive_weaver",
+          "count": 2,
+          "title": "织巢双工",
+          "banner": "织巢者的梭，为你赶工。",
+          "note": "标志性事件 E2；双精英同刷有先例（地牢 570s elite orc×2、图书馆 510s elite gargoyle×2）；精英不占用 maxAlive 名额（spawner.fireEvent 无 countEnemies 检查）。设计意图：双织巢蜂精英抢修/催熟场上 3~4 囊（510s 档软顶 4）= 全图「优先击杀目标」考题的最高压时刻，落在 510s 最密行；终稿措辞归 copydeck（Wave2）"
+        }
+      ],
+      "mechanic": {
+        "id": "broodSacs",
+        "name": "孵化囊",
+        "summary": "场上常驻数枚有 HP、可被武器命中摧毁的卵囊：每囊每 12s 孵化 1 只小怪（工蜂为主），不拆则压力滚雪球。核心决策 =「拆囊还是杀怪」的火力分配——养囊吃经验、拆囊换减压与小奖。",
+        "specRef": "design/v17/mechanic-spec.md",
+        "sacs": {
+          "initialCount": 3,
+          "initialSpawnAt": 0,
+          "softCap": [
+            {
+              "from": 0,
+              "to": 300,
+              "cap": 3
+            },
+            {
+              "from": 300,
+              "to": 600,
+              "cap": 4
+            },
+            {
+              "from": 600,
+              "to": 9999,
+              "cap": 5
+            }
+          ],
+          "hardCap": 7,
+          "hardCapNote": "仅蜂后 rebuildSacs 可突破软顶；全场存活囊恒 ≤7",
+          "respawn": {
+            "firstCheckAt": 90,
+            "intervalSeconds": 90,
+            "perCheck": 1,
+            "pauseWhileBossAlive": true,
+            "note": "任意 Boss（本体/残影）存活期间自然补充暂停（蜂后掌管重建）；补足只看软顶，每次检查最多补 1"
+          },
+          "placement": {
+            "pattern": "玩家圆心环带随机点（复用 spawner.ringPos 模式）；同轮多囊取基准角 a、a+120°、a+240° 各 ±20° 抖动（两两夹角 ≥90°）",
+            "initial": {
+              "center": "玩家出生点",
+              "ringMin": 520,
+              "ringMax": 880,
+              "minDistToPlayerSpawn": 480
+            },
+            "respawn": {
+              "center": "当前玩家位置",
+              "ringMin": 640,
+              "ringMax": 960
+            },
+            "minSeparationBetweenSacs": 240,
+            "minDistToBoss": 520,
+            "resampleAttempts": 8,
+            "note": "环带取远：囊是「目的地物件」——看得见、走得到、不贴脸；对照禁忌书页近环带 260~420 威胁圈（规格 §3.2）"
+          },
+          "forming": {
+            "seconds": 1.2,
+            "targetable": false,
+            "note": "成形态为机制层纯视觉（地底隆起 + 琥珀浆光 alpha 0→0.8 + 尘粒 8），完成瞬间才 spawnEnemyEx 入池；成形期不可命中/不可修复/不可加速/不计入 countSacs"
+          },
+          "panel": {
+            "entityClass": "enemyKind",
+            "kind": "brood_sac",
+            "behavior": "structure",
+            "hpBase": 150,
+            "hpScaling": "waveHpMulAtSpawn",
+            "hpScalingNote": "150 × 生成时刻波次行 hpMul（spawnEnemyEx hpMul 参数，与全部敌人同代码路径），生成时刻快照、终身不变；无尽取当前循环 hpMul（封顶 30 → 囊 HP 封顶 4500）。论证：固定 HP 会在 5min 后退化零成本随手拆、机制身份消失（规格 §2.2）",
+            "radius": 18,
+            "mass": 0.0,
+            "contactDamage": 0,
+            "collisionPlayer": "none（无地形碰撞铁律；重叠无伤害——玩家-敌人无推挤代码路径，enemies.ts:1126-1135）",
+            "collisionEnemy": "锚定软分离：他怪绕行（石像鬼沉睡先例，enemies.ts:1110）；囊自身永不位移",
+            "targeting": "deprioritized",
+            "targetingNote": "命中池内、伤害照常结算；自动索敌/链跳/弹射选目标时存在任意非结构敌人则不选囊，仅 1200 内无其他敌人时才成为目标；AoE/光环/轨道/燃烧等无目标伤害照常命中（规格 §2.4）",
+            "eliteEligible": false,
+            "assetKey": "brood_sac",
+            "frames": {
+              "idle": "brood_sac（常态；呼吸脉动 scale 1±0.03 @0.9Hz 程序化叠加）",
+              "damaged": "brood_sac_dmg（hp<50% 切换；织巢蜂修复回 ≥50% 切回）",
+              "hatchWindup": "brood_sac_hatch（孵化前 0.6s 切入，出生完成切回；待发态常驻。2 键预算时降级为程序化：常态帧 scale→1.15 快脉动 + 囊口描边琥珀光）"
+            }
+          }
+        },
+        "hatch": {
+          "periodSeconds": 12,
+          "firstHatchDelaySeconds": 6,
+          "batchCount": 1,
+          "telegraphSeconds": 0.6,
+          "telegraphNote": "前摇切 brood_sac_hatch 帧，出生点可预判",
+          "products": [
+            {
+              "enemy": "hive_worker",
+              "weight": 1.0,
+              "from": 0,
+              "to": 240
+            },
+            {
+              "enemy": "hive_worker",
+              "weight": 0.85,
+              "from": 240,
+              "to": 9999
+            },
+            {
+              "enemy": "hive_stinger",
+              "weight": 0.15,
+              "from": 240,
+              "to": 9999
+            }
+          ],
+          "productsNote": "共享骨架四敌中择 2 种、工蜂为主；hive_guard/hive_weaver 不进产物池（波次表投放，敌人设计师辖区）；产物 HP × 当前波次行/无尽循环 hpMul；永不精英化；单只落点出生（囊缘 +16px 随机方位），不触发群刷语义（spawner pack 为 rat 专用机制，不泛化）",
+          "perSacAliveCap": 3,
+          "globalAliveCap": 24,
+          "gate": "countEnemies() < 当前有效 maxAlive（含波次行/无尽循环/残影 220 钳制，spawner 同口径背压）且 全场孵化物 < 24 且 该囊孵化物 < 3 才执行孵化",
+          "countsIntoGlobalCap": "孵化物经 spawnEnemyEx 入池，计入敌 300 硬顶（MAX_ENEMIES 检查既有，enemies.ts:429）",
+          "pending": {
+            "rule": "任一帽/闸门不满足 → 囊进入待发态（前摇帧常驻 + 囊口微光），周期计时停在就绪点；每 0.25s 复查，放行即刻出生",
+            "queueLimit": 1,
+            "note": "与 spawner「腾出名额立即补刷」同语义：雪球可延迟、不消失，但永不大于帽值"
+          }
+        },
+        "destroy": {
+          "killRule": "标准武器命中链：弹体/AoE/光环/链跳 → damageEnemy（mass 0 免击退、锚定不位移）→ hp 归零 → enemyKilled{kind:'brood_sac'} → per-kind 掉落覆盖 + 死亡演出；燃烧/感电等印记附着无害（不移动无副作用，燃烧 DoT 是 AoE 构筑的拆囊通道）",
+          "entityClassDecision": "enemy 类实体（论证 vs 独立 damageable 类见规格 §2.1：命中零改动 vs 六模块永久税）",
+          "rewards": {
+            "gemXp": 4,
+            "heartChance": 0.15,
+            "heartNote": "独立 roll；尊重场上 ≤2；不触发、不消耗 45s 保底（保底计时只由 healed 重置的既有语义不变）",
+            "chestChance": 0.06,
+            "magnetChance": 0,
+            "magnetNote": "磁铁是走位奖励型掉落，与定点物件语义不符",
+            "shards": "normal 默认路径（0.06/颗，占 perRunCap；不特殊化省工程触点）",
+            "budgetNote": "按 ~10 次拆囊/局：40 XP（局总 0.8%）+ 期望 1.5 红心（常规红心经济 +5%）+ 期望 0.6 宝箱（精英链 +5%）——克制（规格 §5.2/§8.4）"
+          },
+          "feedback": {
+            "hitStopMs": 30,
+            "hitStopNote": "feel.hitStop.normalKillMs 沿用；perSecondCap 4 天然防连拆震屏",
+            "particles": "浆液爆裂 16 粒（琥珀/骨白双色，终色对齐地图 palette）+ 壳片 4 块抛物线 0.4s（受重力）",
+            "deathFxKey": "brood_sac",
+            "sfx": "sacBurst ×1",
+            "visual": "闪白 80ms → 120ms 缩小淡出（默认死亡链继承）"
+          }
+        },
+        "links": {
+          "weaver": {
+            "seam": "织巢蜂与囊同在 enemies 池，其 supporter 系 AI 直接读写囊实体 hp/孵化计时字段——零跨模块接缝；语义冻结于本段，数值已同步 enemy-spec 终稿（原建议值 2%/s、×0.8、160px 作废）",
+            "healPerSecond": 12,
+            "healNote": "终值：0.5s/tick 调 sac.repair(6)=12 HP/s；上限 maxHp×80%（repairCapPct）；修复须贴近 ≤50px（channelRange 引导）；多织巢蜂修同一囊修复量可叠加、囊侧钳制统一生效；成形期不可修；修复不能跑赢集火（5min 对单 263.5 DPS），只惩罚「打一半放弃」",
+            "hatchPeriodMul": 0.75,
+            "hatchPeriodMulNote": "终值：12s→9s；多织巢蜂不叠加取最小值（noStack）；与蜂后加速乘区叠乘；成形期不可加速",
+            "auraRadius": 200,
+            "scope": "仅作用于囊，不治疗/加速其他敌人（织巢蜂是囊的守护者，不是第二个萨满）"
+          },
+          "queen": {
+            "ownership": "机制侧只保证接口语义与上限/闸门纪律；全部数值（P3 重建数量/加速乘区/强化倍率）归 Boss 设计师（queen-spec.md）",
+            "apis": [
+              {
+                "name": "rebuildSacs(n)",
+                "spec": "立即在玩家环带 [640,960] 生成 n 个囊；重建体=全新囊：满 HP（150×当前 hpMul 生成时刻快照）、走成形态 1.2s、首次孵化延迟 +6s（同 firstHatchDelaySeconds）；可突破软顶，全场恒 ≤ hardCap 7；落点避让女王 ≥520 / 玩家 ≥380；「原地重鼓」类表述仅为演出叙事词，落点恒按本规则"
+              },
+              {
+                "name": "accelerateSacs({target, rateMul, durationSeconds})",
+                "spec": "定向定时孵化加速：target='nearestActive'（距调用方最近 1 个活跃囊）或 'allActive'（全场活跃囊，含当次重建）；同囊同类加速重复施加=刷新持续时间、倍率不叠加；与织巢蜂局部乘区叠乘——生效期间目标囊有效周期=12÷rateMul×织巢蜂局部 mul，不再叠 bossPhase.hatchPeriodMulDefault ×1.25；durationSeconds 到点自动失效；reset 清零"
+              },
+              {
+                "name": "setHatchPeriodMul(mul)",
+                "spec": "全局孵化周期乘区（可选槽位）；覆盖 bossPhase.hatchPeriodMulDefault；与织巢蜂局部 ×0.75 叠乘；reset 清零"
+              },
+              {
+                "name": "empowerSacs(hpMul)",
+                "spec": "现存囊 hp 与 maxHp 同步 ×mul；单向只增；不触发受损帧回退（可选槽位）"
+              },
+              {
+                "name": "countSacs()",
+                "spec": "存活囊计数（不含成形态）"
+              },
+              {
+                "name": "getSacPositions(out)",
+                "spec": "囊坐标查询，零分配 out 数组约定同 queryEnemies"
+              }
+            ],
+            "events": "囊死 emit enemyKilled{kind:'brood_sac'}（既有总线），女王可监听做狂暴/哀悼演出（可选）"
+          }
+        },
+        "bossPhase": {
+          "naturalRespawnPaused": true,
+          "hatchPeriodMulDefault": 1.25,
+          "hatchPeriodMulDefaultNote": "任意 Boss（本体/残影）存活期间孵化减速 12s→15s，保 Boss 技能可读性与实体余量；女王 setHatchPeriodMul 一旦调用、或 accelerateSacs 对目标囊生效期间，即覆盖本默认值（目标囊有效周期=12÷rateMul×织巢蜂局部 mul）",
+          "placementMinDistToBoss": 520,
+          "bossAliveSemantics": "沿用 forbiddenPages V1.5 扩展：boss.isBossAlive() 调用点内联探针（D-015），覆盖本体与残影"
+        },
+        "endless": {
+          "softCap": 5,
+          "respawn": "90s 补充检查照常（残影存活期间暂停，同 bossPhase）",
+          "hpScaling": "150 × 当前循环 hpMul（2.5×1.15^c，封顶 30 → 囊 HP 封顶 4500）；生成时刻快照",
+          "hatchPeriodSeconds": 12,
+          "hatchPeriodNote": "不压缩：无尽波次流入 4.55/s 时囊流入 0.42/s 占比 9%，无需再调",
+          "products": "hive_worker 0.85 / hive_stinger 0.15（同标准局 t≥240 段）",
+          "caps": "单囊 3 / 全场 24 不变；闸门用当前循环有效 maxAlive（残影钳 220 同口径）",
+          "rewards": "红心 15% / 宝箱 6% 不随循环放大（克制：囊在无尽是稀有交互点，不是养循环的经济引擎）；碎片走 normal 路径，无尽 ×1.5 既有规则天然生效",
+          "revenant": "蜂后残影走 links.queen 同一 API（残影 = Boss 实体，bossPhase 语义覆盖）"
+        },
+        "visual": {
+          "layer": "囊实体在 enemies 层（敌实体继承，无独立绘制层）；成形态在世界层 background 之上、enemies 之下（机制层，同禁忌书页层序）",
+          "forming": "地底隆起 1.2s：琥珀浆光 alpha 0→0.8 + 尘粒 8（fx 池复用）",
+          "idle": "常态帧 + 呼吸脉动（程序化，0 粒子）",
+          "damaged": "受损帧切换（hp<50%，可逆）",
+          "hatchWindup": "前摇帧 0.6s；待发态常驻 + 囊口微光",
+          "hatchPuff": "出生点 6 粒浆光（fx 池复用，0.5s 寿命）",
+          "budget": "囊层稳态粒子 ≈ 2 存活；瞬态峰 ≤40（女王重建演出）；叠加既有峰值 ~300 → ≤370 < 500（规格 §8.5）"
+        },
+        "sfx": {
+          "hatch": "sacHatch ×1（孵化执行时；距玩家 ≤480px 才播，音量线性衰减至 480px 外静默——防 5 囊 0.42 次/s 远场噪音）",
+          "destroy": "sacBurst ×1（囊摧毁时；全距离——玩家主动行为需要奖励感）"
+        }
+      },
+      "audio": {
+        "musicGameHive": {
+          "branch": "playMusic('gameHive')，局内替换 'game' 态（menu/boss 态沿用现有）",
+          "filterBase": 240,
+          "lfoRate": 0.12,
+          "lfoDepth": 110,
+          "target": 0.045,
+          "layers": [
+            {
+              "type": "sine",
+              "freq": 49,
+              "detune": 0,
+              "gain": 0.34
+            },
+            {
+              "type": "triangle",
+              "freq": 73.5,
+              "detune": 6,
+              "gain": 0.26
+            },
+            {
+              "type": "sine",
+              "freq": 98,
+              "detune": -8,
+              "gain": 0.16
+            },
+            {
+              "type": "sine",
+              "freq": 196,
+              "detune": 10,
+              "gain": 0.06
+            }
+          ],
+          "diffNote": "地牢 = sawtooth 粗粝石壁感；图书馆 = 纯 sine 空厅 + 220Hz 烛火微漂（filterBase 280）；蜂巢 = 根音降至 49Hz（巢穴更深处）+ 纯五度 triangle 73.5Hz（生物腔体共鸣签名音）+ lfoRate 0.12（孵化囊搏动节拍，三图最快），filterBase 240 更闷（蜡壁吸音），整体暖暗生物感与前两图的『石/书』材质听感分离"
+        },
+        "sfx": [
+          {
+            "name": "sacThud",
+            "recipe": "noise(lowpass, 320, 90, 0.25, 0.12) + tone(sine, 95, 55, 0.22, 0.1)",
+            "trigger": "孵化囊落地/生成瞬间，每囊 1 次（触发点与机制设计师对齐，机制侧可调整）"
+          },
+          {
+            "name": "sacHatch",
+            "recipe": "noise(bandpass, 1400→500, 0.12s, 0.05, q=2) + tone(triangle, 260→180, 0.12s, 0.04)",
+            "trigger": "mechanic 孵化执行 ×1；距离门控 ≤480px 线性衰减（mechanic.sfx.hatch）",
+            "note": "湿壳破裂；峰值 ≤0.3 音量纪律沿用"
+          },
+          {
+            "name": "sacBurst",
+            "recipe": "noise(lowpass, 800→180, 0.35s, 0.09) + tone(sine, 200→70, 0.3s, 0.06)",
+            "trigger": "mechanic 囊摧毁 ×1",
+            "note": "浆爆低通噪声 + 下扫正弦；pageTurn/mistRise 同助手编码（audio.ts tone()/noise()）"
+          }
+        ],
+        "sfxNote": "以上 1 条为地图侧音效需求（孵化囊落地音，参照 maps[1].audio.sfx 体例，用既有 tone()/noise() 助手编码）；孵化/摧毁音效由机制侧 broodsacs-config.json audioAdd 唯一登记（R10 裁决，本片段不重复定义）；敌人/Boss 音效归 Wave1 敌人/Boss 设计师各自登记"
+      }
     }
   ],
   "endless": {
@@ -2847,7 +3732,7 @@
         "cap": 4,
         "capReachedAtCycle": 9,
         "spawnTiming": "每循环开始时刻（t = 600 + 60*(c-1)）一次刷出",
-        "kindPool": "12 种敌人全池随机（slime/bat/rat/spider/skeleton/ghost/orc/cultist/bomber/gargoyle/shieldGuard/shaman）",
+        "kindPool": "16 种敌人全池随机（slime/bat/rat/spider/skeleton/ghost/orc/cultist/bomber/gargoyle/shieldGuard/shaman/hive_worker/hive_stinger/hive_guard/hive_weaver）",
         "eliteRules": "沿用 balance.json §elites：hpMul×10 与循环 hpMul 叠乘、dmgMul×1.5、必掉宝箱+大宝石+精英碎片"
       },
       "weights": {
@@ -2862,7 +3747,11 @@
         "bomber": 0.06,
         "bat": 0.04,
         "rat": 0.03,
-        "slime": 0.03
+        "slime": 0.03,
+        "hive_worker": 0.04,
+        "hive_stinger": 0.03,
+        "hive_guard": 0.03,
+        "hive_weaver": 0.02
       },
       "ratPack": {
         "min": 5,
@@ -3135,6 +4024,72 @@
         },
         "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true, id: 'curator' }；不触发 victory、不触发两选、不中断计时",
         "hitStopMs": 150
+      },
+      "hive": {
+        "name": "蜂后残影·维斯珀",
+        "asset": "boss_queen",
+        "tint": "#f0c060",
+        "alpha": 0.9,
+        "scheduleFormula": "t = 600 + 180 * r（r = 1,2,3,...），与巫妖/馆长残影一致",
+        "scheduleSeconds": [
+          780,
+          960,
+          1140,
+          1320,
+          1500
+        ],
+        "hpFormula": "hp(r) = 34000 * 1.5^(r-1)（= 2 × 蜂后本体 17000，对标巫妖残影 2×15000、馆长残影 2×16500）",
+        "hpBase": 34000,
+        "hpTable": [
+          {
+            "r": 1,
+            "t": 780,
+            "hp": 34000
+          },
+          {
+            "r": 2,
+            "t": 960,
+            "hp": 51000
+          },
+          {
+            "r": 3,
+            "t": 1140,
+            "hp": 76500
+          },
+          {
+            "r": 4,
+            "t": 1320,
+            "hp": 114750
+          },
+          {
+            "r": 5,
+            "t": 1500,
+            "hp": 172125
+          }
+        ],
+        "onlyOneAlive": true,
+        "skipIfPreviousAlive": "上一只残影未击杀时到点跳过本次复活，不排队",
+        "whileAliveMaxAlive": 220,
+        "fieldsNote": "onlyOneAlive/skipIfPreviousAlive/whileAliveMaxAlive 三字段 dungeon 条目既有、library 条目缺省由框架默认承载；hive 条目显式书写消除歧义（spec §10-5），不回改 library",
+        "ai": "复用 boss.ts 三阶段状态机（蜂后 P1 产卵指挥+尾针狙击 / P2 飞巡酸带+悬刺卫戍+狙击 / P3 蜂巢共振+蜂群乱舞+王室护卫），3s intro + 10px 震屏 + 阶段红心掉落全部沿用",
+        "summonHpMul": "当前循环 scaling.hpMul（同巫妖/馆长残影口径）",
+        "banner": "蜂后残影 再度振翅（第 {r} 次）",
+        "mechanicNote": "残影存活期间孵化囊按机制侧无尽折算运转；若机制侧有 bossPhase 参数，适用与 600s 本体战同一窗口语义（『Boss 战』= 任意 Boss 实体存活期间，沿用 V1.5 工程需求 #2）；折算后场上无囊时共振自动走退化分支，无需特判",
+        "drops": {
+          "chest": 1,
+          "gemL": {
+            "count": 5,
+            "xpEach": 20
+          },
+          "shards": {
+            "count": 5,
+            "valueFormula": "10 + 2 * (r-1)",
+            "totalFormula": "50 + 10 * (r-1)",
+            "excludedFromEndlessMul": true
+          }
+        },
+        "onKill": "1.5s 处决演出 + 150ms hit-stop；emit bossKilled { revenant: true, id: 'queen' }；不触发 victory、不触发两选、不中断计时",
+        "hitStopMs": 150
       }
     },
     "xpExtension": {
@@ -3315,6 +4270,12 @@
           "event_mystic_spring": 0.2
         },
         "library": {
+          "event_sacrifice_altar": 0.25,
+          "event_cursed_chest": 0.3,
+          "event_wandering_peddler": 0.2,
+          "event_mystic_spring": 0.25
+        },
+        "hive": {
           "event_sacrifice_altar": 0.25,
           "event_cursed_chest": 0.3,
           "event_wandering_peddler": 0.2,
@@ -4022,6 +4983,290 @@
         "note": "数值与巫妖 deathSequence + feel.hitStop.bossDeathMs 逐字段一致，仅粒子配色主题差异"
       },
       "onKill": "emit bossKilled（payload 含 id:'curator'，与 revenant 标记并列）；触发 endless 远征两选，语义与巫妖一致"
+    },
+    {
+      "id": "queen",
+      "name": "蚀骨蜂后·维斯珀",
+      "title": "万巢之母",
+      "asset": "boss_queen",
+      "themeColor": "#d99a3e",
+      "hp": 17000,
+      "speed": 30,
+      "dmg": 25,
+      "xp": 100,
+      "radius": 40,
+      "mass": 0.0,
+      "spawnTime": 600,
+      "introSeconds": 3.0,
+      "maps": [
+        "hive"
+      ],
+      "drops": [
+        "pickup_chest",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l",
+        "pickup_gem_l"
+      ],
+      "shardDrops": {
+        "count": 5,
+        "totalValueFormula": "50 + 3 * 祭坛bossShard等级",
+        "scatterRingRadiusPx": 60,
+        "note": "复用 boss 自管掉落路径，与巫妖/馆长逐字段一致（meta-data shards.drops.boss）"
+      },
+      "phaseDrops": [
+        {
+          "phase": 2,
+          "drop": "pickup_heart"
+        },
+        {
+          "phase": 3,
+          "drop": "pickup_heart"
+        }
+      ],
+      "onSpawn": {
+        "regularSpawnIntervalMul": 2.0,
+        "maxAlive": 110,
+        "weights": {
+          "hive_worker": 0.6,
+          "hive_stinger": 0.4
+        },
+        "banner": "蚀骨蜂后·维斯珀 为你振翅。",
+        "shakeAmp": 10,
+        "shakeTauMs": 120,
+        "note": "权重限蜂巢族系；巢卫甲虫/织巢蜂不进陪跑（重甲占位与机制支援均为 Boss 专属召唤语境）；与 maps[2] 600s 陪跑行（hive-map.json waves[20]：maxAlive 110 / worker 0.6 / stinger 0.4）逐字段一致（spec §10-3）。⚠️ onSpawn 刷怪覆盖字段（regularSpawnIntervalMul/maxAlive/weights）当前运行时未消费，陪跑实际由 maps[2] waves 末行承载，本段为意图登记"
+      },
+      "movement": {
+        "type": "patrolCruise",
+        "anchorBandMin": 240,
+        "anchorBandMax": 320,
+        "anchorMinAngleDeg": 120,
+        "dwellSeconds": 14.0,
+        "telegraphSeconds": 0.6,
+        "flightSpeed": 110,
+        "contactDmgInFlight": 25,
+        "note": "巡游型第三身份：锚点以玩家当时位置为圆心取 [240,320]px、与上一锚点夹角 ≥120°；dwell 计时到点后 0.6s 路径尘迹虚线预警，随后按阶段 flightSpeed（P1 110 / P2 130 / P3 150）直线低空飞巡至新锚点；飞行中不发射弹幕（P2 落酸除外）、接触伤害恒 25；与巫妖 chase、馆长 kiteDrift 正交（spec §2.2）"
+      },
+      "phases": [
+        {
+          "phase": 1,
+          "hpRange": [
+            1.0,
+            0.7
+          ],
+          "speed": 28,
+          "movement": "patrolCruise",
+          "movementOverrides": {
+            "dwellSeconds": 14.0,
+            "flightSpeed": 110
+          },
+          "attacks": [
+            {
+              "id": "broodCommand",
+              "type": "summon",
+              "name": "产卵指挥",
+              "interval": 9.0,
+              "enemy": "hive_worker",
+              "count": 4,
+              "ringRadius": 160,
+              "addsCap": 8,
+              "mechanismCall": {
+                "api": "accelerateSacs",
+                "target": "nearestActive",
+                "rateMul": 1.5,
+                "durationSeconds": 8.0,
+                "fallback": "无活跃卵囊时加速跳过（召唤照发，技能不空转）",
+                "note": "机制侧 API 语义以 broodsacs-config.json 为准：target='nearestActive'（距蜂后最近 1 个活跃囊）；同囊同类刷新不叠加、与织巢蜂局部乘区叠乘、生效期间目标囊有效周期=12÷rateMul×织巢蜂局部 mul 且不再叠 boss 默认 ×1.25（spec §3-2 / §10-1）"
+              },
+              "note": "召唤物 HP 走 maps[2] 600s 行 hpMul（hive-map.json 终值 2.7）"
+            },
+            {
+              "id": "stingerSnipe",
+              "type": "stingerSnipe",
+              "name": "尾针狙击",
+              "interval": 7.0,
+              "telegraphTrackSeconds": 0.7,
+              "telegraphLockSeconds": 0.4,
+              "boltCount": 1,
+              "boltDmg": 28,
+              "boltSpeed": 560,
+              "boltScale": 1.6,
+              "boltAsset": "proj_stinger",
+              "damageSource": "queenStinger",
+              "aim": "player",
+              "note": "两段 telegraph 共 1.1s：前 0.7s 瞄准线追踪玩家、后 0.4s 锁定方向；锁定后横移恒有解（0.4s×180=72px > 判定 20px，spec §2.3）"
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "hpRange": [
+            0.7,
+            0.35
+          ],
+          "speed": 34,
+          "movement": "patrolCruise",
+          "movementOverrides": {
+            "dwellSeconds": 6.0,
+            "flightSpeed": 130,
+            "acidTrail": {
+              "poolsPerFlight": 3,
+              "dropAtFractions": [
+                0.25,
+                0.5,
+                0.75
+              ],
+              "radius": 80,
+              "armDelaySeconds": 0.8,
+              "activeSeconds": 6.0,
+              "dot": {
+                "tickSeconds": 0.5,
+                "dmgPerTick": 4,
+                "channel": "dotBypassInvuln",
+                "source": "queenAcid"
+              },
+              "stackRule": "同区不叠加，重复落同点刷新时长",
+              "visual": "程序绘制径向渐变（建议 #a8b44a，以 hive palette 为准）+ 每区 6 粒冒泡 fx 粒子；落地 0.8s 冒泡圈描边渐显预警",
+              "note": "酸液带：固定伤害 DoT（与墨雾百分比 DoT、陨星燃烧玩家侧语义三分）；随位移涂污，是换位的一部分（spec §2.3 P2）"
+            }
+          },
+          "attacks": [
+            {
+              "id": "stingerSnipe",
+              "type": "stingerSnipe",
+              "name": "尾针狙击",
+              "interval": 8.0,
+              "telegraphTrackSeconds": 0.7,
+              "telegraphLockSeconds": 0.4,
+              "boltCount": 1,
+              "boltDmg": 28,
+              "boltSpeed": 560,
+              "boltScale": 1.6,
+              "boltAsset": "proj_stinger",
+              "damageSource": "queenStinger",
+              "aim": "player",
+              "note": "P1 同款沿用，interval 放宽至 8.0s（P2 主考题是换位与酸带，非弹幕密度）"
+            },
+            {
+              "id": "summonStinger",
+              "type": "summon",
+              "name": "悬刺卫戍",
+              "interval": 10.0,
+              "enemy": "hive_stinger",
+              "count": 2,
+              "ringRadius": 220,
+              "addsCap": 6
+            }
+          ]
+        },
+        {
+          "phase": 3,
+          "hpRange": [
+            0.35,
+            0.0
+          ],
+          "speed": 42,
+          "movement": "patrolCruise",
+          "movementOverrides": {
+            "dwellSeconds": 9.0,
+            "flightSpeed": 150
+          },
+          "attacks": [
+            {
+              "id": "hiveResonance",
+              "type": "hiveResonance",
+              "name": "蜂巢共振",
+              "trigger": "进入 P3 后 2.0s 首次释放，一次性（避开阶段切换 hit-stop/字幕）",
+              "telegraphSeconds": 1.5,
+              "hoverStill": true,
+              "mechanismCalls": [
+                {
+                  "api": "rebuildSacs",
+                  "scope": "全部被毁卵囊",
+                  "rebuildState": "重建体=全新囊：满 HP（150×当前 hpMul 生成时刻快照）、成形态 1.2s、首孵 +6s（机制侧终稿）；落点=机制环带 [640,960]+避让（女王 ≥520 / 玩家 ≥380）——「原地重鼓」类表述仅为演出叙事词，落点以机制侧为准"
+                },
+                {
+                  "api": "accelerateSacs",
+                  "target": "allActive",
+                  "rateMul": 1.5,
+                  "durationSeconds": 25.0,
+                  "stacking": "全场活跃卵囊（含当次重建）；与织巢蜂局部乘区叠乘；同囊同类加速重复施加=刷新持续时间、倍率不叠加；生效期间目标囊不再叠 boss 默认 ×1.25"
+                }
+              ],
+              "fallback": "无被毁卵囊→仅加速活跃囊；场上无任何卵囊→改为立即召唤 hive_worker ×6（明文计入 P1 产卵指挥同工蜂池 addsCap 8），技能不空转",
+              "shake": {
+                "amp": 4,
+                "tauMs": 70
+              },
+              "sfx": "低频嗡鸣（程序合成或复用既有通道）",
+              "note": "机制联动高潮：共振本身无伤害，威胁经『卵囊→孵化物』传导；悬停 1.5s 为设计好的输出窗口（spec §2.3 P3）"
+            },
+            {
+              "id": "sineSwarm",
+              "type": "sineSwarm",
+              "name": "蜂群乱舞",
+              "interval": 1.2,
+              "telegraphSeconds": 0.0,
+              "boltsPerVolley": 6,
+              "fanDeg": 30,
+              "aim": "player",
+              "boltDmg": 12,
+              "boltSpeed": 250,
+              "sineOffset": {
+                "amplitudePx": 24,
+                "wavelengthPx": 140,
+                "phase": "全弹同相位"
+              },
+              "boltAsset": "proj_stinger",
+              "damageSource": "queenNeedle",
+              "note": "缝隙随时间移动：站缝必死、持续横移可解（半扫宽 109px < 走位预算 216px，spec §2.3）；与馆长直线扇形、巫妖螺旋正交"
+            },
+            {
+              "id": "royalGuard",
+              "type": "summon",
+              "name": "王室护卫",
+              "interval": 12.0,
+              "initialDelaySeconds": 3.0,
+              "enemies": [
+                {
+                  "enemy": "hive_guard",
+                  "count": 1,
+                  "addsCap": 4
+                },
+                {
+                  "enemy": "hive_weaver",
+                  "count": 1,
+                  "addsCap": 2
+                }
+              ],
+              "ringRadius": 260,
+              "note": "重甲护囊 + 机制支援：共振重建卵囊后把『拆囊』从顺手变成决策（spec §4）"
+            }
+          ]
+        }
+      ],
+      "summonCapsTotal": 20,
+      "summonCapsNote": "8+6+4+2=20，与 endless performance.worstCaseBudget.revenantSummons 20 既有核算逐字段对齐",
+      "phaseTransition": {
+        "hitStopMs": 150,
+        "particles": 60,
+        "subtitleSeconds": 1.5,
+        "note": "与巫妖/馆长阶段切换演出逐字段一致（feel.hitStop.bossPhaseMs / feel.particles.bossPhase），粒子琥珀色系"
+      },
+      "deathSequence": {
+        "duration": 1.5,
+        "explosions": 3,
+        "explosionGapSeconds": 0.4,
+        "slowmoScale": 0.3,
+        "slowmoSeconds": 1.2,
+        "whiteFlashMs": 200,
+        "hitStopMs": 400,
+        "particles": 120,
+        "particleTheme": "琥珀甲壳碎屑 + 蜜色灵魂雾（复用 feel.particles 参数与 gravity.soul -40 上浮）",
+        "note": "数值与巫妖/馆长 deathSequence + feel.hitStop.bossDeathMs 逐字段一致，仅粒子配色主题差异"
+      },
+      "onKill": "emit bossKilled（payload 含 id:'queen'，与 revenant 标记并列）；触发 endless 远征两选，语义与巫妖/馆长一致"
     }
   ],
   "synergies": [
