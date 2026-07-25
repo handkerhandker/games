@@ -7839,9 +7839,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u6DF1\u6E0A\u5E38\u5BA2",
           icon: "eye",
           desc: "\u7D2F\u8BA1\u5B8C\u6210 50 \u5C40\u6E38\u620F\u3002",
-          // 口径依赖 main.js 顺序：gameOver/victory 先 updateMeta(runs+1) 再 settleAchievements，
-          // 故 meta.runs 已含本局，不得再加本局（旧写法双计导致早 1 局解锁；中途弃局不计入）。
-          check: (meta2, run2) => num2(meta2 && meta2.runs) >= 50
+          // 口径（D-024 统一后）：评估时 meta.runs 不含本局（main.js 先 settleAchievements 后 updateMeta），
+          // 故 +1 补本局；中途弃局不计入（runs 在结算才 +1）。
+          check: (meta2, run2) => num2(meta2 && meta2.runs) + (run2 ? 1 : 0) >= 50
         },
         {
           id: "gold_500",
@@ -7870,9 +7870,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u767E\u4EBA\u65A9",
           icon: "st-strength",
           desc: "\u7D2F\u8BA1\u51FB\u7834 100 \u4E2A\u654C\u4EBA\u3002",
-          // 口径脆弱点：此处假设 meta.totalKills 已含本局（main.js 先 updateMeta 再结算成就），
-          // 与 B 组（remove_5 / upgrade_10 / damage_1000 等「meta.total* + 本局 stats」写法）假设相反。
-          check: (meta2, run2) => num2(meta2 && meta2.totalKills) >= 100
+          // 口径（D-024 统一后）：评估时 meta.totalKills 不含本局，自加 run.stats.kills（与 B 组同法）。
+          check: (meta2, run2) => num2(meta2 && meta2.totalKills) + st(run2, "kills") >= 100
         },
         // ---------- 参与奖 ----------
         {
@@ -7880,10 +7879,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           name: "\u8D25\u8005\u98DF\u5C18",
           icon: "x",
           desc: "\u7D2F\u8BA1\u8D25\u5317 5 \u6B21\u3002\u6DF1\u6E0A\u8BB0\u5F97\u6BCF\u4E00\u4E2A\u6765\u8FC7\u7684\u4EBA\u3002",
-          // 口径依赖 main.js 顺序：结算先 updateMeta（败局 runs+1/wins 不动，胜局 wins/runs 同+1 相消）
-          // 再 settleAchievements，故 losses 已含本局结果，不得再加本局（旧写法双计导致早 1 局解锁）。
+          // 口径（D-024 统一后）：评估时 meta.runs/wins 均不含本局——runs-wins 是历史败场，
+          // 本局为败局再 +1（胜局 runWon 为 true 不 +1）。
           check: (meta2, run2) => {
-            const losses = num2(meta2 && meta2.runs) - num2(meta2 && meta2.wins);
+            const losses = num2(meta2 && meta2.runs) - num2(meta2 && meta2.wins) + (run2 && !runWon(run2) ? 1 : 0);
             return losses >= 5;
           }
         }
@@ -13491,11 +13490,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     });
   }
   async function gameOver() {
-    updateMeta({ runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
-    meta = getMeta();
     lastRun = run;
     lastResult = "lose";
     const newIds = await settleAchievements();
+    updateMeta({ runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
+    meta = getMeta();
     try {
       mergeRunIntoMeta(run, { won: false });
       meta = getMeta();
@@ -13509,11 +13508,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     toastAchievements(newIds);
   }
   async function victory() {
-    updateMeta({ wins: meta.wins + 1, runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
-    meta = getMeta();
     lastRun = run;
     lastResult = "win";
     const newIds = await settleAchievements();
+    updateMeta({ wins: meta.wins + 1, runs: meta.runs + 1, bestFloor: Math.max(meta.bestFloor, run.stats.floorsClimbed), totalKills: meta.totalKills + run.stats.kills });
+    meta = getMeta();
     try {
       mergeRunIntoMeta(run, { won: true });
       meta = getMeta();
