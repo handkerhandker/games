@@ -1397,6 +1397,11 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 .sc-title-meta-item { text-align: center; }
 .sc-title-meta-v { color: var(--phos); font-size: var(--fs-lg); }
 .sc-title-meta-k { color: var(--dim); font-size: var(--fs-xs); margin-top: 2px; }
+/* 构建版本戳：标题屏/游戏菜单底部小字（--fs-xs 档、--dim 色、居中、半透明不抢戏） */
+.sc-buildstamp {
+  margin-top: clamp(8px, 1.4vw, 14px);
+  color: var(--dim); font-size: var(--fs-xs); text-align: center; opacity: .6;
+}
 
 /* ============ 奖励屏 ============ */
 .sc-reward-gold {
@@ -1864,6 +1869,8 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 /* 返回标题二次确认 */
 .sc-gmenu-confirm-t { font-size: var(--fs-sm); line-height: 1.8; margin-bottom: clamp(12px, 2vw, 18px); }
 .sc-gmenu-actions { display: flex; gap: var(--gap); flex-wrap: wrap; justify-content: center; }
+/* 菜单内版本戳：复用 .sc-buildstamp，仅收一点上间距贴合按钮列 */
+.sc-gmenu-stamp { margin-top: clamp(6px, 1vw, 10px); }
 /* 触屏：可点目标 ≥42px（§2-6） */
 @media (pointer: coarse) {
   .sc-gmenu-btn { min-width: 42px; min-height: 42px; }
@@ -6223,6 +6230,14 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
   });
 
+  // src/buildStamp.js
+  var BUILD_STAMP;
+  var init_buildStamp = __esm({
+    "src/buildStamp.js"() {
+      BUILD_STAMP = "2026-07-25 19:51 \xB7 6819f9e4";
+    }
+  });
+
   // src/ui/components.js
   function opToText(op, card) {
     switch (op.op) {
@@ -6591,7 +6606,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           item("\u8FD4\u56DE\u6807\u9898", () => {
             sfx2();
             renderConfirm();
-          }, "sc-gmenu-item--danger")
+          }, "sc-gmenu-item--danger"),
+          // 构建版本戳：菜单列表末尾小字一行，与标题屏同一数据源
+          el("div", { class: "sc-buildstamp sc-gmenu-stamp" }, `\u7248\u672C ${BUILD_STAMP}`)
         )
       );
     }
@@ -6640,6 +6657,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       init_dom();
       init_icons();
       init_cards();
+      init_buildStamp();
       STATUS_NAMES = {
         poison: "\u75C5\u6BD2",
         weak: "\u5F31\u5316",
@@ -8197,7 +8215,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         metaItem("\u5165\u4FB5\u6B21\u6570", m.runs),
         metaItem("\u6700\u6DF1\u62B5\u8FBE", `${m.bestFloor} \u5C42`),
         metaItem("\u7D2F\u8BA1\u51FB\u7834", m.totalKills)
-      )
+      ),
+      // 构建版本戳：壳末尾小字一行，源码态显示 dev 占位，打包后为「时间 · git短hash」
+      el("div", { class: "sc-buildstamp" }, `\u7248\u672C ${BUILD_STAMP}`)
     ));
   }
   function renderReward(root, run2, ctx2, reward, onDone) {
@@ -9062,6 +9082,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     "src/ui/screens.js"() {
       init_dom();
       init_components();
+      init_buildStamp();
       init_cards();
       init_relics();
       init_enemies();
