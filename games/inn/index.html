@@ -4,10 +4,138 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>次元旅店</title>
-    <script type="module" crossorigin src="./assets/index-DtDtlEfX.js"></script>
+    <style>
+      /* 首屏加载遮罩：SW 预载期间可见；React 正常挂载，不阻塞 */
+      #boot-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: #2b1f14;
+        color: #f3e6c8;
+        font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+        transition: opacity 0.4s ease;
+      }
+      #boot-screen.boot-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .boot-title {
+        font-size: 20px;
+        letter-spacing: 0.35em;
+        text-indent: 0.35em;
+      }
+      .boot-bar {
+        width: min(70vw, 300px);
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(232, 189, 88, 0.16);
+        overflow: hidden;
+      }
+      #boot-fill {
+        width: 0%;
+        height: 100%;
+        border-radius: 999px;
+        background: #e8bd58;
+        transition: width 0.25s ease;
+      }
+      #boot-pct {
+        font-size: 12px;
+        letter-spacing: 0.15em;
+        color: rgba(243, 230, 200, 0.65);
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-DheKLYLC.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CUo_0j3W.css">
   </head>
   <body>
+    <div id="boot-screen" role="status" aria-label="游戏资源加载中">
+      <div class="boot-title">次元旅店 · 正在准备</div>
+      <div class="boot-bar"><div id="boot-fill"></div></div>
+      <div id="boot-pct">0%</div>
+    </div>
     <div id="root"></div>
+    <script>
+      // 次元旅店 · SW 注册与首屏进度
+      (function () {
+        var boot = document.getElementById('boot-screen')
+        var fill = document.getElementById('boot-fill')
+        var pct = document.getElementById('boot-pct')
+
+        function setProgress(done, total) {
+          var p = total > 0 ? Math.min(100, Math.round((done / total) * 100)) : 0
+          fill.style.width = p + '%'
+          pct.textContent = p + '%'
+        }
+        function hide() {
+          if (!boot || boot.dataset.done === '1') return
+          boot.dataset.done = '1'
+          boot.classList.add('boot-hidden')
+          window.setTimeout(function () {
+            if (boot.parentNode) boot.parentNode.removeChild(boot)
+          }, 450)
+        }
+
+        // 守卫：开发调试场景（非 https：localhost / 127.0.0.1 / 局域网 IP / file:）
+        // 或 URL 带 ?nosw=1 时，不注册 SW、直接放行，避免缓存干扰开发。
+        var params = new URLSearchParams(location.search)
+        var host = location.hostname
+        var isDevEnv =
+          location.protocol !== 'https:' ||
+          host === 'localhost' ||
+          host === '127.0.0.1' ||
+          host === '' ||
+          /^192\.168\.\d{1,3}\.\d{1,3}$/.test(host)
+        if (isDevEnv || params.get('nosw') === '1' || !('serviceWorker' in navigator)) {
+          // ?nosw=1 且曾注册过：顺手注销旧 SW 并清掉 inn- 缓存，彻底免干扰（D-014 P2）
+          if (params.get('nosw') === '1' && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (rs) {
+              rs.forEach(function (r) { r.unregister() })
+            })
+            if (window.caches && caches.keys) {
+              caches.keys().then(function (ks) {
+                ks.forEach(function (k) { if (k.indexOf('inn-') === 0) caches.delete(k) })
+              })
+            }
+          }
+          hide()
+          return
+        }
+
+        // SW 预载进度 → 进度条；预载完成 → 收起遮罩
+        navigator.serviceWorker.addEventListener('message', function (event) {
+          var data = event.data || {}
+          if (data.type === 'progress') setProgress(data.done, data.total)
+          if (data.type === 'installed') hide()
+        })
+
+        // 版本换新：新 SW 激活接管 → 整页刷新一次（localStorage 存档不受影响）。
+        // 首次安装时页面原本就未被控制（hadController=false），不触发刷新。
+        var hadController = !!navigator.serviceWorker.controller
+        var reloaded = false
+        navigator.serviceWorker.addEventListener('controllerchange', function () {
+          if (!hadController || reloaded) return
+          reloaded = true
+          location.reload()
+        })
+
+        navigator.serviceWorker
+          .register('./sw.js', { updateViaCache: 'none' })
+          .then(function (reg) {
+            // 老用户秒开：SW 已激活且无新老安装任务（无预载工作要做）
+            if (reg.active && !reg.installing && !reg.waiting) hide()
+          })
+          .catch(hide)
+
+        // 兜底：预载异常（弱网/个别文件失败）时最长等待 60s 放行，
+        // 游戏仍可在线使用，SW 会在后台继续/重试。
+        window.setTimeout(hide, 60000)
+      })()
+    </script>
   </body>
 </html>
