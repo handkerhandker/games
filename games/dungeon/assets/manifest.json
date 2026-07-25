@@ -139,5 +139,11 @@
   "proj_stinger": "sprites/proj_stinger.png",
   "brood_sac": "sprites/brood_sac.png",
   "brood_sac_dmg": "sprites/brood_sac_dmg.png",
-  "brood_sac_hatch": "sprites/brood_sac_hatch.png"
+  "brood_sac_hatch": "sprites/brood_sac_hatch.png",
+  "passive_power": "sprites/passive_power.png",
+  "passive_haste": "sprites/passive_haste.png",
+  "passive_swift": "sprites/passive_swift.png",
+  "passive_magnet": "sprites/passive_magnet.png",
+  "passive_vitality": "sprites/passive_vitality.png",
+  "passive_aegis": "sprites/passive_aegis.png"
 }
