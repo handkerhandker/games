@@ -1340,7 +1340,7 @@
       "pickup_chest",
       "pickup_gem_l"
     ],
-    "note": "hpMul 与波次 hpMul 叠乘；必掉宝箱 + 1 颗大宝石(20 XP)；击杀触发 90ms hit-stop"
+    "note": "hpMul 与波次 hpMul 叠乘；必掉宝箱 + 1 颗大宝石(20 XP)；击杀触发 90ms hit-stop。dmgMul 口径（D-033）：覆盖该敌一切伤害来源（接触/弹体/爆炸等），仅已明示豁免者除外（如 shaman 光环）；speedMul 只作于移速，弹速/追踪/弹寿/施放节奏不吃精英乘区"
   },
   "boss": {
     "id": "lich",
