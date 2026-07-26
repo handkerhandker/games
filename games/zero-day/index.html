@@ -2594,9 +2594,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   });
 
   // src/engine/map.js
-  function rollType(rng, floor) {
+  function rollType(rng, floor, table = TYPE_TABLE) {
     let roll = rng.next();
-    for (const [type, w] of TYPE_TABLE) {
+    for (const [type, w] of table) {
       roll -= w;
       if (roll <= 0) {
         if (type === "elite" && floor < 5) return "combat";
@@ -2727,7 +2727,15 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       if (!repaired) return;
     }
   }
-  function generateMap(rng, act = 1) {
+  function generateMap(rng, act = 1, mods) {
+    let table = TYPE_TABLE;
+    const eliteW = mods && typeof mods === "object" ? Number(mods.eliteWeight) : NaN;
+    if (Number.isFinite(eliteW) && eliteW >= 0 && eliteW !== 0.12) {
+      const combatW = 0.42 - (eliteW - 0.12);
+      if (combatW > 0) {
+        table = TYPE_TABLE.map(([t, w]) => t === "elite" ? [t, eliteW] : t === "combat" ? [t, combatW] : [t, w]);
+      }
+    }
     const counts = planRowCounts(rng);
     const nodes = {};
     const floors = [];
@@ -2738,7 +2746,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         let type;
         if (f === BOSS_FLOOR) type = "boss";
         else if (f === 0) type = "combat";
-        else type = rollType(rng, f);
+        else type = rollType(rng, f, table);
         nodes[id] = { id, floor: f, col: c, type, next: [], visited: false };
         row.push(id);
       }
@@ -2923,8 +2931,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           type: "skill",
           rarity: "starter",
           target: "self",
-          effects: [{ op: "heat", amount: -4 }],
-          upgrade: { effects: [{ op: "heat", amount: -6 }] },
+          effects: [{ op: "heat", amount: -6 }],
+          upgrade: { effects: [{ op: "heat", amount: -8 }] },
           flavor: "\u98CE\u6247\u72C2\u8F6C\u7684\u58F0\u97F3\uFF0C\u662F\u8FD9\u4E2A\u7CFB\u7EDF\u552F\u4E00\u7684\u8BDA\u5B9E\u3002",
           icon: "flame"
         },
@@ -4264,6 +4272,49 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
             }
           }
         },
+        chaos_coil: {
+          id: "chaos_coil",
+          name: "\u6DF7\u6C8C\u7EBF\u5708",
+          icon: "warn",
+          rarity: "uncommon",
+          desc: "\u6218\u6597\u5F00\u59CB\u65F6\uFF0C\u4F7F\u6240\u6709\u654C\u4EBA\u83B7\u5F97 2 \u5C42\u7834\u7EFD\uFF0C\u4F60\u7684\u70ED\u91CF +3\u3002\u5B83\u4E0D\u5206\u654C\u6211\uFF0C\u53EA\u5206\u5148\u540E\u3002",
+          hooks: {
+            onCombatStart(run2, combat) {
+              eachAliveEnemy(combat, (e) => addStatus(e, "vulnerable", 2));
+              const p = player(combat);
+              if (p) p.heat = (p.heat || 0) + 3;
+            }
+          }
+        },
+        scar_firmware: {
+          id: "scar_firmware",
+          name: "\u4F24\u75A4\u56FA\u4EF6",
+          icon: "st-thorns",
+          rarity: "uncommon",
+          desc: "\u4F60\u6BCF\u53D7\u5230\u4E00\u6B21\u751F\u547D\u4F24\u5BB3\uFF0C\u7F16\u8BD1 1 \u5C42\u53CD\u4F24\uFF0C\u4E0B\u4E2A\u4F60\u7684\u56DE\u5408\u5F00\u59CB\u65F6\u5B9E\u88C5\uFF08\u6BCF\u573A\u6218\u6597\u81F3\u591A 4 \u5C42\uFF09\u3002\u75BC\u75DB\u65E5\u5FD7\u9010\u884C\u5199\u5165\uFF0C\u4ECE\u4E0D\u4E22\u5931\u3002",
+          hooks: {
+            onCombatStart(run2) {
+              if (!run2.relicFlags) run2.relicFlags = {};
+              run2.relicFlags.scarCount = 0;
+              run2.relicFlags.scarQueue = 0;
+            },
+            onDamageTaken(run2, amount) {
+              if (!run2.relicFlags) return amount;
+              const compiled = (run2.relicFlags.scarCount || 0) + (run2.relicFlags.scarQueue || 0);
+              if (amount > 0 && compiled < 4) {
+                run2.relicFlags.scarQueue = (run2.relicFlags.scarQueue || 0) + 1;
+              }
+              return amount;
+            },
+            onTurnStart(run2, combat) {
+              const queued = run2.relicFlags && run2.relicFlags.scarQueue;
+              if (!queued) return;
+              addStatus(player(combat), "thorns", queued);
+              run2.relicFlags.scarCount = (run2.relicFlags.scarCount || 0) + queued;
+              run2.relicFlags.scarQueue = 0;
+            }
+          }
+        },
         // ============ rare ============
         recursion_mirror: {
           id: "recursion_mirror",
@@ -4363,6 +4414,32 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
               }
               if (target) addStatus(target, "poison", 1);
               else if (healthiest) addStatus(healthiest, "poison", 2);
+            }
+          }
+        },
+        flywheel_battery: {
+          id: "flywheel_battery",
+          name: "\u98DE\u8F6E\u7535\u6C60",
+          icon: "st-charge",
+          rarity: "rare",
+          desc: "\u56DE\u5408\u7ED3\u675F\u65F6\uFF0C\u672A\u7528\u5B8C\u7684\u80FD\u91CF\u81F3\u591A 3 \u70B9\u5B58\u5165\u98DE\u8F6E\uFF0C\u4E0B\u56DE\u5408\u5F00\u59CB\u65F6\u91CA\u653E\u3002\u80FD\u91CF\u4E0D\u4F1A\u6D88\u5931\uFF0C\u53EA\u4F1A\u6362\u73ED\u3002",
+          hooks: {
+            onCombatStart(run2) {
+              if (!run2.relicFlags) run2.relicFlags = {};
+              run2.relicFlags.flywheelStore = 0;
+            },
+            onTurnEnd(run2, combat) {
+              const p = player(combat);
+              if (!p || !run2.relicFlags) return;
+              run2.relicFlags.flywheelStore = Math.min(3, Math.max(0, p.energy || 0));
+            },
+            onTurnStart(run2, combat, n) {
+              const p = player(combat);
+              const stored = run2.relicFlags && run2.relicFlags.flywheelStore;
+              if (p && n > 1 && stored > 0) {
+                p.energy += stored;
+                run2.relicFlags.flywheelStore = 0;
+              }
             }
           }
         },
@@ -4695,6 +4772,34 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
   });
 
+  // src/engine/ascend.js
+  function resolveAscendMods(level) {
+    const n = Number(level);
+    if (!Number.isInteger(n) || n <= 0) return {};
+    const mods = {};
+    for (const entry of ASCENDS) {
+      if (entry.level > n) break;
+      if (entry.disabled) continue;
+      Object.assign(mods, entry.mods);
+    }
+    return mods;
+  }
+  var ASCEND_MAX, ASCENDS;
+  var init_ascend = __esm({
+    "src/engine/ascend.js"() {
+      ASCEND_MAX = 7;
+      ASCENDS = [
+        { level: 1, id: "enemy_atk", name: "\u654C\u610F\u5347\u7EA7", desc: "\u654C\u4EBA\u653B\u51FB\u4F24\u5BB3 +10%", mods: { enemyAtkMul: 1.1 } },
+        { level: 2, id: "enemy_hp", name: "\u88C5\u7532\u52A0\u539A", desc: "\u654C\u4EBA\u751F\u547D +25%", mods: { enemyHpMul: 1.25 } },
+        { level: 3, id: "thin_reward", name: "\u56DE\u6536\u7F29\u6C34", desc: "\u6218\u6597\u5956\u52B1\u4E09\u9009\u4E00\u53D8\u4E8C\u9009\u4E00", mods: { rewardCards: 2 } },
+        { level: 4, id: "purge_tax", name: "\u6E05\u7406\u52A0\u4EF7", desc: "\u5546\u5E97\u5220\u5361\u4EF7\u683C +50%", mods: { removePriceMul: 1.5 } },
+        { level: 5, id: "trojan", name: "\u9884\u8F7D\u6728\u9A6C", desc: "\u5F00\u5C40\u724C\u7EC4\u585E\u5165\u4E00\u5F20\u6728\u9A6C\uFF08\u5E7F\u544A\u5F39\u7A97\uFF09", mods: { startTrojan: "c_adpopup" } },
+        { level: 6, id: "elite_swarm", name: "\u7CBE\u82F1\u5DE1\u903B", desc: "\u5730\u56FE\u7CBE\u82F1\u8282\u70B9\u6743\u91CD .12\u2192.20", mods: { eliteWeight: 0.2 } },
+        { level: 7, id: "no_heal_rest", name: "\u8B66\u6212\u72B6\u6001", desc: "\u4F11\u606F\u70B9\u4E0D\u56DE\u8840\uFF08\u4EC5\u5347\u7EA7\uFF09", mods: { restHeal: false } }
+      ];
+    }
+  });
+
   // src/engine/state.js
   var state_exports = {};
   __export(state_exports, {
@@ -4718,6 +4823,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     mergeRunIntoMeta: () => mergeRunIntoMeta,
     newRun: () => newRun,
     nextAct: () => nextAct,
+    recordAscendWin: () => recordAscendWin,
     recordChallengeResult: () => recordChallengeResult,
     removeCard: () => removeCard,
     runRng: () => runRng,
@@ -4783,10 +4889,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function getSetting(k) {
     return loadSettings()[k];
   }
-  function newRun(seed, characterId = "zero_day") {
+  function newRun(seed, characterId = "zero_day", opts) {
     if (seed === void 0 || seed === null) seed = Date.now() >>> 0;
+    const ascendRaw = opts && typeof opts === "object" ? Number(opts.ascend) : NaN;
+    const ascend = Number.isFinite(ascendRaw) ? Math.min(Math.max(Math.floor(ascendRaw), 0), ASCEND_MAX) : 0;
+    const ascendMods = resolveAscendMods(ascend);
     const rng = makeRng(seed);
-    const map = generateMap(rng, 1);
+    const map = generateMap(rng, 1, ascendMods);
     const def = CHARACTERS && CHARACTERS[characterId] || CHARACTERS && CHARACTERS.zero_day || null;
     const starter = def && Array.isArray(def.starter) && def.starter.length ? def.starter : STARTER_DECK;
     const run2 = {
@@ -4804,6 +4913,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       deck: starter.map((ref) => ({ id: ref.id, upgraded: !!ref.upgraded })),
       relics: [],
       shopReroll: 0,
+      ascend,
       stats: {
         kills: 0,
         elites: 0,
@@ -4826,6 +4936,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       seenEvents: [],
       heatLimitBonus: 0
     };
+    if (typeof ascendMods.startTrojan === "string" && ascendMods.startTrojan) {
+      run2.deck.push({ id: ascendMods.startTrojan, upgraded: false });
+    }
     try {
       for (const ref of run2.deck) markSeen("card", ref.id);
     } catch (e) {
@@ -4842,6 +4955,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function normalizeRun(run2) {
     if (typeof run2.character !== "string" || !run2.character) run2.character = "zero_day";
     if (typeof run2.startTime !== "number" || !Number.isFinite(run2.startTime)) run2.startTime = Date.now();
+    if (typeof run2.ascend !== "number" || !Number.isFinite(run2.ascend)) run2.ascend = 0;
+    run2.ascend = Math.min(Math.max(Math.floor(run2.ascend), 0), ASCEND_MAX);
     if (!run2.stats || typeof run2.stats !== "object") run2.stats = {};
     for (const k of RUN_STAT_FIELDS) {
       if (typeof run2.stats[k] !== "number" || !Number.isFinite(run2.stats[k])) run2.stats[k] = 0;
@@ -4876,6 +4991,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       if (typeof m[k] !== "number" || !Number.isFinite(m[k])) m[k] = 0;
     }
     m.daily = m.daily && typeof m.daily === "object" && !Array.isArray(m.daily) ? { ...m.daily } : {};
+    m.ascendUnlocks = m.ascendUnlocks && typeof m.ascendUnlocks === "object" && !Array.isArray(m.ascendUnlocks) ? { ...m.ascendUnlocks } : {};
     return m;
   }
   function getMeta() {
@@ -4933,6 +5049,18 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       patch.charactersWon = [...set];
     }
     return updateMeta(patch);
+  }
+  function recordAscendWin(run2) {
+    if (!run2 || typeof run2 !== "object") return null;
+    const cid = typeof run2.character === "string" && run2.character ? run2.character : "zero_day";
+    const ascend = Number.isInteger(run2.ascend) ? run2.ascend : 0;
+    const meta2 = getMeta();
+    const prev = Number.isInteger(meta2.ascendUnlocks[cid]) ? meta2.ascendUnlocks[cid] : 0;
+    if (ascend !== prev) return null;
+    if (ascend >= ASCEND_MAX) return null;
+    const unlocked = ascend + 1;
+    updateMeta({ ascendUnlocks: { ...meta2.ascendUnlocks, [cid]: unlocked } });
+    return { character: cid, prev, unlocked };
   }
   function normDailyEntry(raw) {
     const e = raw && typeof raw === "object" ? raw : {};
@@ -5088,7 +5216,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function buildReward(run2, tier = "normal") {
     const rng = runRng(run2);
     const gold = tier === "boss" ? rng.int(40, 60) : tier === "elite" ? rng.int(25, 40) : rng.int(15, 25);
-    const reward = { gold, cards: draftCards(rng, 3, run2) };
+    const draftCount = resolveAscendMods(run2.ascend).rewardCards || 3;
+    const reward = { gold, cards: draftCards(rng, draftCount, run2) };
     if (tier === "elite") {
       const relic = randomRelic(run2, rng);
       if (relic) reward.relic = relic;
@@ -5133,7 +5262,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   function nextAct(run2) {
     run2.act += 1;
     const rng = runRng(run2);
-    run2.map = generateMap(rng, run2.act);
+    run2.map = generateMap(rng, run2.act, resolveAscendMods(run2.ascend));
     run2.rngState = rng.getState();
     run2.nodeId = null;
     return run2;
@@ -5152,6 +5281,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       init_relics();
       init_characters();
       init_daily();
+      init_ascend();
       SAVE_KEY = "zdp_save";
       META_KEY = "zdp_meta";
       SETTINGS_KEY = "zdp_settings";
@@ -5165,7 +5295,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         charactersWon: [],
         totalDamage: 0,
         totalCardsRemoved: 0,
-        totalCardsUpgraded: 0
+        totalCardsUpgraded: 0,
+        ascendUnlocks: {}
       };
       RUN_STAT_FIELDS = [
         "kills",
@@ -6273,7 +6404,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   var BUILD_STAMP;
   var init_buildStamp = __esm({
     "src/buildStamp.js"() {
-      BUILD_STAMP = "2026-07-26 03:00 \xB7 4d6b2358";
+      BUILD_STAMP = "2026-07-26 11:11 \xB7 62a07325";
     }
   });
 
@@ -10081,6 +10212,99 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           resultText: "\u5305\u88F9\u539F\u8DEF\u8FD4\u56DE\u3002\u4E09\u79D2\u540E\u4F60\u6536\u5230\u9000\u6B3E\u5230\u8D26\u901A\u77E5\u2014\u2014\u6263\u9664\u624B\u7EED\u8D39\uFF0C\u521A\u597D\u4E00\u676F\u5496\u5561\u94B1\u3002"
         }
       ]
+    },
+    {
+      id: "morph_altar",
+      title: "\u53D8\u5F62\u796D\u575B",
+      icon: "deck",
+      text: "\u8D70\u5ECA\u5C3D\u5934\u7ACB\u7740\u4E00\u5EA7\u7528\u9000\u5F79\u663E\u5361\u5806\u6210\u7684\u796D\u575B\uFF0C\u9999\u7070\u662F\u7845\u8102\uFF0C\u4F9B\u54C1\u662F\u6210\u6346\u7684\u65E7\u4EE3\u7801\u3002\u575B\u4E0A\u94ED\u6587\u53EA\u6709\u4E00\u884C\uFF1A\u300C\u732E\u4E0A\u4F60\u7684\u4E00\u6BB5\uFF0C\u6362\u4E00\u6BB5\u4F60\u4E0D\u8BA4\u8BC6\u7684\u3002\u300D",
+      choices: [
+        {
+          text: "\u732E 12 \u70B9\u751F\u547D\u4E0E\u4E00\u6BB5\u4EE3\u7801\uFF0C\u9886\u53D7\u300C\u75C5\u53D8\u300D\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF09",
+          requires: (run2) => run2.deck.length < 2 ? "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u732E" : run2.hp >= 16 ? true : "\u8840\u7EBF\u592A\u4F4E\uFF0C\u796D\u575B\u770B\u4E0D\u4E0A\uFF08\u9700\u8981 16 \u751F\u547D\uFF09",
+          result: { hp: -12, removeRandomCard: 1, addCard: { id: "v_lesion", upgraded: false } },
+          resultText: "\u796D\u575B\u5148\u62BD\u8D70\u4E00\u5927\u7BA1\u8840\u5F53\u57F9\u517B\u57FA\u2014\u2014\u75C5\u6BD2\u8D27\u8272\u6700\u8FD1\u6DA8\u4EF7\u4E86\u3002\u6362\u56DE\u6765\u7684\u8FD9\u6BB5\u4E0D\u592A\u5B89\u9759\uFF0C\u4F24\u53E3\u4E0A\u8FD8\u5728\u5192\u65B0\u70B9\u5B50\u3002"
+        },
+        {
+          text: "\u732E 9 \u70B9\u751F\u547D\u4E0E\u4E00\u6BB5\u4EE3\u7801\uFF0C\u9886\u53D7\u300C\u4F59\u70ED\u56DE\u6536\u300D\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF09",
+          requires: (run2) => run2.deck.length < 2 ? "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u732E" : run2.hp >= 12 ? true : "\u8840\u7EBF\u592A\u4F4E\uFF0C\u796D\u575B\u770B\u4E0D\u4E0A\uFF08\u9700\u8981 12 \u751F\u547D\uFF09",
+          result: { hp: -9, removeRandomCard: 1, addCard: { id: "o_recycle", upgraded: false } },
+          resultText: "\u9999\u706B\u94B1\u662F\u4E00\u7BA1\u8840\uFF0C\u6B63\u597D\u6DFB\u8FDB\u7089\u819B\u3002\u6362\u56DE\u6765\u7684\u8FD9\u6BB5\u4E0D\u4EA7\u70ED\uFF0C\u4E13\u6536\u70ED\u2014\u2014\u7089\u5B50\u656C\u5B83\u4E09\u5206\u3002"
+        },
+        {
+          text: "\u732E 9 \u70B9\u751F\u547D\u4E0E\u4E00\u6BB5\u4EE3\u7801\uFF0C\u9886\u53D7\u300C\u53CD\u5165\u4FB5\u77E9\u9635\u300D\uFF08\u968F\u673A\u5931\u53BB 1 \u5F20\u5361\uFF09",
+          requires: (run2) => run2.deck.length < 2 ? "\u5361\u7EC4\u592A\u8584\uFF0C\u65E0\u7269\u53EF\u732E" : run2.hp >= 12 ? true : "\u8840\u7EBF\u592A\u4F4E\uFF0C\u796D\u575B\u770B\u4E0D\u4E0A\uFF08\u9700\u8981 12 \u751F\u547D\uFF09",
+          result: { hp: -9, removeRandomCard: 1, addCard: { id: "d_matrix", upgraded: false } },
+          resultText: "\u4F60\u4EA4\u51FA\u4E00\u6BB5\u4EE3\u7801\u548C\u4E00\u7BA1\u8840\uFF0C\u4EE3\u7801\u7ACB\u6B63\u656C\u4E86\u4E2A\u793C\uFF0C\u8840\u6CA1\u6709\u3002\u6362\u56DE\u6765\u7684\u8FD9\u6BB5\uFF0C\u6D51\u8EAB\u957F\u6EE1\u4E86\u793C\u8C8C\u7684\u523A\u3002"
+        },
+        {
+          text: "\u4E0D\u4E0A\u4E86\uFF0C\u97A0\u4E2A\u8EAC\u5C31\u8D70",
+          result: {},
+          resultText: "\u796D\u575B\u76EE\u9001\u4F60\u79BB\u5F00\uFF0C\u94ED\u6587\u95EA\u4E86\u95EA\uFF0C\u50CF\u662F\u66F4\u65B0\u4E86\u4E00\u6761\u300C\u5DF2\u8BFB\u4E0D\u56DE\u300D\u7684\u796D\u7940\u8BB0\u5F55\u3002"
+        }
+      ]
+    },
+    {
+      id: "duplicator",
+      title: "\u65E0\u9650\u590D\u5370\u4EAD",
+      icon: "drawpile",
+      text: "\u4E00\u53F0\u8D6B\u5C14\u58A8\u65AF\u884C\u653F\u590D\u5370\u673A\u5361\u5728\u300C\u8FDE\u7EED\u590D\u5370\u300D\u6863\uFF0C\u51FA\u7EB8\u53E3\u5410\u7740\u91CD\u590D\u7684\u7EB8\u9875\uFF0C\u6BCF\u4E00\u5F20\u90FD\u662F\u540C\u4E00\u4EFD\u88C1\u5458\u901A\u77E5\u3002\u5C4F\u5E55\u95EA\u70C1\uFF1A\u300C\u8D44\u4EA7\u590D\u5236\u670D\u52A1\u2014\u2014\u7B2C\u4E8C\u5F20\uFF0C\u7167\u4EF7\u6536\u8D39\uFF0C\u7AE5\u53DF\u65E0\u6B3A\u3002\u300D",
+      choices: [
+        {
+          text: "\u590D\u5370\u300C\u52A0\u56FA\u300D\uFF0845 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.gold >= 45 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 45\uFF09",
+          result: { gold: -45, addCard: { id: "d_reinforce", upgraded: false } },
+          resultText: "\u5494\u54D2\uFF0C\u5494\u54D2\u3002\u5370\u51FA\u6765\u7684\u52A0\u56FA\u4EF6\u548C\u539F\u88C5\u4E00\u6837\u539A\u5B9E\uFF0C\u8FDE\u9508\u8FF9\u7684\u5F62\u72B6\u90FD\u5206\u6BEB\u4E0D\u5DEE\u3002"
+        },
+        {
+          text: "\u590D\u5370\u300C\u6CC4\u538B\u9600\u300D\uFF0840 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.gold >= 40 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 40\uFF09",
+          result: { gold: -40, addCard: { id: "o_vent", upgraded: false } },
+          resultText: "\u673A\u5668\u541E\u4E86\u91D1\u5E01\uFF0C\u5410\u51FA\u4E00\u679A\u4E00\u6A21\u4E00\u6837\u7684\u9600\u95E8\uFF0C\u9644\u8D60\u4E00\u58F0\u6CC4\u538B\u7684\u53F9\u606F\u3002"
+        },
+        {
+          text: "\u590D\u5370\u300C\u805A\u80FD\u73AF\u300D\uFF0845 \u91D1\u5E01\uFF09",
+          requires: (run2) => run2.gold >= 45 ? true : "\u91D1\u5E01\u4E0D\u8DB3\uFF08\u9700\u8981 45\uFF09",
+          result: { gold: -45, addCard: { id: "g_charge_ring", upgraded: false } },
+          resultText: "\u590D\u5370\u673A\u9884\u70ED\u4E86\u4E09\u79D2\uFF0C\u5410\u51FA\u6765\u7684\u73AF\u548C\u539F\u88C5\u7684\u4E00\u6837\u5706\uFF0C\u4E00\u6837\u70EB\u3002"
+        },
+        {
+          text: "\u6309\u4E0B\u300C\u53D6\u6D88\u300D\u952E",
+          result: {},
+          resultText: "\u590D\u5370\u673A\u53F9\u4E86\u53E3\u6C14\uFF0C\u7EE7\u7EED\u5370\u5B83\u7684\u88C1\u5458\u901A\u77E5\u3002\u7B2C 4096 \u4EFD\uFF0C\u548C\u7B2C 1 \u4EFD\u4E00\u6837\u65B0\u3002"
+        }
+      ]
+    },
+    {
+      id: "deathwish_contract",
+      title: "\u8D4C\u547D\u5951\u7EA6",
+      icon: "versus",
+      text: "\u5899\u7F1D\u91CC\u585E\u7740\u4E00\u4EFD\u4F1A\u547C\u5438\u7684\u5408\u540C\uFF0C\u7532\u65B9\u680F\u76D6\u7740\u6DF1\u6E0A\u7684\u516C\u7AE0\uFF0C\u4E59\u65B9\u680F\u7A7A\u7740\uFF0C\u58A8\u8FF9\u672A\u5E72\u3002\u6761\u6B3E\u672B\u5C3E\u4E00\u884C\u5C0F\u5B57\uFF1A\u300C\u672C\u5951\u7EA6\u6982\u4E0D\u63A5\u53D7\u5206\u671F\u4ED8\u6B3E\u3002\u300D",
+      choices: [
+        {
+          text: "\u62BC 15 \u70B9\u751F\u547D\uFF0C\u6362\u751F\u547D\u4E0A\u9650 +9",
+          requires: (run2) => run2.hp >= 16 ? true : "\u5951\u7EA6\u8981\u6C42\u4F60\u81F3\u5C11\u8FD8\u5269\u4E00\u53E3\u6C14\u53EF\u62BC\uFF08\u9700\u8981 16 \u751F\u547D\uFF09",
+          result: { hp: -15, maxHp: 9 },
+          resultText: "\u4F60\u6309\u4E86\u624B\u5370\u3002\u5408\u540C\u5438\u8D70\u4E00\u7BA1\u8840\uFF0C\u5410\u56DE\u4E00\u526F\u66F4\u539A\u7684\u8EAF\u58F3\u2014\u2014\u4FDD\u4FEE\u671F\uFF1A\u4F60\u7684\u4F59\u751F\u3002"
+        },
+        {
+          text: "\u62BC 8 \u70B9\u751F\u547D\u4E0A\u9650\uFF0C\u6362\u300C\u7279\u6D1B\u4F0A\u6728\u9A6C\u300D",
+          requires: (run2) => run2.relics.includes("trojan_horse") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
+          result: { maxHp: -8, relic: "trojan_horse" },
+          resultText: "\u5408\u540C\u5728\u4F60\u80F8\u8154\u91CC\u5378\u4E86\u4E00\u5757\u6321\u677F\uFF0C\u7ACB\u8D77\u4E00\u5C0A\u6728\u9A6C\u3002\u5B83\u8BF4\uFF1A\u793C\u7269\u5DF2\u7ECF\u62C6\u5F00\u4E86\uFF0C\u91CC\u9762\u662F\u88C5\u7532\u3002"
+        },
+        {
+          text: "\u62BC 6 \u70B9\u751F\u547D\u4E0A\u9650\uFF0C\u6362\u300C\u5947\u70B9\u6B8B\u7247\u300D",
+          requires: (run2) => run2.relics.includes("singularity_core_shard") ? "\u4F60\u5DF2\u7ECF\u62E5\u6709\u8FD9\u4EF6\u9057\u7269" : true,
+          result: { maxHp: -6, relic: "singularity_core_shard" },
+          resultText: "\u5408\u540C\u5728\u4F60\u80F8\u8154\u91CC\u5378\u4E86\u4E00\u5757\u6321\u677F\uFF0C\u5D4C\u8FDB\u4E00\u7C92\u8FD8\u5728\u574D\u7F29\u7684\u788E\u7247\u3002\u5B83\u8BF4\uFF1A\u8D8A\u70EB\u624B\u7684\u65E5\u5B50\uFF0C\u8D8A\u6765\u52B2\u3002"
+        },
+        {
+          text: "\u628A\u5408\u540C\u585E\u56DE\u5899\u7F1D",
+          result: {},
+          resultText: "\u5899\u7F1D\u4E0D\u6EE1\u5730\u5495\u54DD\u4E86\u4E00\u58F0\uFF0C\u628A\u5408\u540C\u54BD\u4E86\u56DE\u53BB\u3002\u4F60\u62CD\u62CD\u80F8\u53E3\u2014\u2014\u96F6\u4EF6\u90FD\u5728\uFF0C\u8FD9\u5C31\u591F\u4E86\u3002"
+        }
+      ]
     }
   ];
   function randomEvent(run2, rng) {
@@ -10302,6 +10526,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   init_enemies();
   init_state();
   init_characters();
+  init_ascend();
   var BASE_HEAT_LIMIT = 10;
   var DRAW_PER_TURN = 5;
   var RUN_STAT_FIELDS2 = [
@@ -10343,6 +10568,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       this.turn = 0;
       this._emitter = createEmitter();
       this._tookDamage = false;
+      this._asc = resolveAscendMods(run2 && run2.ascend || 0);
       ensureRunStats(run2);
       const drawPile = run2.deck.map(cloneRef);
       rng.shuffle(drawPile);
@@ -10416,7 +10642,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     // ---------- 初始化 ----------
     _makeEnemy(id) {
       const def = getEnemy(id);
-      const hp = this.rng.int(def.hp[0], def.hp[1]);
+      const hp = Math.round(this.rng.int(def.hp[0], def.hp[1]) * (this._asc.enemyHpMul || 1));
       return {
         uid: `enemy_${uidSeq++}`,
         id,
@@ -10844,6 +11070,10 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       const srcUid = isPlayerSource ? "player" : source.uid;
       const tgtUid = target === this.state.player ? "player" : target.uid;
       let amount = base;
+      const ascAtkMul = this._asc.enemyAtkMul || 1;
+      if (!isPlayerSource && !opts.raw && ascAtkMul !== 1) {
+        amount = Math.max(1, Math.round(amount * ascAtkMul));
+      }
       if (!opts.raw) {
         amount += srcEntity.statuses.strength || 0;
         if (srcEntity.statuses.weak) amount = Math.floor(amount * 0.75);
