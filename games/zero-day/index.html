@@ -150,6 +150,9 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 }
 .cb-head-title { color: var(--phos); font-size: var(--fs-md); }
 .cb-head-turn { color: var(--dim); font-size: var(--fs-sm); }
+/* ASCEND.md §4：战斗标题区进阶 chip（视觉基类 .sc-ascend-chip 在 screens.css；此处只负责
+   行内归位——margin-right:auto 与标题同簇居左，恒渲染+hidden 预留，出现/消失零位移） */
+.cb-ascend-chip { margin-right: auto; align-self: center; }
 /* 右侧组：回合计数 + 全局菜单齿轮（基类 .sc-gmenu-btn 在 screens.css，此处只负责行内对齐） */
 .cb-head-side { display: inline-flex; align-items: center; gap: var(--gap); }
 .cb-head-gmenu { align-self: center; }
@@ -1885,6 +1888,65 @@ body.cb-noscroll { position: fixed; inset: 0; width: 100%; }
 .sc-gmenu-head-btn { margin-left: auto; }
 /* 事件（无标题行）：面板内顶行，事件图标居左、齿轮居右 */
 .sc-gmenu-event-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--gap); }
+
+/* ============ 进阶系统（ASCEND.md §4，批 2 UI） ============ */
+/* —— 二级选级条：0..已解锁可选、未解锁置灰；尺寸只用 §3 令牌/clamp —— */
+.sc-ascend-hidden { display: none !important; }
+.sc-ascend-panel {
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(10px, 1.8vw, 16px); max-width: 100%;
+}
+.sc-ascend-title { font-size: var(--fs-lg); letter-spacing: .08em; }
+.sc-ascend-loading { font-size: var(--fs-sm); }
+.sc-ascend-list {
+  display: flex; flex-direction: column; gap: var(--gap);
+  width: min(560px, 94vw);
+}
+.sc-ascend-item {
+  display: flex; flex-direction: column; gap: clamp(2px, .5vw, 4px);
+  text-align: left; font-family: var(--font); font-size: var(--fs-md); color: var(--ink);
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: clamp(8px, 1.4vw, 12px) clamp(12px, 2vw, 16px); cursor: pointer;
+  touch-action: manipulation;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+@media (hover:hover) and (pointer:fine) {
+  .sc-ascend-item:hover:not(:disabled) {
+    border-color: var(--amber); transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+  }
+}
+.sc-ascend-item:disabled { cursor: not-allowed; }
+.sc-ascend-item--lock { opacity: .42; }
+.sc-ascend-lv {
+  display: flex; justify-content: space-between; align-items: baseline;
+  gap: var(--gap); letter-spacing: .06em;
+}
+.sc-ascend-name { color: var(--amber); }
+.sc-ascend-item--lock .sc-ascend-name { color: var(--dim); }
+.sc-ascend-tag { font-size: var(--fs-xs); color: var(--dim); flex: none; }
+.sc-ascend-desc { font-size: var(--fs-sm); color: var(--dim); line-height: 1.6; }
+.sc-ascend-back { margin-top: clamp(2px, .6vw, 6px); }
+/* 触屏：选级条目可点目标 ≥42px（§2-6 同款纪律） */
+@media (pointer: coarse) {
+  .sc-ascend-item { min-height: clamp(42px, 6vw, 46px); justify-content: center; }
+}
+
+/* —— 局内「进阶 N」chip（地图顶栏/战斗标题区共用基类）：
+   恒渲染，0 级 visibility:hidden 预留——出现/消失布局零位移（占位纪律，D-010 同款） —— */
+.sc-ascend-chip {
+  display: inline-flex; align-items: center; flex: none;
+  font-size: var(--fs-xs); letter-spacing: .08em; white-space: nowrap;
+  color: var(--amber); border: 1px solid var(--amber); border-radius: 2em;
+  padding: 1px clamp(6px, 1vw, 10px);
+}
+.sc-ascend-chip--off { visibility: hidden; }
+
+/* —— 结算屏「进阶 N 通关」徽记：sc-unlock-chip 琥珀变体 —— */
+.sc-ascend-badge {
+  color: var(--amber); border-color: var(--amber); font-weight: 700;
+  box-shadow: 0 0 8px rgba(221, 176, 105, .18);
+}
 
 /* ==== styles/fx.css ==== */
 /* 《零日协议》动效样式（.fx-* 命名空间，美术音效工程师所有）
@@ -4773,6 +4835,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   });
 
   // src/engine/ascend.js
+  var ascend_exports = {};
+  __export(ascend_exports, {
+    ASCENDS: () => ASCENDS,
+    ASCEND_MAX: () => ASCEND_MAX,
+    ascendInfo: () => ascendInfo,
+    resolveAscendMods: () => resolveAscendMods
+  });
   function resolveAscendMods(level) {
     const n = Number(level);
     if (!Number.isInteger(n) || n <= 0) return {};
@@ -4784,18 +4853,26 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     }
     return mods;
   }
+  function ascendInfo(level) {
+    const n = Number(level);
+    const lv = Number.isInteger(n) ? Math.min(Math.max(n, 0), ASCEND_MAX) : 0;
+    return {
+      level: lv,
+      entries: ASCENDS.filter((e) => e.level <= lv && !e.disabled).map(({ id, name, desc }) => ({ id, name, desc }))
+    };
+  }
   var ASCEND_MAX, ASCENDS;
   var init_ascend = __esm({
     "src/engine/ascend.js"() {
       ASCEND_MAX = 7;
       ASCENDS = [
-        { level: 1, id: "enemy_atk", name: "\u654C\u610F\u5347\u7EA7", desc: "\u654C\u4EBA\u653B\u51FB\u4F24\u5BB3 +10%", mods: { enemyAtkMul: 1.1 } },
-        { level: 2, id: "enemy_hp", name: "\u88C5\u7532\u52A0\u539A", desc: "\u654C\u4EBA\u751F\u547D +25%", mods: { enemyHpMul: 1.25 } },
+        { level: 1, id: "enemy_atk", name: "\u654C\u610F\u5347\u7EA7", desc: "\u654C\u4EBA\u653B\u51FB\u4F24\u5BB3 +5%", mods: { enemyAtkMul: 1.05 } },
+        { level: 2, id: "enemy_hp", name: "\u88C5\u7532\u52A0\u539A", desc: "\u654C\u4EBA\u751F\u547D +25%", mods: { enemyHpMul: 1.25 }, disabled: true },
         { level: 3, id: "thin_reward", name: "\u56DE\u6536\u7F29\u6C34", desc: "\u6218\u6597\u5956\u52B1\u4E09\u9009\u4E00\u53D8\u4E8C\u9009\u4E00", mods: { rewardCards: 2 } },
         { level: 4, id: "purge_tax", name: "\u6E05\u7406\u52A0\u4EF7", desc: "\u5546\u5E97\u5220\u5361\u4EF7\u683C +50%", mods: { removePriceMul: 1.5 } },
         { level: 5, id: "trojan", name: "\u9884\u8F7D\u6728\u9A6C", desc: "\u5F00\u5C40\u724C\u7EC4\u585E\u5165\u4E00\u5F20\u6728\u9A6C\uFF08\u5E7F\u544A\u5F39\u7A97\uFF09", mods: { startTrojan: "c_adpopup" } },
         { level: 6, id: "elite_swarm", name: "\u7CBE\u82F1\u5DE1\u903B", desc: "\u5730\u56FE\u7CBE\u82F1\u8282\u70B9\u6743\u91CD .12\u2192.20", mods: { eliteWeight: 0.2 } },
-        { level: 7, id: "no_heal_rest", name: "\u8B66\u6212\u72B6\u6001", desc: "\u4F11\u606F\u70B9\u4E0D\u56DE\u8840\uFF08\u4EC5\u5347\u7EA7\uFF09", mods: { restHeal: false } }
+        { level: 7, id: "no_heal_rest", name: "\u8B66\u6212\u72B6\u6001", desc: "\u4F11\u606F\u70B9\u56DE\u8840\u6548\u679C -20%", mods: { restHealMul: 0.8 } }
       ];
     }
   });
@@ -4893,9 +4970,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (seed === void 0 || seed === null) seed = Date.now() >>> 0;
     const ascendRaw = opts && typeof opts === "object" ? Number(opts.ascend) : NaN;
     const ascend = Number.isFinite(ascendRaw) ? Math.min(Math.max(Math.floor(ascendRaw), 0), ASCEND_MAX) : 0;
-    const ascendMods = resolveAscendMods(ascend);
+    const ascendMods2 = resolveAscendMods(ascend);
     const rng = makeRng(seed);
-    const map = generateMap(rng, 1, ascendMods);
+    const map = generateMap(rng, 1, ascendMods2);
     const def = CHARACTERS && CHARACTERS[characterId] || CHARACTERS && CHARACTERS.zero_day || null;
     const starter = def && Array.isArray(def.starter) && def.starter.length ? def.starter : STARTER_DECK;
     const run2 = {
@@ -4936,8 +5013,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       seenEvents: [],
       heatLimitBonus: 0
     };
-    if (typeof ascendMods.startTrojan === "string" && ascendMods.startTrojan) {
-      run2.deck.push({ id: ascendMods.startTrojan, upgraded: false });
+    if (typeof ascendMods2.startTrojan === "string" && ascendMods2.startTrojan) {
+      run2.deck.push({ id: ascendMods2.startTrojan, upgraded: false });
     }
     try {
       for (const ref of run2.deck) markSeen("card", ref.id);
@@ -6404,7 +6481,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
   var BUILD_STAMP;
   var init_buildStamp = __esm({
     "src/buildStamp.js"() {
-      BUILD_STAMP = "2026-07-26 11:11 \xB7 62a07325";
+      BUILD_STAMP = "2026-07-26 12:09 \xB7 8a912e7f";
     }
   });
 
@@ -8116,6 +8193,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     if (!_dailyMod) _dailyMod = Promise.resolve().then(() => (init_daily(), daily_exports)).catch(() => null);
     return _dailyMod;
   }
+  function loadAscend() {
+    if (!_ascMod) {
+      _ascMod = Promise.resolve().then(() => (init_ascend(), ascend_exports)).then((m) => {
+        _ascApi = m;
+        return m;
+      }).catch(() => null);
+    }
+    return _ascMod;
+  }
+  function ascendMods(run2) {
+    const lv = run2 && Number.isInteger(run2.ascend) ? run2.ascend : 0;
+    if (lv <= 0 || !_ascApi || typeof _ascApi.resolveAscendMods !== "function") return {};
+    try {
+      return _ascApi.resolveAscendMods(lv) || {};
+    } catch (e) {
+      return {};
+    }
+  }
   function getSettings() {
     if (_settings) return _settings;
     let stored = null;
@@ -8486,8 +8581,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const soldRelics = /* @__PURE__ */ new Set();
     const goldNum = el("span", { class: "sc-shop-gold-n" }, String(run2.gold));
     const body = el("div", {});
-    function removePrice() {
-      return REMOVE_BASE + run2.shopReroll * REMOVE_STEP;
+    function removePrice(n = run2.shopReroll) {
+      const mul = ascendMods(run2).removePriceMul || 1;
+      return Math.round((REMOVE_BASE + n * REMOVE_STEP) * mul);
     }
     function openRemovePicker() {
       const price = removePrice();
@@ -8579,7 +8675,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
           "div",
           { class: "sc-shop-service-d" },
           el("div", {}, "\u5185\u5B58\u6E05\u7406 \xB7 \u5220\u9664\u5361\u7EC4\u4E2D\u7684\u4E00\u5F20\u7A0B\u5E8F"),
-          el("div", { class: "sc-shop-service-hint" }, `\u5DF2\u6E05\u7406 ${run2.shopReroll} \u6B21\uFF0C\u4E0B\u6B21 ${price + REMOVE_STEP} \u788E\u7247`)
+          el("div", { class: "sc-shop-service-hint" }, `\u5DF2\u6E05\u7406 ${run2.shopReroll} \u6B21\uFF0C\u4E0B\u6B21 ${removePrice(run2.shopReroll + 1)} \u788E\u7247`)
         ),
         buyButton(`${price} \u788E\u7247`, price, false, false, openRemovePicker)
       );
@@ -8605,6 +8701,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       );
     }
     refresh();
+    loadAscend().then(() => {
+      if (body.isConnected) refresh();
+    });
     const shopHead = screenHead(ctx2, "chip", "\u9ED1\u5E02\u63A5\u5165\u70B9", "\u4E00\u624B\u4EA4\u94B1\uFF0C\u4E00\u624B\u4EA4\u8D27");
     shopHead.append(gameMenuButton(ctx2, "sc-gmenu-head-btn"));
     root.append(el(
@@ -8636,8 +8735,9 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     guardFlavor(root);
   }
   function renderRest(root, run2, ctx2, onDone) {
-    const healAmt = Math.ceil(run2.maxHp * 0.3);
     const body = el("div", { class: "sc-rest-opts" });
+    const head = screenHead(ctx2, "flame", "\u5B89\u5168\u5C4B", "\u4FE1\u53F7\u5C4F\u853D\u4E2D\u2026\u2026\u53EA\u80FD\u6267\u884C\u4E00\u9879\u64CD\u4F5C");
+    const headSub = head.querySelector(".sc-screen-sub");
     function finish(htmlText) {
       clear(body);
       body.className = "sc-rest-done";
@@ -8662,36 +8762,57 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         el("div", { class: "sc-rest-opt-d" }, desc)
       );
     }
-    body.append(
-      opt("heart", "\u63A5\u5165\u533B\u7597\u534F\u8BAE", `\u56DE\u590D ${healAmt} \u70B9\u751F\u547D\uFF08\u4E0A\u9650\u7684 30%\uFF09`, () => {
-        heal(run2, healAmt);
-        ctx2.sfx.play("heal");
-        ctx2.save();
-        finish(`\u4FEE\u590D\u5B8C\u6210\uFF0C\u5F53\u524D\u751F\u547D ${run2.hp} / ${run2.maxHp}\u3002`);
-      }),
-      opt("chip", "\u91CD\u6784\u7A0B\u5E8F\u4EE3\u7801", "\u5347\u7EA7\u5361\u7EC4\u4E2D\u7684\u4E00\u5F20\u7A0B\u5E8F", () => {
-        if (!run2.deck.some((r) => !r.upgraded)) {
-          finish("\u6240\u6709\u7A0B\u5E8F\u5747\u5DF2\u5B8C\u6210\u91CD\u6784\uFF0C\u6CA1\u6709\u53EF\u5347\u7EA7\u7684\u4EE3\u7801\u3002");
-          return;
-        }
-        const close = modal(root, el(
-          "div",
-          {},
-          el("div", { class: "sc-modal-title" }, "\u9009\u62E9\u8981\u5347\u7EA7\u7684\u7A0B\u5E8F"),
-          deckGrid(run2, (index, card) => {
-            upgradeCard(run2, index);
-            ctx2.sfx.play("status");
-            ctx2.save();
-            close();
-            finish(`\u300C${card.name}\u300D\u91CD\u6784\u5B8C\u6210\uFF0C\u6027\u80FD\u63D0\u5347\u3002`);
-          }, { onlyUpgradable: true })
-        ));
-      })
-    );
+    function healMul() {
+      const m = ascendMods(run2).restHealMul;
+      return typeof m === "number" && isFinite(m) && m > 0 ? m : 1;
+    }
+    function drawHead() {
+      if (!headSub) return;
+      headSub.textContent = healMul() !== 1 ? "\u4FE1\u53F7\u5C4F\u853D\u4E2D\u2026\u2026\u533B\u7597\u534F\u8BAE\u88AB\u5E72\u6270" : "\u4FE1\u53F7\u5C4F\u853D\u4E2D\u2026\u2026\u53EA\u80FD\u6267\u884C\u4E00\u9879\u64CD\u4F5C";
+    }
+    function drawOpts() {
+      clear(body);
+      body.className = "sc-rest-opts";
+      const mul = healMul();
+      const healAmt = Math.ceil(run2.maxHp * 0.3 * mul);
+      body.append(
+        opt("heart", "\u63A5\u5165\u533B\u7597\u534F\u8BAE", `\u56DE\u590D ${healAmt} \u70B9\u751F\u547D\uFF08\u4E0A\u9650\u7684 ${Math.round(30 * mul)}%\uFF09`, () => {
+          heal(run2, healAmt);
+          ctx2.sfx.play("heal");
+          ctx2.save();
+          finish(`\u4FEE\u590D\u5B8C\u6210\uFF0C\u5F53\u524D\u751F\u547D ${run2.hp} / ${run2.maxHp}\u3002`);
+        }),
+        opt("chip", "\u91CD\u6784\u7A0B\u5E8F\u4EE3\u7801", "\u5347\u7EA7\u5361\u7EC4\u4E2D\u7684\u4E00\u5F20\u7A0B\u5E8F", () => {
+          if (!run2.deck.some((r) => !r.upgraded)) {
+            finish("\u6240\u6709\u7A0B\u5E8F\u5747\u5DF2\u5B8C\u6210\u91CD\u6784\uFF0C\u6CA1\u6709\u53EF\u5347\u7EA7\u7684\u4EE3\u7801\u3002");
+            return;
+          }
+          const close = modal(root, el(
+            "div",
+            {},
+            el("div", { class: "sc-modal-title" }, "\u9009\u62E9\u8981\u5347\u7EA7\u7684\u7A0B\u5E8F"),
+            deckGrid(run2, (index, card) => {
+              upgradeCard(run2, index);
+              ctx2.sfx.play("status");
+              ctx2.save();
+              close();
+              finish(`\u300C${card.name}\u300D\u91CD\u6784\u5B8C\u6210\uFF0C\u6027\u80FD\u63D0\u5347\u3002`);
+            }, { onlyUpgradable: true })
+          ));
+        })
+      );
+    }
+    drawHead();
+    drawOpts();
+    loadAscend().then(() => {
+      if (!body.isConnected) return;
+      drawHead();
+      if (body.classList.contains("sc-rest-opts")) drawOpts();
+    });
     root.append(el(
       "div",
       { class: "sc-shell sc-center sc-gmenu-shell" },
-      screenHead(ctx2, "flame", "\u5B89\u5168\u5C4B", "\u4FE1\u53F7\u5C4F\u853D\u4E2D\u2026\u2026\u53EA\u80FD\u6267\u884C\u4E00\u9879\u64CD\u4F5C"),
+      head,
       // 全局菜单齿轮：居中壳右上角浮挂
       gameMenuButton(ctx2, "sc-gmenu-float"),
       body
@@ -8932,7 +9053,24 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       )
     ));
   }
-  function renderVictory(root, ctx2, run2, ep, unlockIds, challengeInfo) {
+  function ascendWinEl(info) {
+    if (!info || typeof info !== "object") return null;
+    const prev = Number.isInteger(info.prev) ? info.prev : 0;
+    const unlocked = Number.isInteger(info.unlocked) ? info.unlocked : 0;
+    if (prev <= 0 && unlocked <= 0) return null;
+    return el(
+      "div",
+      { class: "sc-unlock sc-ascend-win" },
+      el("div", { class: "sc-unlock-t" }, "\u8FDB\u9636\u534F\u8BAE"),
+      el(
+        "div",
+        { class: "sc-unlock-row" },
+        prev > 0 ? el("span", { class: "sc-unlock-chip sc-ascend-badge" }, `\u8FDB\u9636 ${prev} \u901A\u5173`) : null,
+        unlocked > 0 ? el("span", { class: "sc-unlock-chip" }, `\u8FDB\u9636 ${unlocked} \u5DF2\u89E3\u9501`) : null
+      )
+    );
+  }
+  function renderVictory(root, ctx2, run2, ep, unlockIds, challengeInfo, ascendResult) {
     root.append(el(
       "div",
       { class: "sc-shell sc-end-shell" },
@@ -8940,6 +9078,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       el("div", { class: "sc-end-title app-phos" }, "\u5947\u70B9\u5BC6\u94A5\u5DF2\u7A83\u53D6"),
       el("p", { class: "sc-end-flavor" }, "\u8D6B\u5C14\u58A8\u65AF\u4E3B\u8111\u7684\u6838\u5FC3\u5728\u4F60\u9762\u524D\u655E\u5F00\u3002\u6DF1\u6E0A\u4E3B\u7F51\uFF0C\u5F52\u4E8E\u96F6\u65E5\u3002"),
       epilogueEl(ep),
+      ascendWinEl(ascendResult),
       unlocksEl(ctx2, unlockIds),
       challengeEl(ctx2, run2, "win", challengeInfo),
       statsGrid(run2),
@@ -9205,33 +9344,123 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       }, "\u8FD4\u56DE\u6807\u9898") : null
     ));
   }
-  function renderCharacterSelect(root, ctx2, onPick) {
+  function renderCharacterSelect(root, ctx2, onPick, opts) {
     const pick = typeof onPick === "function" ? onPick : () => {
     };
+    const ascendMode = !!(opts && opts.ascend);
     const row = el("div", { class: "sc-char-row" });
+    const shell = el(
+      "div",
+      { class: "sc-shell sc-center" },
+      screenHead(ctx2, "logo", "\u9009\u62E9\u63A5\u5165\u8F7D\u4F53", "\u6BCF\u4E2A\u8F7D\u4F53\u62E5\u6709\u72EC\u7ACB\u7684\u8D77\u59CB\u724C\u7EC4\u4E0E\u88AB\u52A8\u534F\u8BAE"),
+      row
+    );
+    root.append(shell);
+    if (ascendMode) loadAscend();
+    function cardNode(ch, onCard) {
+      return el(
+        "div",
+        { class: "sc-char-card", onClick: onCard },
+        el("span", { class: "sc-ic-wrap", html: ctx2.icon(ch.icon || (ch.id === "bulwark" ? "knight" : "logo"), "sc-char-ic") }),
+        el("div", { class: "sc-char-name" }, String(ch.name)),
+        ch.epithet ? el("div", { class: "sc-char-epithet" }, String(ch.epithet)) : null,
+        ch.desc ? el("div", { class: "sc-char-desc" }, String(ch.desc)) : null,
+        el(
+          "div",
+          { class: "sc-char-passive" },
+          ch.passive && ch.passive.desc ? `\u88AB\u52A8 \xB7 ${ch.passive.desc}` : "\u88AB\u52A8 \xB7 \u65E0"
+        )
+      );
+    }
     function draw(chars) {
       clear(row);
       for (const ch of chars) {
-        row.append(el(
-          "div",
-          {
-            class: "sc-char-card",
-            onClick: () => {
-              ctx2.sfx.play("click");
-              pick(ch.id);
-            }
-          },
-          el("span", { class: "sc-ic-wrap", html: ctx2.icon(ch.icon || (ch.id === "bulwark" ? "knight" : "logo"), "sc-char-ic") }),
-          el("div", { class: "sc-char-name" }, String(ch.name)),
-          ch.epithet ? el("div", { class: "sc-char-epithet" }, String(ch.epithet)) : null,
-          ch.desc ? el("div", { class: "sc-char-desc" }, String(ch.desc)) : null,
-          el(
-            "div",
-            { class: "sc-char-passive" },
-            ch.passive && ch.passive.desc ? `\u88AB\u52A8 \xB7 ${ch.passive.desc}` : "\u88AB\u52A8 \xB7 \u65E0"
-          )
-        ));
+        row.append(cardNode(ch, () => {
+          ctx2.sfx.play("click");
+          if (ascendMode) openAscendPick(ch);
+          else pick(ch.id);
+        }));
       }
+    }
+    function openAscendPick(ch) {
+      row.classList.add("sc-ascend-hidden");
+      const list = el(
+        "div",
+        { class: "sc-ascend-list" },
+        el("div", { class: "app-dim sc-ascend-loading" }, "\u8BCD\u7F00\u6570\u636E\u8F7D\u5165\u4E2D\u2026\u2026")
+      );
+      const panel = el(
+        "div",
+        { class: "sc-ascend-panel" },
+        el(
+          "div",
+          { class: "sc-ascend-title" },
+          el("span", { class: "app-amber" }, String(ch.name)),
+          " \xB7 \u9009\u62E9\u8FDB\u9636\u7B49\u7EA7"
+        ),
+        list,
+        el("button", {
+          class: "app-btn sc-ascend-back",
+          type: "button",
+          onClick: () => {
+            ctx2.sfx.play("click");
+            panel.remove();
+            row.classList.remove("sc-ascend-hidden");
+          }
+        }, "\u2190 \u8FD4\u56DE\u91CD\u9009\u8F7D\u4F53")
+      );
+      shell.append(panel);
+      const meta2 = readMeta(ctx2);
+      const unlocks = meta2 && meta2.ascendUnlocks && typeof meta2.ascendUnlocks === "object" ? meta2.ascendUnlocks : {};
+      const unlocked = Number.isInteger(unlocks[ch.id]) ? Math.max(0, unlocks[ch.id]) : 0;
+      loadAscend().then(() => {
+        if (!panel.isConnected) return;
+        clear(list);
+        const table = _ascApi && Array.isArray(_ascApi.ASCENDS) ? _ascApi.ASCENDS : [];
+        const maxLv = _ascApi && Number.isInteger(_ascApi.ASCEND_MAX) ? _ascApi.ASCEND_MAX : 7;
+        const infoFn = _ascApi && typeof _ascApi.ascendInfo === "function" ? _ascApi.ascendInfo : null;
+        for (let lv = 0; lv <= Math.max(maxLv, unlocked); lv++) {
+          const locked = lv > unlocked;
+          const entry = table.find((e) => e && e.level === lv);
+          const name = lv === 0 ? "\u666E\u901A\u5165\u4FB5" : entry && entry.name || `\u8FDB\u9636 ${lv}`;
+          let desc = "\u65E0\u8BCD\u7F00 \xB7 \u6807\u51C6\u5165\u4FB5\u534F\u8BAE";
+          if (lv > 0 && infoFn) {
+            try {
+              const entries = (infoFn(lv) || {}).entries || [];
+              desc = entries.length ? entries.map((t) => `${t.name}\uFF1A${t.desc}`).join("\uFF1B") : "\u65E0\u751F\u6548\u8BCD\u7F00";
+            } catch (e) {
+              desc = "\u8BCD\u7F00\u9884\u89C8\u4E0D\u53EF\u7528";
+            }
+            if (entry && entry.disabled) desc = `\u672C\u7EA7\u8BCD\u7F00\u91CD\u8BBE\u8BA1\u4E2D\uFF0C\u6682\u4E0D\u751F\u6548\uFF08${desc}\uFF09`;
+          } else if (lv > 0) {
+            desc = "\u8BCD\u7F00\u6A21\u5757\u672A\u5C31\u7EEA";
+          }
+          list.append(el(
+            "button",
+            {
+              class: "sc-ascend-item" + (locked ? " sc-ascend-item--lock" : ""),
+              type: "button",
+              disabled: locked ? true : null,
+              onClick: locked ? null : () => {
+                ctx2.sfx.play("click");
+                pick(ch.id, lv);
+              }
+            },
+            el(
+              "div",
+              { class: "sc-ascend-lv" },
+              el(
+                "span",
+                {},
+                lv === 0 ? "\u8FDB\u9636 0" : `\u8FDB\u9636 ${lv}`,
+                el("span", { class: "sc-ascend-name" }, ` \xB7 ${name}`)
+              ),
+              locked ? el("span", { class: "sc-ascend-tag" }, "\u672A\u89E3\u9501") : null
+            ),
+            el("div", { class: "sc-ascend-desc" }, desc)
+          ));
+        }
+      });
     }
     draw(CHAR_FALLBACK);
     loadCharacters().then((mod) => {
@@ -9240,14 +9469,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       const chars = order.map((id) => mod.CHARACTERS[id]).filter(Boolean);
       if (chars.length) draw(chars);
     });
-    root.append(el(
-      "div",
-      { class: "sc-shell sc-center" },
-      screenHead(ctx2, "logo", "\u9009\u62E9\u63A5\u5165\u8F7D\u4F53", "\u6BCF\u4E2A\u8F7D\u4F53\u62E5\u6709\u72EC\u7ACB\u7684\u8D77\u59CB\u724C\u7EC4\u4E0E\u88AB\u52A8\u534F\u8BAE"),
-      row
-    ));
   }
-  var _nvMod, _charMod, _achMod, _dailyMod, SETTINGS_DEFAULT, _settings, CARD_PRICE, RELIC_PRICE, REMOVE_BASE, REMOVE_STEP, FB_QUESTIONS, FB_NUMS, GAL_TIER_ZH, GAL_TYPE_ZH, GAL_RARITY_ZH, CHAR_FALLBACK;
+  var _nvMod, _charMod, _achMod, _dailyMod, _ascMod, _ascApi, SETTINGS_DEFAULT, _settings, CARD_PRICE, RELIC_PRICE, REMOVE_BASE, REMOVE_STEP, FB_QUESTIONS, FB_NUMS, GAL_TIER_ZH, GAL_TYPE_ZH, GAL_RARITY_ZH, CHAR_FALLBACK;
   var init_screens = __esm({
     "src/ui/screens.js"() {
       init_dom();
@@ -9262,6 +9485,8 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       _charMod = null;
       _achMod = null;
       _dailyMod = null;
+      _ascMod = null;
+      _ascApi = null;
       SETTINGS_DEFAULT = { masterVolume: 0.8, sfx: true, music: true, reduceMotion: false, crt: true };
       _settings = null;
       CARD_PRICE = { starter: 40, common: 48, uncommon: 78, rare: 128 };
@@ -10356,6 +10581,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     const floors = run2.map.floors;
     const curFloor = run2.nodeId ? run2.map.nodes[run2.nodeId].floor : -1;
     const availIds = new Set(availableNodes(run2).map((n) => n.id));
+    const asc = Number.isInteger(run2.ascend) ? run2.ascend : 0;
     const topbar = el(
       "div",
       { class: "sc-topbar" },
@@ -10364,6 +10590,7 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
         { class: "sc-topbar-cell sc-topbar-act" },
         el("span", { class: "sc-ic-wrap app-phos", html: ctx2.icon("logo", "sc-ic") }),
         el("span", {}, `ACT ${run2.act} \xB7 ${ACT_NAMES[run2.act] || "\u672A\u77E5\u533A\u57DF"}`),
+        el("span", { class: `sc-ascend-chip${asc > 0 ? "" : " sc-ascend-chip--off"}` }, `\u8FDB\u9636 ${asc}`),
         el("span", { class: "app-dim" }, `\u7B2C ${curFloor + 1} / ${floors.length} \u5C42`)
       ),
       el(
@@ -12496,10 +12723,12 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       const targeting = selected >= 0;
       const shell = el("div", { class: `cb-shell${p.heat >= 7 ? " cb-shell--hot" : ""}` });
       shellEl = shell;
+      const asc = run2 && Number.isInteger(run2.ascend) ? run2.ascend : 0;
       shell.append(el(
         "div",
         { class: "cb-head" },
         el("span", { class: "cb-head-title" }, `\u906D\u9047\u6218 // ${S().enemies.map((e) => e.name).join(" \xB7 ")}`),
+        el("span", { class: `sc-ascend-chip cb-ascend-chip${asc > 0 ? "" : " sc-ascend-chip--off"}` }, `\u8FDB\u9636 ${asc}`),
         el(
           "span",
           { class: "cb-head-side" },
@@ -13750,13 +13979,13 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     sfx.play("click");
     const sc = await loadScreens();
     if (sc && typeof sc.renderCharacterSelect === "function") {
-      mount(sc.renderCharacterSelect, ctx, (id) => beginRun(id));
+      mount(sc.renderCharacterSelect, ctx, (id, ascend) => beginRun(id, ascend), { ascend: true });
     } else {
       beginRun("zero_day");
     }
   }
-  async function beginRun(characterId) {
-    run = newRun(void 0, characterId || "zero_day");
+  async function beginRun(characterId, ascend) {
+    run = newRun(void 0, characterId || "zero_day", { ascend: ascend || 0 });
     if (!run.character) run.character = "zero_day";
     ctx.save();
     music.start();
@@ -13889,10 +14118,11 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
     } catch (e) {
     }
     const challengeInfo = await settleChallenge("win");
+    const ascendResult = await settleAscendWin();
     sfx.play("win");
     const ep = await pickEpilogue("win");
     clearRun();
-    mount(renderVictory, ctx, run, ep, newIds, challengeInfo);
+    mount(renderVictory, ctx, run, ep, newIds, challengeInfo, ascendResult);
     toastAchievements(newIds);
   }
   async function settleChallenge(result) {
@@ -13907,9 +14137,22 @@ body.rm .fx-combo-pop { animation-duration: 0.01s; }
       return void 0;
     }
   }
+  async function settleAscendWin() {
+    if (!run) return void 0;
+    const st2 = await loadState2();
+    if (!st2 || typeof st2.recordAscendWin !== "function") return void 0;
+    try {
+      const info = st2.recordAscendWin(run);
+      if (info) meta = getMeta();
+      return info || void 0;
+    } catch (e) {
+      return void 0;
+    }
+  }
   function debugBoot(screen) {
     const qp = new URLSearchParams(location.search);
-    run = newRun(qp.get("seed") || "debug", qp.get("char") || "zero_day");
+    const ascendQp = qp.get("ascend");
+    run = newRun(qp.get("seed") || "debug", qp.get("char") || "zero_day", ascendQp !== null ? { ascend: Number(ascendQp) } : void 0);
     if (!run.character) run.character = "zero_day";
     const act = Math.min(3, Math.max(1, Number(qp.get("act")) || 1));
     while (run.act < act) nextAct(run);
