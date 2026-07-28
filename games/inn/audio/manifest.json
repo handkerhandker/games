@@ -707,7 +707,32 @@
     "e8_xixi_c1l12": "audio/voice/e8_xixi_c1l12.mp3",
     "e8_xixi_c2l12": "audio/voice/e8_xixi_c2l12.mp3",
     "e8_yangui_c6l07": "audio/voice/e8_yangui_c6l07.mp3",
-    "e8_yanxiao_c4l13": "audio/voice/e8_yanxiao_c4l13.mp3"
+    "e8_yanxiao_c4l13": "audio/voice/e8_yanxiao_c4l13.mp3",
+    "p0_aurora_l04": "audio/voice/p0_aurora_l04.mp3",
+    "p0_aurora_l06": "audio/voice/p0_aurora_l06.mp3",
+    "p0_aurora_l08": "audio/voice/p0_aurora_l08.mp3",
+    "p0_aurora_l09": "audio/voice/p0_aurora_l09.mp3",
+    "p0_aurora_l11": "audio/voice/p0_aurora_l11.mp3",
+    "p0_aurora_l12": "audio/voice/p0_aurora_l12.mp3",
+    "p0_aurora_l13": "audio/voice/p0_aurora_l13.mp3",
+    "p0_aurora_l15": "audio/voice/p0_aurora_l15.mp3",
+    "p0_aurora_l17": "audio/voice/p0_aurora_l17.mp3",
+    "p0_aurora_l18": "audio/voice/p0_aurora_l18.mp3",
+    "p0_aurora_l19": "audio/voice/p0_aurora_l19.mp3",
+    "p0_aurora_l20": "audio/voice/p0_aurora_l20.mp3",
+    "p0_aurora_l24": "audio/voice/p0_aurora_l24.mp3",
+    "p0_dianzhang_l01": "audio/voice/p0_dianzhang_l01.mp3",
+    "p0_dianzhang_l02": "audio/voice/p0_dianzhang_l02.mp3",
+    "p0_dianzhang_l03": "audio/voice/p0_dianzhang_l03.mp3",
+    "p0_dianzhang_l05": "audio/voice/p0_dianzhang_l05.mp3",
+    "p0_dianzhang_l07": "audio/voice/p0_dianzhang_l07.mp3",
+    "p0_dianzhang_l10": "audio/voice/p0_dianzhang_l10.mp3",
+    "p0_dianzhang_l14": "audio/voice/p0_dianzhang_l14.mp3",
+    "p0_dianzhang_l16": "audio/voice/p0_dianzhang_l16.mp3",
+    "p0_dianzhang_l21": "audio/voice/p0_dianzhang_l21.mp3",
+    "p0_dianzhang_l22": "audio/voice/p0_dianzhang_l22.mp3",
+    "p0_dianzhang_l25": "audio/voice/p0_dianzhang_l25.mp3",
+    "p0_guest_l23": "audio/voice/p0_guest_l23.mp3"
   },
   "ambience": {
     "lobby_hearth_night": "audio/ambience/lobby_hearth_night.mp3",
@@ -760,6 +785,8 @@
     "bell_second_once": "audio/sfx/bell_second_once.mp3",
     "bowl_on_stone": "audio/sfx/bowl_on_stone.mp3",
     "water_cupped_hands": "audio/sfx/water_cupped_hands.mp3",
-    "fire_all_lamps": "audio/sfx/fire_all_lamps.mp3"
+    "fire_all_lamps": "audio/sfx/fire_all_lamps.mp3",
+    "door_creak_open": "audio/sfx/door_creak_open.mp3",
+    "starlight_beam_shot": "audio/sfx/starlight_beam_shot.mp3"
   }
 }

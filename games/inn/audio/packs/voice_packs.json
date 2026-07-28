@@ -3409,6 +3409,131 @@
   "start": 78.456,
   "duration": 6.072
  },
+ "p0_aurora_l04": {
+  "pack": "prologue_ch2",
+  "start": 8.208,
+  "duration": 4.68
+ },
+ "p0_aurora_l06": {
+  "pack": "prologue_ch2",
+  "start": 16.704,
+  "duration": 3.264
+ },
+ "p0_aurora_l08": {
+  "pack": "prologue_ch2",
+  "start": 23.736,
+  "duration": 5.616
+ },
+ "p0_aurora_l09": {
+  "pack": "prologue_ch3",
+  "start": 0.0,
+  "duration": 2.712
+ },
+ "p0_aurora_l11": {
+  "pack": "prologue_ch3",
+  "start": 13.128,
+  "duration": 14.16
+ },
+ "p0_aurora_l12": {
+  "pack": "prologue_ch3",
+  "start": 27.288,
+  "duration": 7.176
+ },
+ "p0_aurora_l13": {
+  "pack": "prologue_ch4",
+  "start": 0.0,
+  "duration": 4.704
+ },
+ "p0_aurora_l15": {
+  "pack": "prologue_ch4",
+  "start": 13.368,
+  "duration": 5.976
+ },
+ "p0_aurora_l17": {
+  "pack": "prologue_ch5",
+  "start": 10.176,
+  "duration": 7.68
+ },
+ "p0_aurora_l18": {
+  "pack": "prologue_ch5",
+  "start": 17.856,
+  "duration": 12.696
+ },
+ "p0_aurora_l19": {
+  "pack": "prologue_ch5",
+  "start": 30.552,
+  "duration": 10.56
+ },
+ "p0_aurora_l20": {
+  "pack": "prologue_ch6",
+  "start": 0.0,
+  "duration": 5.544
+ },
+ "p0_aurora_l24": {
+  "pack": "prologue_ch7",
+  "start": 9.912,
+  "duration": 4.344
+ },
+ "p0_dianzhang_l01": {
+  "pack": "prologue_ch1",
+  "start": 0.0,
+  "duration": 6.768
+ },
+ "p0_dianzhang_l02": {
+  "pack": "prologue_ch1",
+  "start": 6.768,
+  "duration": 7.296
+ },
+ "p0_dianzhang_l03": {
+  "pack": "prologue_ch2",
+  "start": 0.0,
+  "duration": 8.208
+ },
+ "p0_dianzhang_l05": {
+  "pack": "prologue_ch2",
+  "start": 12.888,
+  "duration": 3.816
+ },
+ "p0_dianzhang_l07": {
+  "pack": "prologue_ch2",
+  "start": 19.968,
+  "duration": 3.768
+ },
+ "p0_dianzhang_l10": {
+  "pack": "prologue_ch3",
+  "start": 2.712,
+  "duration": 10.416
+ },
+ "p0_dianzhang_l14": {
+  "pack": "prologue_ch4",
+  "start": 4.704,
+  "duration": 8.664
+ },
+ "p0_dianzhang_l16": {
+  "pack": "prologue_ch5",
+  "start": 0.0,
+  "duration": 10.176
+ },
+ "p0_dianzhang_l21": {
+  "pack": "prologue_ch6",
+  "start": 5.544,
+  "duration": 8.208
+ },
+ "p0_dianzhang_l22": {
+  "pack": "prologue_ch7",
+  "start": 0.0,
+  "duration": 5.04
+ },
+ "p0_dianzhang_l25": {
+  "pack": "prologue_ch7",
+  "start": 14.256,
+  "duration": 6.84
+ },
+ "p0_guest_l23": {
+  "pack": "prologue_ch7",
+  "start": 5.04,
+  "duration": 4.872
+ },
  "vann_01": {
   "pack": "event01_ch1",
   "start": 24.984,

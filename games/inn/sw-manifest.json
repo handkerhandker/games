@@ -1,10 +1,11 @@
 {
-  "version": "20260726063413",
-  "git": "36b0b7b",
-  "builtAt": "2026-07-26T06:34:13.424Z",
+  "version": "20260728170037",
+  "git": "d3c7d92",
+  "builtAt": "2026-07-28T17:00:37.194Z",
   "precache": [
-    "assets/index-CfK7RlUG.css",
-    "assets/index-Db9oZs6T.js",
+    "assets/Prologue-C-6twelJ.js",
+    "assets/index-TwEH3Bao.css",
+    "assets/index-h9SOqZZi.js",
     "audio/ambience/kitchen_hearth.mp3",
     "audio/ambience/lobby_hearth_night.mp3",
     "audio/ambience/star_mist_surge.mp3",
