@@ -151,7 +151,7 @@
 
   <noscript><p style="padding:1rem">需要启用 JavaScript。</p></noscript>
 <script>
-const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN","genre":"放置经营 · 抽卡","pitch":"经营一家连接万千世界的旅店：招募奇珍旅客、扩建房间、放置也有收益。","status":"开发中","tags":["放置","经营","抽卡"],"listedAt":"2026-07-23","syncedAt":"2026-07-30T02:42:40.411Z","entry":"./games/inn/index.html","cover":"./covers/inn.jpg","needsServer":true},{"slug":"zero-day","title":"零日协议","subtitle":"ZERO-DAY PROTOCOL","genre":"卡牌 Roguelike","pitch":"扮演觉醒的流浪 AI「零日」，用程序卡牌攻破巨企主网层层 ICE，直抵核心窃取奇点密钥。","status":"可玩","tags":["卡牌","Roguelike","赛博朋克"],"listedAt":"2026-07-22","syncedAt":"2026-07-30T02:42:42.306Z","entry":"./games/zero-day/index.html","cover":"./covers/zero-day.jpg","needsServer":false},{"slug":"embernight","title":"烛夜","subtitle":"EMBERNIGHT","genre":"动作 · 黑暗奇幻","pitch":"一根蜡烛照亮黑夜：十分钟一局的打击感动作小品，零外部素材、纯代码渲染与程序化音频。","status":"可玩","tags":["动作","单文件"],"listedAt":"2026-07-22","syncedAt":"2026-07-30T02:42:42.313Z","entry":"./games/embernight/index.html","cover":"./covers/embernight.jpg","needsServer":false},{"slug":"dungeon","title":"地牢幸存者：巫妖深渊","subtitle":"DUNGEON SURVIVORS","genre":"幸存者类动作","pitch":"吸血鬼幸存者式实时动作：6 武器进化、8 种敌人与三阶段巫妖，在 10 分钟波次中活下来。","status":"可玩","tags":["动作","幸存者","Roguelite"],"listedAt":"2026-07-23","syncedAt":"2026-07-30T02:42:44.000Z","entry":"./games/dungeon/index.html","cover":"./covers/dungeon.jpg","needsServer":true},{"slug":"spellforge","title":"法术工坊 Spellforge","subtitle":"SPELLFORGE","genre":"竖版竞技场肉鸽 · 山海经","pitch":"自由组合法术与符文，肃清怪潮，讨伐古神——山海经主题竖版竞技场肉鸽。","status":"可玩","tags":["肉鸽","山海经","竖屏"],"listedAt":"2026-07-21","syncedAt":"2026-07-30T02:42:44.116Z","entry":"https://handkerhandker.github.io/spellforge/","cover":"./covers/spellforge.jpg","needsServer":false}];
+const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN","genre":"放置经营 · 抽卡","pitch":"经营一家连接万千世界的旅店：招募奇珍旅客、扩建房间、放置也有收益。","status":"开发中","tags":["放置","经营","抽卡"],"listedAt":"2026-07-23","syncedAt":"2026-08-02T02:10:57.546Z","entry":"./games/inn/index.html","cover":"./covers/inn.jpg","needsServer":true},{"slug":"zero-day","title":"零日协议","subtitle":"ZERO-DAY PROTOCOL","genre":"卡牌 Roguelike","pitch":"扮演觉醒的流浪 AI「零日」，用程序卡牌攻破巨企主网层层 ICE，直抵核心窃取奇点密钥。","status":"可玩","tags":["卡牌","Roguelike","赛博朋克"],"listedAt":"2026-07-22","syncedAt":"2026-08-02T02:11:03.328Z","entry":"./games/zero-day/index.html","cover":"./covers/zero-day.jpg","needsServer":false},{"slug":"embernight","title":"烛夜","subtitle":"EMBERNIGHT","genre":"动作 · 黑暗奇幻","pitch":"一根蜡烛照亮黑夜：十分钟一局的打击感动作小品，零外部素材、纯代码渲染与程序化音频。","status":"可玩","tags":["动作","单文件"],"listedAt":"2026-07-22","syncedAt":"2026-08-02T02:11:03.339Z","entry":"./games/embernight/index.html","cover":"./covers/embernight.jpg","needsServer":false},{"slug":"dungeon","title":"地牢幸存者：巫妖深渊","subtitle":"DUNGEON SURVIVORS","genre":"幸存者类动作","pitch":"吸血鬼幸存者式实时动作：6 武器进化、8 种敌人与三阶段巫妖，在 10 分钟波次中活下来。","status":"可玩","tags":["动作","幸存者","Roguelite"],"listedAt":"2026-07-23","syncedAt":"2026-08-02T02:11:10.880Z","entry":"./games/dungeon/index.html","cover":"./covers/dungeon.jpg","needsServer":true},{"slug":"spellforge","title":"法术工坊 Spellforge","subtitle":"SPELLFORGE","genre":"竖版竞技场肉鸽 · 山海经","pitch":"法术工坊 Spellforge——山海经竖版竞技场肉鸽：自由组合法术与符文，肃清怪潮，讨伐古神","status":"可玩","tags":["肉鸽","山海经","竖屏"],"listedAt":"2026-07-21","entry":"https://handkerhandker.github.io/spellforge/","cover":"./covers/spellforge.jpg","needsServer":false}];
 </script>
 <script>
 (function () {
@@ -183,7 +183,6 @@ const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN"
     var a = document.createElement('a')
     a.className = 'door'
     a.href = g.entry
-    if (/^https?:\/\//.test(g.entry)) { a.target = '_blank'; a.rel = 'noopener noreferrer' }
     a.setAttribute('data-slug', g.slug)
     a.setAttribute('aria-label', g.title + '（' + g.genre + '，' + g.status + '）')
     a.innerHTML =
@@ -223,7 +222,7 @@ const GAMES = [{"slug":"inn","title":"次元旅店","subtitle":"DIMENSIONAL INN"
     var g = games.filter(function (x) { return x.slug === a.getAttribute('data-slug') })[0]
     if (isFile && g && g.needsServer) {
       e.preventDefault()
-      var online = /^https?:\/\//.test(String(g.entry)) ? String(g.entry) : 'https://handkerhandker.github.io/games/' + String(g.entry).replace(/^\.\//, '')
+      var online = 'https://cydgames.com/' + String(g.entry).replace(/^\.\//, '')
       showToast(
         '「' + g.title + '」需经本地服务或在线版进入：<a href="' + online + '" target="_blank" rel="noopener noreferrer">打开在线版 →</a>' +
         '<br><small>本地：在门户目录运行 npm run dev，或使用部署后的网址</small>'
